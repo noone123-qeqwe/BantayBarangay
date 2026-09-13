@@ -1,0 +1,371 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String?   @unique
+  phone        String?   @unique
+  passwordHash String
+  birthDate    DateTime?
+  age          Int?
+  role         String    @default("RESIDENT") // RESIDENT, STAFF, ADMIN, SUPER_ADMIN
+  avatar            String?
+  preferredLanguage String    @default("msb") // en, fil, msb
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  reports          Report[]              @relation("ReportAuthor")
+  assignedReports  Report[]              @relation("ReportAssignedStaff")
+  statusHistories  ReportStatusHistory[]
+  updates          ReportUpdate[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+  announcements    Announcement[]
+}
+
+model Category {
+  id              String    @id @default(cuid())
+  name            String
+  slug            String    @unique
+  description     String
+  icon            String    @default("AlertTriangle")
+  defaultPriority String    @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  defaultAgencyId String?
+  defaultAgency   Agency?   @relation(fields: [defaultAgencyId], references: [id])
+  isActive        Boolean   @default(true)
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  reports         Report[]
+}
+
+model Agency {
+  id           String     @id @default(cuid())
+  name         String
+  code         String     @unique
+  description  String
+  contactEmail String?
+  contactPhone String?
+  coverageArea String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  categories   Category[]
+  reports      Report[]
+}
+
+model Report {
+  id               String     @id @default(cuid())
+  referenceNo      String     @unique
+  categoryId       String
+  category         Category   @relation(fields: [categoryId], references: [id])
+  residentId       String
+  resident         User       @relation("ReportAuthor", fields: [residentId], references: [id])
+  title            String
+  description      String
+  safetyFlag       String     @default("NO") // NO, POSSIBLY, URGENT
+  priority         String     @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status           String     @default("SUBMITTED") // SUBMITTED, PENDING_VERIFICATION, RECEIVED, UNDER_REVIEW, ASSIGNED, IN_PROGRESS, ON_HOLD, RESOLVED, REOPENED, CLOSED, REJECTED
+  latitude         Float
+  longitude        Float
+  accuracy         Float?
+  address          String
+  landmark         String?
+  locationSource   String? // DEVICE_GPS, MANUAL_PIN, MAP_CLICK, SEARCH, PHOTO_EXIF
+  locationCapturedAt DateTime?
+  assignedAgencyId String?
+  assignedAgency   Agency?    @relation(fields: [assignedAgencyId], references: [id])
+  assignedStaffId  String?
+  assignedStaff    User?      @relation("ReportAssignedStaff", fields: [assignedStaffId], references: [id])
+  duplicateOfId    String?
+  duplicateOf      Report?    @relation("DuplicateReports", fields: [duplicateOfId], references: [id])
+  duplicates       Report[]   @relation("DuplicateReports")
+  slaDeadline      DateTime?
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  // Anti-abuse fields
+  riskScore        Int?       // 0-100 composite risk score
+  riskLevel        String?    // LOW, MEDIUM, HIGH
+  verificationStatus String?  // null=normal, PENDING_VERIFICATION, VERIFIED, REJECTED_SPAM
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  photos              ReportPhoto[]
+  statusHistory       ReportStatusHistory[]
+  updates             ReportUpdate[]
+  notifications       Notification[]
+  riskAssessment      ReportRiskAssessment?
+  moderationActions   ModerationAction[]
+  verificationRequests VerificationRequest[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([categoryId])
+  @@index([residentId])
+  @@index([latitude, longitude])
+  @@index([riskLevel])
+  @@index([verificationStatus])
+}
+
+model ReportPhoto {
+  id               String   @id @default(cuid())
+  reportId         String
+  report           Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  photoUrl         String
+  photoType        String   @default("BEFORE") // BEFORE, IN_PROGRESS, RESOLUTION
+  caption          String?
+  uploadedByUserId String?
+  fingerprint      String?  // Perceptual hash for duplicate detection
+  createdAt        DateTime @default(now())
+
+  @@index([reportId])
+  @@index([fingerprint])
+}
+
+model ReportStatusHistory {
+  id             String   @id @default(cuid())
+  reportId       String
+  report         Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  actorId        String?
+  actor          User?    @relation(fields: [actorId], references: [id])
+  previousStatus String?
+  newStatus      String
+  note           String?
+  isInternal     Boolean  @default(false)
+  photoUrl       String?
+  createdAt      DateTime @default(now())
+
+  @@index([reportId])
+}
+
+model ReportUpdate {
+  id         String   @id @default(cuid())
+  reportId   String
+  report     Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  authorId   String?
+  author     User?    @relation(fields: [authorId], references: [id])
+  message    String
+  isInternal Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([reportId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reportId  String?
+  report    Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  title     String
+  message   String
+  type      String   @default("STATUS_CHANGE") // STATUS_CHANGE, ASSIGNMENT, UPDATE, RESOLUTION, SLA_BREACH, VERIFICATION_REQUEST, MODERATION
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Announcement {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  priority    String    @default("NORMAL") // NORMAL, URGENT
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  createdById String?
+  createdBy   User?     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  actorId       String?
+  actor         User?    @relation(fields: [actorId], references: [id])
+  action        String
+  entity        String
+  entityId      String?
+  previousState String?
+  newState      String?
+  ipAddress     String?
+  createdAt     DateTime @default(now())
+
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Anti-Abuse System Models ───────────────────────────────────────────────
+
+model ReportRiskAssessment {
+  id                  String   @id @default(cuid())
+  reportId            String   @unique
+  report              Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  totalScore          Int      @default(0)    // 0-100 composite
+  riskLevel           String   @default("LOW") // LOW, MEDIUM, HIGH
+  textScore           Int      @default(0)    // 0-100
+  imageScore          Int      @default(0)    // 0-100
+  duplicateScore      Int      @default(0)    // 0-100
+  locationScore       Int      @default(0)    // 0-100
+  behaviorScore       Int      @default(0)    // 0-100
+  categoryMismatchScore Int    @default(0)    // 0-100
+  actionTaken         String   @default("AUTO_APPROVE") // AUTO_APPROVE, PENDING_VERIFICATION
+  signals             String?  // JSON array of human-readable signal descriptions
+  summary             String?  // Human-readable analysis summary
+  createdAt           DateTime @default(now())
+
+  @@index([riskLevel])
+  @@index([totalScore])
+}
+
+model UserTrustProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  totalReports    Int       @default(0)
+  approvedCount   Int       @default(0)
+  rejectedCount   Int       @default(0)
+  spamCount       Int       @default(0)
+  duplicateCount  Int       @default(0)
+  trustScore      Int       @default(50)  // 0-100, starts at 50
+  cooldownUntil   DateTime? // Temporary submission cooldown
+  lastFlaggedAt   DateTime?
+  lastReportAt    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([trustScore])
+}
+
+model ModerationAction {
+  id              String   @id @default(cuid())
+  reportId        String
+  report          Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  moderatorId     String
+  actionType      String   // APPROVE, REJECT, REQUEST_INFO, MARK_SPAM, MERGE_DUPLICATE, FLAG_USER
+  flagType        String?  // SPAM, PRANK_FAKE, DUPLICATE, INCORRECT_CATEGORY, INVALID_LOCATION, INAPPROPRIATE, MISLEADING, OTHER
+  reason          String?
+  previousStatus  String?
+  newStatus       String?
+  riskSignalsUsed String?  // JSON of risk signals considered
+  evidence        String?  // Additional evidence or notes
+  createdAt       DateTime @default(now())
+
+  @@index([reportId])
+  @@index([moderatorId])
+  @@index([actionType])
+  @@index([createdAt])
+}
+
+model PhotoFingerprint {
+  id           String   @id @default(cuid())
+  photoUrl     String
+  fingerprint  String   // Perceptual hash
+  uploaderId   String?
+  reportId     String?
+  fileSize     Int?
+  mimeType     String?
+  createdAt    DateTime @default(now())
+
+  @@index([fingerprint])
+  @@index([uploaderId])
+}
+
+model VerificationRequest {
+  id           String    @id @default(cuid())
+  reportId     String
+  report       Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  requestType  String    // CONFIRM_LOCATION, RETAKE_PHOTO, ADD_DETAILS, GENERAL
+  message      String    // Message to resident
+  status       String    @default("PENDING") // PENDING, RESPONDED, EXPIRED
+  requestedBy  String    // Staff user ID
+  response     String?   // Resident's response text
+  responsePhotoUrl String? // Optional new photo from resident
+  respondedAt  DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([reportId])
+  @@index([status])
+}
+
+// ─── SMS OTP Verification Model ─────────────────────────────────────────────
+
+model OtpVerification {
+  id                  String    @id @default(cuid())
+  phone               String    // Normalized canonical phone e.g. +639XXXXXXXXX
+  otpHash             String    // Bcrypt hash of 6-digit code (never plain text)
+  purpose             String    // "REGISTRATION" | "PASSWORD_RESET" | "LOGIN"
+  attempts            Int       @default(0)
+  maxAttempts         Int       @default(5)
+  expiresAt           DateTime
+  resendCooldownUntil DateTime?
+  isUsed              Boolean   @default(false)
+  verifiedAt          DateTime?
+  verificationToken   String?   @unique // Short-lived single-use token granted upon verification
+  tokenExpiresAt      DateTime?
+  ipAddress           String?
+  createdAt           DateTime  @default(now())
+
+  @@index([phone, purpose])
+  @@index([verificationToken])
+}
+
+// ─── Masbateño (Minasbate) Language Management Models ────────────────────────
+
+model MasbatenoGlossary {
+  id             String                   @id @default(cuid())
+  term           String                   @unique
+  category       String                   // common_words, greetings, questions, report_terms, location_terms, infrastructure_terms, status_messages, notifications, error_messages, help_instructions, ui_labels, common_local_expressions
+  masbateno      String
+  filipino       String
+  english        String
+  contextOrNotes String?
+  status         String                   @default("VERIFIED") // VERIFIED, NEEDS_REVIEW, INCORRECT, UNNATURAL, UNCERTAIN
+  isActive       Boolean                  @default(true)
+  createdById    String?
+  updatedById    String?
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  auditLogs      MasbatenoLanguageAudit[]
+
+  @@index([category])
+  @@index([status])
+  @@index([isActive])
+}
+
+model MasbatenoLanguageAudit {
+  id            String            @id @default(cuid())
+  glossaryId   String
+  glossary     MasbatenoGlossary @relation(fields: [glossaryId], references: [id], onDelete: Cascade)
+  actorId      String?
+  actorName    String?
+  changeType   String            // CREATE, UPDATE, STATUS_CHANGE, TOGGLE_ACTIVE, HUMAN_REVIEW_FLAG
+  previousState String?          // JSON
+  newState     String?           // JSON
+  note         String?
+  createdAt    DateTime          @default(now())
+
+  @@index([glossaryId])
+  @@index([createdAt])
+}
+

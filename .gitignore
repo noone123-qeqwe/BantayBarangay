@@ -1,0 +1,41 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js build output
+/.next/
+/out/
+*.tsbuildinfo
+
+# Production
+/build
+
+# Local database
+prisma/*.db
+prisma/*.db-journal
+*.db
+*.db-journal
+
+# Uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Environment files
+.env*.local
+.env
+
+# Debug & IDE
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,106 @@
+{
+  "id": "/?source=pwa",
+  "name": "BantayBarangay - Civic Infrastructure Reporting",
+  "short_name": "BantayBarangay",
+  "description": "Citizen infrastructure reporting and municipal dispatch platform for Pasig City.",
+  "start_url": "/dashboard?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0284c7",
+  "categories": [
+    "government",
+    "utilities",
+    "social",
+    "productivity"
+  ],
+  "lang": "en-PH",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/favicon-32x32.png?v=2",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-192x192.png?v=2",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192x192.png?v=2",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512x512.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Report an Issue",
+      "short_name": "New Report",
+      "description": "Quickly report a road pothole, dark streetlight, or clogged drain",
+      "url": "/reports/new?source=shortcut",
+      "icons": [
+        {
+          "src": "/icon-192x192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Community Map",
+      "short_name": "Map",
+      "description": "Explore active community infrastructure issues on the interactive map",
+      "url": "/map?source=shortcut",
+      "icons": [
+        {
+          "src": "/icon-192x192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "My Reports",
+      "short_name": "Reports",
+      "description": "Track the status of your reported problems",
+      "url": "/reports?source=shortcut",
+      "icons": [
+        {
+          "src": "/icon-192x192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "short_name": "Alerts",
+      "description": "View progress updates and messages from barangay staff",
+      "url": "/notifications?source=shortcut",
+      "icons": [
+        {
+          "src": "/icon-192x192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
