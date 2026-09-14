@@ -99,11 +99,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const proto = req.headers.get("x-forwarded-proto") || req.nextUrl.protocol.replace(":", "");
+    const isHttps = proto === "https";
+
     response.cookies.set({
       name: COOKIE_NAME,
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isHttps,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: "/",
