@@ -18,8 +18,8 @@ export default function BottomNav() {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Hide bottom navigation bar on authentication screens
-  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname);
+  // Hide bottom navigation bar on authentication screens and intro
+  const isAuthPage = ["/login", "/register", "/forgot-password", "/"].includes(pathname);
 
   useEffect(() => {
     if (!user) return;

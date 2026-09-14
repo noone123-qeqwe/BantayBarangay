@@ -52,6 +52,10 @@ export default function Navbar() {
   const isStaff = user && ["STAFF", "ADMIN", "SUPER_ADMIN"].includes(user.role);
   const isAdmin = user && ["ADMIN", "SUPER_ADMIN"].includes(user.role);
 
+  if (pathname === "/") {
+    return null;
+  }
+
   return (
     <header
       style={{

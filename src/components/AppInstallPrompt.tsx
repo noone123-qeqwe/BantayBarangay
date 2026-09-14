@@ -1,16 +1,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Download, X, Share, PlusSquare, CheckCircle, Smartphone, Shield, Zap } from "lucide-react";
 
 export default function AppInstallPrompt() {
+  const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isIos, setIsIos] = useState(false);
   const [showIosGuide, setShowIosGuide] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(true);
   const [installedSuccess, setInstalledSuccess] = useState(false);
+
+  if (pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/forgot-password") {
+    return null;
+  }
 
   useEffect(() => {
     if (typeof window === "undefined") return;

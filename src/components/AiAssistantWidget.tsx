@@ -833,9 +833,9 @@ export default function AiAssistantWidget() {
   const pathname = usePathname();
   const { isOpen, setIsOpen } = useAiAssistant();
 
-  // Hide on auth pages
+  // Hide on auth pages and cinematic intro
   const isAuthPage =
-    pathname === "/login" || pathname === "/register" || pathname === "/forgot-password";
+    pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/";
   if (isAuthPage) return null;
 
   // On /map, the community map page coordinates and renders the dedicated desktop side panel & mobile bottom sheet

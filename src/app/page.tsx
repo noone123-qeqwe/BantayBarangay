@@ -1,456 +1,675 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import NextLink from "next/link";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import {
-  ShieldAlert,
-  MapPin,
-  Camera,
-  CheckCircle2,
-  Clock,
-  ArrowRight,
-  Search,
-  AlertTriangle,
-  Building,
-  Users,
-  Eye,
-  Activity,
-  FileCheck,
-  ChevronRight,
-  Lock,
-  ExternalLink,
-} from "lucide-react";
+import { ShieldCheck, Sparkles, ChevronRight, Radio, Shield, Zap, Lock } from "lucide-react";
 
-export default function LandingPage() {
-  const { user } = useAuth();
+export default function CinematicIntroPage() {
   const router = useRouter();
-  const [searchRef, setSearchRef] = useState("");
-  const [trackerError, setTrackerError] = useState<string | null>(null);
-  const [stats, setStats] = useState({
-    totalReports: 48,
-    resolvedCount: 36,
-    activeAgencies: 6,
-    avgHours: 18,
-  });
+  const { user } = useAuth();
 
-  const handleTrackSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanRef = searchRef.trim().toUpperCase();
-    if (!cleanRef) {
-      setTrackerError("Please enter a reference number (e.g. BB-2026-000101)");
-      return;
-    }
-    router.push(`/reports/${cleanRef}`);
-  };
+  const [progress, setProgress] = useState(0);
+  const [telemetryIndex, setTelemetryIndex] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
+
+  const telemetrySteps = [
+    { title: "INITIALIZING SECURE MUNICIPAL NODE", color: "#38bdf8" },
+    { title: "SYNCING BARANGAY GIS & SATELLITE TELEMETRY", color: "#60a5fa" },
+    { title: "ESTABLISHING 256-BIT ENCRYPTED CHANNEL", color: "#34d399" },
+    { title: "AUTHENTICATION GATEWAY READY · LAUNCHING", color: "#10b981" },
+  ];
+
+  const handleProceed = useCallback(() => {
+    if (isExiting) return;
+    setIsExiting(true);
+    setTimeout(() => {
+      if (user) {
+        router.replace("/dashboard");
+      } else {
+        router.replace("/login");
+      }
+    }, 450);
+  }, [isExiting, user, router]);
+
+  // Keyboard shortcut listener to skip
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" || e.key === " " || e.key === "Enter") {
+        handleProceed();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleProceed]);
+
+  // Smooth cinematic progress counter
+  useEffect(() => {
+    const startTime = Date.now();
+    const duration = 2600; // 2.6 seconds total cinematic duration
+
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
+      setProgress(pct);
+
+      if (pct < 28) {
+        setTelemetryIndex(0);
+      } else if (pct < 60) {
+        setTelemetryIndex(1);
+      } else if (pct < 88) {
+        setTelemetryIndex(2);
+      } else {
+        setTelemetryIndex(3);
+      }
+
+      if (elapsed >= duration) {
+        clearInterval(timer);
+        handleProceed();
+      }
+    }, 24);
+
+    return () => clearInterval(timer);
+  }, [handleProceed]);
 
   return (
-    <div style={{ minHeight: "100vh" }}>
-      {/* Hero Section */}
-      <section
-        style={{
-          background: "linear-gradient(180deg, #f0fdf4 0%, #e0f2fe 60%, var(--bg-app) 100%)",
-          padding: "60px 20px 80px 20px",
-          textAlign: "center",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ maxWidth: "860px", margin: "0 auto", position: "relative", zIndex: 2 }}>
-          {/* Badge */}
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "6px 16px",
-              backgroundColor: "rgba(2, 132, 199, 0.12)",
-              color: "var(--primary-dark)",
-              borderRadius: "9999px",
-              fontSize: "0.813rem",
-              fontWeight: 700,
-              marginBottom: "24px",
-              border: "1px solid rgba(2, 132, 199, 0.25)",
-            }}
-          >
-            <img
-              src="/logo.png"
-              alt="BantayBarangay Logo"
-              width={20}
-              height={20}
-              style={{ borderRadius: "5px", objectFit: "contain" }}
-            />
-            <span>Official Civic Reporting & Community Response Platform</span>
-          </div>
+    <div className={`cinematic-canvas ${isExiting ? "canvas-exit" : ""}`}>
+      {/* Dynamic Ambient Background Beams */}
+      <div className="beam-ambient beam-sapphire" />
+      <div className="beam-ambient beam-cyan" />
+      <div className="beam-ambient beam-emerald" />
 
-          <h1
-            style={{
-              fontSize: "clamp(2.2rem, 5vw, 3.75rem)",
-              fontWeight: 800,
-              lineHeight: 1.15,
-              color: "var(--text-primary)",
-              marginBottom: "20px",
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Report. Track. <span className="text-gradient">Improve Our Community.</span>
+      {/* Cyber-Civic Coordinate Grid & Radar Sweep */}
+      <div className="radar-grid-bg" />
+      <div className="radar-sweep-line" />
+
+      {/* Top Bar: Skip Intro Pill */}
+      <div className="top-control-bar">
+        <div className="top-system-tag">
+          <span className="live-telemetry-dot" />
+          <span>BANTAYBARANGAY OS v2.6 · LIVE CIVIC NET</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleProceed}
+          className="skip-intro-btn"
+          aria-label="Skip cinematic introduction"
+        >
+          <span>Skip Intro</span>
+          <ChevronRight size={14} />
+          <kbd className="skip-kbd">ESC</kbd>
+        </button>
+      </div>
+
+      {/* Main Cinematic Centerpiece */}
+      <main className="cinematic-hero-core">
+        
+        {/* Layer 1: Concentric Neon Orbital Rings */}
+        <div className="orbit-rings-container">
+          <div className="orbit-ring ring-outer" />
+          <div className="orbit-ring ring-mid" />
+          <div className="orbit-ring ring-pulse" />
+
+          {/* Central Emblem Badge with Specular Light Flare */}
+          <div className="central-emblem-gem">
+            <div className="specular-shine" />
+            <ShieldCheck size={48} className="emblem-shield-svg" />
+          </div>
+        </div>
+
+        {/* Layer 2: Typographic Brand Reveal */}
+        <div className="brand-reveal-block">
+          <h1 className="cinematic-brand-title">
+            BANTAY<span className="brand-accent">BARANGAY</span>
           </h1>
 
-          <p
-            style={{
-              fontSize: "clamp(1.05rem, 2vw, 1.25rem)",
-              color: "var(--text-secondary)",
-              lineHeight: 1.6,
-              maxWidth: "700px",
-              margin: "0 auto 36px auto",
-            }}
-          >
-            A direct civic bridge for residents to report road potholes, broken electric posts, dangling wires, flooded canals, and busted streetlights. Pin exact GPS coordinates, upload photo proof, and track live repair progress.
-          </p>
-
-          {/* Primary Action Buttons */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "14px",
-              flexWrap: "wrap",
-              marginBottom: "48px",
-            }}
-          >
-            <NextLink
-              href={user ? "/reports/new" : "/login"}
-              className="btn btn-lg btn-primary"
-              style={{
-                background: "linear-gradient(135deg, #0284c7 0%, #0891b2 100%)",
-                fontWeight: 700,
-                boxShadow: "0 8px 24px rgba(2, 132, 199, 0.35)",
-              }}
-            >
-              <Camera size={20} />
-              <span>+ Report an Issue Now</span>
-            </NextLink>
-
-            <NextLink href="/map" className="btn btn-lg btn-secondary">
-              <MapPin size={20} />
-              <span>Explore Community Map</span>
-            </NextLink>
+          <div className="cinematic-subline">
+            <span>OFFICIAL CIVIC INFRASTRUCTURE</span>
+            <span className="subline-dot">·</span>
+            <span className="subline-highlight">TRANSPARENT COMMUNITY RESPONSE</span>
           </div>
+        </div>
 
-          {/* Public Report Tracker Box */}
-          <div
-            className="card"
-            style={{
-              maxWidth: "560px",
-              margin: "0 auto",
-              padding: "24px",
-              boxShadow: "var(--shadow-xl)",
-              border: "1.5px solid var(--border-medium)",
-              backgroundColor: "var(--bg-card)",
-              textAlign: "left",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-              <Search size={18} color="var(--primary)" />
-              <strong style={{ fontSize: "0.938rem", color: "var(--text-primary)" }}>
-                Track a Report by Reference Number
-              </strong>
-            </div>
-
-            <form onSubmit={handleTrackSubmit} style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              <input
-                type="text"
-                className="form-control"
-                style={{ flex: "1 1 240px", textTransform: "uppercase", fontWeight: 600 }}
-                placeholder="e.g. BB-2026-000101"
-                value={searchRef}
-                onChange={(e) => {
-                  setSearchRef(e.target.value);
-                  setTrackerError(null);
-                }}
+        {/* Layer 3: Dynamic Telemetry Terminal & Progress Bar */}
+        <div className="telemetry-deck">
+          <div className="telemetry-status-row">
+            <div className="status-indicator-wrap">
+              <span
+                className="status-pulse-light"
+                style={{ backgroundColor: telemetrySteps[telemetryIndex].color }}
               />
-              <button type="submit" className="btn btn-primary" style={{ flexShrink: 0 }}>
-                <span>Track Status</span>
-                <ArrowRight size={16} />
-              </button>
-            </form>
-
-            {trackerError && (
-              <div style={{ fontSize: "0.813rem", color: "var(--danger)", marginTop: "8px" }}>
-                {trackerError}
-              </div>
-            )}
-
-            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "10px" }}>
-              Try sample reference: <strong>BB-2026-000101</strong> (Pothole) or <strong>BB-2026-000103</strong> (Streetlight)
+              <span
+                className="status-text-content"
+                style={{ color: telemetrySteps[telemetryIndex].color }}
+              >
+                {telemetrySteps[telemetryIndex].title}
+              </span>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Community Stats Bar */}
-      <section
-        style={{
-          backgroundColor: "var(--bg-surface)",
-          borderTop: "1px solid var(--border-subtle)",
-          borderBottom: "1px solid var(--border-subtle)",
-          padding: "32px 20px",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1100px",
-            margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "24px",
-            textAlign: "center",
-          }}
-        >
-          <div>
-            <div style={{ fontSize: "2.2rem", fontWeight: 800, color: "var(--primary)" }}>48+</div>
-            <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-muted)" }}>
-              Infrastructure Reports Logged
-            </div>
+            <span className="progress-percent-number">{progress}%</span>
           </div>
-          <div>
-            <div style={{ fontSize: "2.2rem", fontWeight: 800, color: "var(--success)" }}>82%</div>
-            <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-muted)" }}>
-              Community Resolution Rate
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: "2.2rem", fontWeight: 800, color: "var(--accent)" }}>4 hrs</div>
-            <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-muted)" }}>
-              Urgent Hazard Target SLA
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: "2.2rem", fontWeight: 800, color: "var(--info)" }}>6 Active</div>
-            <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-muted)" }}>
-              Coordinated Civic Agencies
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" style={{ padding: "80px 20px", maxWidth: "1160px", margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "50px" }}>
-          <span
-            style={{
-              fontSize: "0.813rem",
-              fontWeight: 800,
-              color: "var(--primary)",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}
-          >
-            Streamlined Civic Workflow
-          </span>
-          <h2 style={{ fontSize: "2.2rem", fontWeight: 800, marginTop: "8px" }}>How BantayBarangay Works</h2>
-          <p style={{ color: "var(--text-muted)", maxWidth: "600px", margin: "8px auto 0 auto" }}>
-            From identifying a community issue to verified completion in four transparent steps.
-          </p>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "24px",
-          }}
-        >
-          {/* Step 1 */}
-          <div className="card" style={{ padding: "28px 24px" }}>
+          {/* Glowing Precision Progress Bar */}
+          <div className="progress-track-wrapper">
             <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "14px",
-                backgroundColor: "var(--primary-light)",
-                color: "var(--primary)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "20px",
-              }}
+              className="progress-fill-bar"
+              style={{ width: `${progress}%` }}
             >
-              <Camera size={24} />
+              <div className="progress-light-head" />
             </div>
-            <div style={{ fontSize: "0.813rem", fontWeight: 800, color: "var(--primary)", marginBottom: "4px" }}>
-              STEP 1
-            </div>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "10px" }}>1. Snap & Describe</h3>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              Select the category (pothole, streetlight, cable, drainage) and upload photo evidence directly from your phone camera or gallery.
-            </p>
           </div>
 
-          {/* Step 2 */}
-          <div className="card" style={{ padding: "28px 24px" }}>
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "14px",
-                backgroundColor: "var(--info-light)",
-                color: "var(--info)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <MapPin size={24} />
+          {/* Telemetry Micro-Badges */}
+          <div className="micro-telemetry-row">
+            <div className="telemetry-badge">
+              <Radio size={11} className="badge-icon-cyan" />
+              <span>REGION IV-A / NCR MUNICIPAL NODES</span>
             </div>
-            <div style={{ fontSize: "0.813rem", fontWeight: 800, color: "var(--info)", marginBottom: "4px" }}>
-              STEP 2
+            <div className="telemetry-badge">
+              <Lock size={11} className="badge-icon-emerald" />
+              <span>256-BIT SSL · DATA PRIVACY RA 10173</span>
             </div>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "10px" }}>2. Pin Location</h3>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              Use one-tap GPS or adjust the interactive map pin. Our system checks for existing nearby reports to prevent duplicates and routes to the right agency.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div className="card" style={{ padding: "28px 24px" }}>
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "14px",
-                backgroundColor: "var(--warning-light)",
-                color: "var(--warning-dark)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <Clock size={24} />
+            <div className="telemetry-badge hide-mobile">
+              <Zap size={11} className="badge-icon-amber" />
+              <span>LATENCY: 8ms</span>
             </div>
-            <div style={{ fontSize: "0.813rem", fontWeight: 800, color: "var(--warning-dark)", marginBottom: "4px" }}>
-              STEP 3
-            </div>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "10px" }}>3. Live Tracking</h3>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              Receive updates as barangay personnel review, assign staff or utility crews (DPWH, Meralco, Manila Water), and begin repair operations.
-            </p>
-          </div>
-
-          {/* Step 4 */}
-          <div className="card" style={{ padding: "28px 24px" }}>
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "14px",
-                backgroundColor: "var(--success-light)",
-                color: "var(--success-dark)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <CheckCircle2 size={24} />
-            </div>
-            <div style={{ fontSize: "0.813rem", fontWeight: 800, color: "var(--success-dark)", marginBottom: "4px" }}>
-              STEP 4
-            </div>
-            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "10px" }}>4. Resident Verification</h3>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              When work finishes, you receive completion photos. You verify whether it’s truly fixed: click “Yes, It’s Fixed” to close or “No” to reopen with feedback.
-            </p>
           </div>
         </div>
-      </section>
 
-      {/* Emergency Hotline Disclaimer */}
-      <section
-        style={{
-          maxWidth: "1000px",
-          margin: "0 auto 60px auto",
-          padding: "20px",
-        }}
-      >
-        <div
-          style={{
-            padding: "20px 24px",
-            borderRadius: "var(--radius-lg)",
-            backgroundColor: "var(--danger-light)",
-            border: "1.5px solid rgba(239, 68, 68, 0.3)",
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            flexWrap: "wrap",
-          }}
-        >
-          <AlertTriangle size={32} color="var(--danger)" style={{ flexShrink: 0 }} />
-          <div style={{ flex: "1 1 300px" }}>
-            <strong style={{ color: "var(--danger-dark)", fontSize: "1rem", display: "block" }}>
-              Life-Threatening Emergency Notice
-            </strong>
-            <span style={{ fontSize: "0.875rem", color: "var(--text-primary)" }}>
-              BantayBarangay is for civic and infrastructure tracking. In cases of active fire, medical crisis, or imminent structural collapse, call national emergency hotline <strong>911</strong> or local emergency operations immediately.
-            </span>
-          </div>
-        </div>
-      </section>
+      </main>
 
-      {/* Footer */}
-      <footer
-        style={{
-          borderTop: "1px solid var(--border-subtle)",
-          backgroundColor: "var(--bg-surface)",
-          padding: "40px 20px",
-          color: "var(--text-muted)",
-          fontSize: "0.875rem",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1160px",
-            margin: "0 auto",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "20px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <img
-              src="/logo.png"
-              alt="BantayBarangay Logo"
-              width={38}
-              height={38}
-              style={{ borderRadius: "10px", objectFit: "contain", boxShadow: "0 2px 8px rgba(2, 132, 199, 0.25)" }}
-            />
-            <div>
-              <strong style={{ color: "var(--text-primary)", display: "block", marginBottom: "2px" }}>
-                BantayBarangay Civic Technology
-              </strong>
-              <span>Community Civic Infrastructure Platform • All rights reserved.</span>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "16px" }}>
-            <NextLink href="/map" style={{ color: "var(--primary)", fontWeight: 600 }}>
-              Nearby Map
-            </NextLink>
-            <NextLink href="/login" style={{ color: "var(--primary)", fontWeight: 600 }}>
-              Portal Login
-            </NextLink>
-            <a href="/api/health" target="_blank" style={{ color: "var(--primary)", fontWeight: 600 }}>
-              System Health
-            </a>
-          </div>
-        </div>
+      {/* Bottom Compliance & Civic Watermark */}
+      <footer className="cinematic-footer">
+        <span>Republic of the Philippines · Barangay Community Incident Command</span>
       </footer>
+
+      {/* ===============================================================
+          STYLES: High-Budget Cinema-Grade Visuals
+         =============================================================== */}
+      <style jsx>{`
+        /* Fullscreen Viewport Canvas */
+        .cinematic-canvas {
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          z-index: 99999;
+          background-color: #030712;
+          background-image: 
+            radial-gradient(circle at 50% 40%, rgba(15, 23, 42, 0.9) 0%, #030712 90%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+          padding: 24px 28px;
+          overflow: hidden;
+          color: #ffffff;
+          user-select: none;
+          transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .canvas-exit {
+          opacity: 0;
+          transform: scale(1.04);
+          filter: brightness(1.2);
+        }
+
+        /* Ambient Lighting Beams */
+        .beam-ambient {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(140px);
+          pointer-events: none;
+          opacity: 0.5;
+        }
+
+        .beam-sapphire {
+          width: 550px;
+          height: 550px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.28) 0%, transparent 70%);
+          top: 10%;
+          left: 20%;
+          animation: floatBeam1 9s ease-in-out infinite alternate;
+        }
+
+        .beam-cyan {
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(6, 182, 212, 0.24) 0%, transparent 70%);
+          bottom: 10%;
+          right: 15%;
+          animation: floatBeam2 11s ease-in-out infinite alternate;
+        }
+
+        .beam-emerald {
+          width: 450px;
+          height: 450px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+          top: 35%;
+          right: 30%;
+          animation: floatBeam3 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatBeam1 {
+          0% { transform: translate(0, 0) scale(1); }
+          100% { transform: translate(40px, -30px) scale(1.15); }
+        }
+
+        @keyframes floatBeam2 {
+          0% { transform: translate(0, 0) scale(1.1); }
+          100% { transform: translate(-50px, 30px) scale(0.95); }
+        }
+
+        @keyframes floatBeam3 {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(25px, 35px); }
+        }
+
+        /* Radar Grid Background */
+        .radar-grid-bg {
+          position: absolute;
+          inset: 0;
+          background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+          background-size: 48px 48px;
+          background-position: center center;
+          pointer-events: none;
+          opacity: 0.7;
+        }
+
+        /* Radar Sweep Effect */
+        .radar-sweep-line {
+          position: absolute;
+          width: 700px;
+          height: 700px;
+          border-radius: 50%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: conic-gradient(from 0deg at 50% 50%, rgba(56, 189, 248, 0.12) 0deg, transparent 65deg, transparent 360deg);
+          animation: radarRotate 6s linear infinite;
+          pointer-events: none;
+        }
+
+        @keyframes radarRotate {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Top Bar */
+        .top-control-bar {
+          width: 100%;
+          max-width: 1180px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
+          z-index: 10;
+        }
+
+        .top-system-tag {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-family: var(--font-mono, monospace);
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          color: #94a3b8;
+        }
+
+        .live-telemetry-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #10b981;
+          box-shadow: 0 0 10px #10b981;
+          animation: pulseDot 1.6s infinite;
+        }
+
+        @keyframes pulseDot {
+          0%, 100% { transform: scale(1); opacity: 0.9; }
+          50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px #34d399; }
+        }
+
+        .skip-intro-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 7px 14px;
+          border-radius: 9999px;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(12px);
+          color: #cbd5e1;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .skip-intro-btn:hover {
+          background: rgba(255, 255, 255, 0.12);
+          border-color: rgba(56, 189, 248, 0.4);
+          color: #ffffff;
+          transform: translateY(-1px);
+        }
+
+        .skip-kbd {
+          font-family: var(--font-mono, monospace);
+          font-size: 0.65rem;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 1px 5px;
+          border-radius: 4px;
+          color: #94a3b8;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Centerpiece */
+        .cinematic-hero-core {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          position: relative;
+          z-index: 10;
+          max-width: 780px;
+          margin: auto 0;
+        }
+
+        /* Concentric Orbital Rings */
+        .orbit-rings-container {
+          position: relative;
+          width: 170px;
+          height: 170px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 28px;
+        }
+
+        .orbit-ring {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+        }
+
+        .ring-outer {
+          width: 168px;
+          height: 168px;
+          border: 1px dashed rgba(56, 189, 248, 0.35);
+          animation: spinClockwise 16s linear infinite;
+        }
+
+        .ring-mid {
+          width: 136px;
+          height: 136px;
+          border: 1px solid rgba(37, 99, 235, 0.3);
+          border-top-color: #38bdf8;
+          border-bottom-color: #34d399;
+          animation: spinCounter 10s linear infinite;
+        }
+
+        .ring-pulse {
+          width: 108px;
+          height: 108px;
+          background: rgba(37, 99, 235, 0.15);
+          box-shadow: 0 0 35px rgba(37, 99, 235, 0.4);
+          animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes spinClockwise {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes spinCounter {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+
+        @keyframes pulseGlow {
+          0% { transform: scale(0.95); opacity: 0.6; }
+          100% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 50px rgba(56, 189, 248, 0.6); }
+        }
+
+        /* Central Shield Emblem */
+        .central-emblem-gem {
+          width: 88px;
+          height: 88px;
+          border-radius: 22px;
+          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          box-shadow: 
+            0 10px 30px rgba(37, 99, 235, 0.5),
+            0 0 0 1px rgba(255, 255, 255, 0.35),
+            inset 0 2px 4px rgba(255, 255, 255, 0.4);
+          position: relative;
+          overflow: hidden;
+          animation: emblemEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes emblemEntrance {
+          0% { transform: scale(0.6) rotate(-15deg); opacity: 0; filter: blur(8px); }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0); }
+        }
+
+        .specular-shine {
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+            45deg,
+            transparent 42%,
+            rgba(255, 255, 255, 0.65) 50%,
+            transparent 58%
+          );
+          transform: rotate(25deg);
+          animation: lightSweep 2.8s infinite;
+        }
+
+        @keyframes lightSweep {
+          0% { transform: translateY(-100%) rotate(25deg); }
+          40%, 100% { transform: translateY(100%) rotate(25deg); }
+        }
+
+        .emblem-shield-svg {
+          color: #ffffff;
+          filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+          position: relative;
+          z-index: 2;
+        }
+
+        /* Brand Typography */
+        .brand-reveal-block {
+          margin-bottom: 32px;
+        }
+
+        .cinematic-brand-title {
+          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+          font-size: clamp(2.3rem, 5.5vw, 3.5rem);
+          font-weight: 800;
+          letter-spacing: 0.18em;
+          color: #ffffff;
+          margin: 0 0 10px 0;
+          line-height: 1.1;
+          text-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
+          animation: trackingReveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes trackingReveal {
+          0% { letter-spacing: 0.05em; opacity: 0; transform: translateY(14px); }
+          100% { letter-spacing: 0.18em; opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-accent {
+          background: linear-gradient(135deg, #38bdf8 0%, #34d399 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .cinematic-subline {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          font-size: clamp(0.725rem, 1.8vw, 0.85rem);
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          color: #94a3b8;
+          text-transform: uppercase;
+          animation: fadeUp 1.4s ease 0.4s both;
+        }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .subline-dot {
+          color: #38bdf8;
+        }
+
+        .subline-highlight {
+          color: #38bdf8;
+        }
+
+        /* Telemetry Deck */
+        .telemetry-deck {
+          width: 100%;
+          max-width: 520px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .telemetry-status-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-family: var(--font-mono, monospace);
+          font-size: 0.725rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+        }
+
+        .status-indicator-wrap {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .status-pulse-light {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          transition: background-color 0.3s ease;
+        }
+
+        .status-text-content {
+          transition: color 0.3s ease;
+        }
+
+        .progress-percent-number {
+          color: #38bdf8;
+        }
+
+        /* Progress Bar */
+        .progress-track-wrapper {
+          width: 100%;
+          height: 4px;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 9999px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .progress-fill-bar {
+          height: 100%;
+          background: linear-gradient(90deg, #2563eb 0%, #06b6d4 60%, #10b981 100%);
+          border-radius: 9999px;
+          position: relative;
+          transition: width 0.08s linear;
+        }
+
+        .progress-light-head {
+          position: absolute;
+          right: 0;
+          top: -2px;
+          bottom: -2px;
+          width: 10px;
+          border-radius: 50%;
+          background: #ffffff;
+          box-shadow: 0 0 12px #38bdf8;
+        }
+
+        /* Micro Telemetry Row */
+        .micro-telemetry-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 6px;
+          flex-wrap: wrap;
+        }
+
+        .telemetry-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-family: var(--font-mono, monospace);
+          font-size: 0.65rem;
+          color: #64748b;
+          letter-spacing: 0.04em;
+        }
+
+        .badge-icon-cyan { color: #38bdf8; }
+        .badge-icon-emerald { color: #34d399; }
+        .badge-icon-amber { color: #fbbf24; }
+
+        /* Footer */
+        .cinematic-footer {
+          font-size: 0.725rem;
+          color: #64748b;
+          letter-spacing: 0.05em;
+          text-align: center;
+          position: relative;
+          z-index: 10;
+        }
+
+        @media (max-width: 640px) {
+          .cinematic-canvas {
+            padding: 20px 16px;
+          }
+
+          .cinematic-brand-title {
+            letter-spacing: 0.12em;
+          }
+
+          .cinematic-subline {
+            flex-direction: column;
+            gap: 4px;
+            letter-spacing: 0.1em;
+          }
+
+          .subline-dot {
+            display: none;
+          }
+
+          .hide-mobile {
+            display: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }
