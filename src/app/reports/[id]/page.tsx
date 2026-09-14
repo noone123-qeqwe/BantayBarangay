@@ -259,7 +259,7 @@ export default function ReportDetailPage({
 
       {/* TOP SECTION: Reference #, Status badge, Priority badge (Section 17) */}
       <div
-        className="card"
+        className="card report-hero-card"
         style={{
           padding: "24px 28px",
           marginBottom: "24px",
@@ -293,7 +293,7 @@ export default function ReportDetailPage({
               <PriorityBadge priority={report.priority} />
             </div>
 
-            <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "var(--text-primary)" }}>
+            <h1 className="report-hero-title" style={{ fontSize: "1.625rem", fontWeight: 800, color: "var(--text-primary)" }}>
               {report.title}
             </h1>
           </div>
@@ -857,6 +857,17 @@ export default function ReportDetailPage({
           display: grid;
           grid-template-columns: 1fr;
           gap: 20px;
+        }
+        @media (max-width: 640px) {
+          .report-hero-card {
+            padding: 16px 14px !important;
+            margin-bottom: 16px !important;
+            border-radius: 16px !important;
+          }
+          .report-hero-title {
+            font-size: 1.25rem !important;
+            margin-top: 4px !important;
+          }
         }
         @media (min-width: 1024px) {
           .report-detail-layout.is-staff {

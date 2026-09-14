@@ -164,7 +164,7 @@ export default function ProfilePage() {
     <div className="page-container" style={{ maxWidth: "640px", paddingBottom: "100px" }}>
       {/* 1. PROFILE HEADER CARD */}
       <div
-        className="card"
+        className="card profile-header-card"
         style={{
           padding: "24px 20px",
           marginBottom: "20px",
@@ -738,6 +738,15 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        @media (max-width: 640px) {
+          .profile-header-card {
+            padding: 16px 14px !important;
+            border-radius: 16px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

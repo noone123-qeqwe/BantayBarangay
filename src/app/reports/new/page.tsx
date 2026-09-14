@@ -1806,6 +1806,7 @@ export default function NewReportWizard() {
 
       {/* Navigation Buttons (Back & Continue / Submit Report) */}
       <div
+        className="wizard-nav-footer"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -1884,6 +1885,13 @@ export default function NewReportWizard() {
           .category-grid {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 10px !important;
+          }
+          .category-card {
+            padding: 12px 10px !important;
+            gap: 6px !important;
+          }
+          .wizard-nav-footer {
+            padding-bottom: 24px;
           }
         }
         @media (min-width: 641px) {

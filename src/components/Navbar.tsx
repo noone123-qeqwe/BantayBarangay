@@ -213,8 +213,8 @@ export default function Navbar() {
           ) : null}
         </nav>
 
-        {/* User Right Section */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        {/* Desktop User Right Section */}
+        <div className="desktop-header-right" style={{ display: "none", alignItems: "center", gap: "10px" }}>
           {user ? (
             <>
               {/* Notification Bell with Badge */}
@@ -229,7 +229,7 @@ export default function Navbar() {
                   justifyContent: "center",
                   textDecoration: "none",
                   borderRadius: "50%",
-                  backgroundColor: "rgba(255, 255, 255, 0.8)",
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
                   border: "1px solid var(--border-subtle)",
                 }}
               >
@@ -268,7 +268,7 @@ export default function Navbar() {
                   gap: "8px",
                   padding: "4px 12px 4px 6px",
                   borderRadius: "var(--radius-full)",
-                  backgroundColor: "rgba(241, 245, 249, 0.8)",
+                  backgroundColor: "rgba(255, 255, 255, 0.06)",
                   border: "1px solid var(--border-subtle)",
                   backdropFilter: "blur(8px)",
                 }}
@@ -382,23 +382,76 @@ export default function Navbar() {
 
         {/* Mobile Header Actions */}
         <div className="mobile-header-actions" style={{ display: "none", alignItems: "center", gap: "8px" }}>
+          {/* Emergency Hotline is accessible on mobile */}
+          <a
+            href="tel:0286431111"
+            title="Call Emergency Hotline"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              padding: "5px 10px",
+              borderRadius: "9999px",
+              backgroundColor: "rgba(239, 68, 68, 0.12)",
+              border: "1px solid rgba(239, 68, 68, 0.45)",
+              color: "#fca5a5",
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              textDecoration: "none",
+              boxShadow: "0 2px 8px rgba(239, 68, 68, 0.2)",
+            }}
+          >
+            <PhoneCall size={11} style={{ color: "#ef4444" }} />
+            <span>Hotline</span>
+          </a>
+
           {user ? (
             <>
+              {/* Mobile Notification Bell */}
               <NextLink
-                href="/reports/new"
-                className="btn btn-sm btn-primary"
+                href="/notifications"
+                aria-label="View notifications"
                 style={{
-                  padding: "6px 12px",
-                  fontSize: "0.813rem",
-                  fontWeight: 700,
-                  borderRadius: "9999px",
-                  boxShadow: "0 2px 8px var(--primary-glow)",
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "34px",
+                  height: "34px",
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid var(--border-subtle)",
+                  color: "var(--text-primary)",
+                  textDecoration: "none",
                 }}
               >
-                <PlusCircle size={15} />
-                <span>Report</span>
+                <Bell size={16} />
+                {unreadCount > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-2px",
+                      right: "-2px",
+                      backgroundColor: "var(--priority-critical)",
+                      color: "#ffffff",
+                      fontSize: "0.625rem",
+                      fontWeight: 800,
+                      minWidth: "16px",
+                      height: "16px",
+                      borderRadius: "9999px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "0 3px",
+                      border: "1.5px solid var(--bg-surface)",
+                    }}
+                  >
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </NextLink>
 
+              {/* Citizen Avatar */}
               <NextLink
                 href="/profile"
                 aria-label="Profile and Settings"
@@ -406,10 +459,10 @@ export default function Navbar() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: "36px",
-                  height: "36px",
+                  width: "34px",
+                  height: "34px",
                   borderRadius: "50%",
-                  border: "2px solid var(--border-subtle)",
+                  border: "2px solid rgba(56, 189, 248, 0.5)",
                   overflow: "hidden",
                   backgroundColor: "var(--bg-subtle)",
                 }}
@@ -421,49 +474,17 @@ export default function Navbar() {
                 />
               </NextLink>
             </>
-          ) : isAuthPage ? (
-            <a
-              href="tel:0286431111"
-              title="Call Emergency Hotline"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "5px",
-                padding: "5px 12px",
-                borderRadius: "9999px",
-                backgroundColor: "rgba(239, 68, 68, 0.12)",
-                border: "1px solid rgba(239, 68, 68, 0.45)",
-                color: "#fca5a5",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                textDecoration: "none",
-                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.2)",
-              }}
-            >
-              <PhoneCall size={12} style={{ color: "#ef4444" }} />
-              <span>Hotline</span>
-            </a>
-          ) : (
+          ) : !isAuthPage ? (
             <div style={{ display: "flex", gap: "6px" }}>
-              {pathname === "/login" ? (
-                <NextLink
-                  href="/register"
-                  className="btn btn-sm btn-primary"
-                  style={{ borderRadius: "9999px", padding: "6px 14px", fontWeight: 700 }}
-                >
-                  Register
-                </NextLink>
-              ) : (
-                <NextLink
-                  href="/login"
-                  className="btn btn-sm btn-primary"
-                  style={{ borderRadius: "9999px", padding: "6px 14px", fontWeight: 700 }}
-                >
-                  Sign In
-                </NextLink>
-              )}
+              <NextLink
+                href="/login"
+                className="btn btn-sm btn-primary"
+                style={{ borderRadius: "9999px", padding: "5px 12px", fontSize: "0.75rem", fontWeight: 700 }}
+              >
+                Sign In
+              </NextLink>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -472,8 +493,17 @@ export default function Navbar() {
           .desktop-nav {
             display: flex !important;
           }
+          .desktop-header-right {
+            display: flex !important;
+          }
         }
         @media (max-width: 959px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .desktop-header-right {
+            display: none !important;
+          }
           .mobile-header-actions {
             display: flex !important;
           }

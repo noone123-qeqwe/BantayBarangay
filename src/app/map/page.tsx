@@ -978,39 +978,43 @@ export default function CommunityMapPage() {
           font-size: 0.813rem;
           font-weight: 700;
           white-space: nowrap;
-          border: 1px solid rgba(226, 232, 240, 0.9);
-          background: rgba(255, 255, 255, 0.92);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          color: var(--text-secondary);
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: rgba(15, 23, 42, 0.88);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          color: #94a3b8;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
           cursor: pointer;
           transition: all 0.15s ease;
           display: flex;
           align-items: center;
           gap: 4px;
         }
+        .mobile-filter-pill:hover {
+          color: #f8fafc;
+          border-color: rgba(56, 189, 248, 0.4);
+        }
         .mobile-filter-pill.active {
-          background: var(--primary);
+          background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
           color: #ffffff;
-          border-color: var(--primary);
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+          border-color: #38bdf8;
+          box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
         }
 
         .mobile-filter-btn {
           width: 40px;
           height: 40px;
           border-radius: 12px;
-          background: rgba(255, 255, 255, 0.92);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(226, 232, 240, 0.9);
-          color: var(--text-primary);
+          background: rgba(15, 23, 42, 0.88);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #f8fafc;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
           pointer-events: auto;
           flex-shrink: 0;
           position: relative;
@@ -1029,7 +1033,7 @@ export default function CommunityMapPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 1.5px solid #ffffff;
+          border: 1.5px solid #0f172a;
         }
 
         /* Floating GPS Feedback */
@@ -1114,11 +1118,12 @@ export default function CommunityMapPage() {
           color: #ffffff;
         }
         .mobile-fab-secondary {
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          color: var(--text-primary);
-          border: 1px solid var(--border-subtle);
+          background: rgba(15, 23, 42, 0.92);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          color: #f8fafc;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         .mobile-fab-ai {
           background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);

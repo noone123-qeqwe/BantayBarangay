@@ -645,9 +645,9 @@ export default function ReportsListPage() {
                   {/* Photo or Category Icon Thumbnail */}
                   <div
                     style={{
-                      width: "76px",
-                      height: "76px",
-                      borderRadius: "var(--radius-md)",
+                      width: "62px",
+                      height: "62px",
+                      borderRadius: "12px",
                       backgroundColor: "var(--bg-subtle)",
                       overflow: "hidden",
                       flexShrink: 0,
@@ -664,7 +664,7 @@ export default function ReportsListPage() {
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                     ) : (
-                      <Camera size={26} color="var(--text-muted)" />
+                      <Camera size={22} color="var(--text-muted)" />
                     )}
                   </div>
 
@@ -683,10 +683,13 @@ export default function ReportsListPage() {
                     <strong
                       style={{
                         display: "block",
-                        fontSize: "0.938rem",
+                        fontSize: "0.9rem",
                         color: "var(--text-primary)",
                         lineHeight: 1.3,
                         marginBottom: "2px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {report.title}
@@ -694,22 +697,22 @@ export default function ReportsListPage() {
 
                     <p
                       style={{
-                        fontSize: "0.813rem",
+                        fontSize: "0.775rem",
                         color: "var(--text-secondary)",
                         display: "-webkit-box",
-                        WebkitLineClamp: 2,
+                        WebkitLineClamp: 1,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
-                        margin: "2px 0 6px 0",
-                        lineHeight: 1.4,
+                        margin: "1px 0 4px 0",
+                        lineHeight: 1.35,
                       }}
                     >
                       {report.description}
                     </p>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "var(--text-muted)", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.72rem", color: "var(--text-muted)", flexWrap: "wrap" }}>
                       <span style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-                        <MapPin size={12} color="var(--primary)" />
+                        <MapPin size={11} color="var(--primary)" />
                         <span>{report.address.split(",")[0]}</span>
                       </span>
                       <span>•</span>
@@ -725,7 +728,7 @@ export default function ReportsListPage() {
                     </div>
                   </div>
 
-                  <ChevronRight size={20} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                  <ChevronRight size={18} color="var(--text-muted)" style={{ flexShrink: 0 }} />
                 </NextLink>
               );
             })}
@@ -798,6 +801,13 @@ export default function ReportsListPage() {
           }
           .mobile-reports-cards {
             display: flex !important;
+            gap: 10px !important;
+            padding-bottom: 24px;
+          }
+          .mobile-reports-cards .card {
+            padding: 12px 14px !important;
+            gap: 12px !important;
+            border-radius: 14px !important;
           }
         }
       `}</style>

@@ -165,6 +165,10 @@ export default function BottomNav() {
       <style jsx>{`
         .bottom-nav-mobile {
           display: flex;
+          background-color: rgba(11, 17, 33, 0.94) !important;
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border-top: 1px solid rgba(255, 255, 255, 0.09) !important;
         }
         @media (min-width: 1024px) {
           .bottom-nav-mobile {
@@ -181,30 +185,41 @@ export default function BottomNav() {
           text-decoration: none;
           min-height: 54px;
           touch-action: manipulation;
-          transition: transform 0.1s ease;
+          transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
         }
         .nav-tab:active {
-          transform: scale(0.92);
+          transform: scale(0.90);
         }
         .nav-icon-wrapper {
           position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 40px;
+          width: 42px;
           height: 28px;
           border-radius: 9999px;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .active-pill {
-          background-color: rgba(37, 99, 235, 0.12);
-          color: var(--primary);
+          background-color: rgba(56, 189, 248, 0.16) !important;
+          color: #38bdf8 !important;
+          box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
         }
-        :global([data-theme="dark"]) .bottom-nav-mobile {
-          background-color: rgba(15, 23, 42, 0.94) !important;
+        .nav-tab-active {
+          color: #38bdf8 !important;
         }
-        :global([data-theme="dark"]) .active-pill {
-          background-color: rgba(37, 99, 235, 0.25) !important;
+        .nav-tab-active::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 24px;
+          height: 3px;
+          border-radius: 0 0 4px 4px;
+          background: linear-gradient(90deg, #38bdf8, #34d399);
+          box-shadow: 0 0 8px #38bdf8;
         }
       `}</style>
     </nav>

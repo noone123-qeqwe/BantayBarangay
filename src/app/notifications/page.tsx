@@ -144,7 +144,7 @@ export default function NotificationsPage() {
                 key={notif.id}
                 href={targetUrl}
                 onClick={() => handleMarkOneRead(notif.id)}
-                className="card card-interactive"
+                className="card card-interactive notif-item-card"
                 style={{
                   padding: "16px 18px",
                   display: "flex",
@@ -328,6 +328,14 @@ export default function NotificationsPage() {
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+          :global(.notif-item-card) {
+            padding: 12px 14px !important;
+            gap: 12px !important;
+            border-radius: 14px !important;
+          }
         }
       `}</style>
     </div>

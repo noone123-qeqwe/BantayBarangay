@@ -395,6 +395,18 @@ export function AiAssistantPanel({
           animation: floatingPopUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        @media (max-width: 640px) {
+          .mode-floating {
+            right: 10px;
+            left: 10px;
+            width: calc(100vw - 20px);
+            bottom: calc(var(--bottom-nav-height, 62px) + 8px);
+            height: calc(100dvh - var(--header-height, 60px) - var(--bottom-nav-height, 62px) - 20px);
+            max-height: 560px;
+            border-radius: 20px;
+          }
+        }
+
         @media (min-width: 1024px) {
           .mode-floating {
             bottom: 24px;
@@ -891,6 +903,22 @@ export default function AiAssistantWidget() {
         }
         .global-ai-fab:active {
           transform: scale(0.96);
+        }
+
+        @media (max-width: 640px) {
+          .global-ai-fab {
+            bottom: calc(var(--bottom-nav-height, 62px) + 12px);
+            right: 12px;
+            padding: 0;
+            width: 44px;
+            height: 44px;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 18px rgba(124, 58, 237, 0.45);
+          }
+          .global-ai-fab-label {
+            display: none;
+          }
         }
 
         @media (min-width: 1024px) {
