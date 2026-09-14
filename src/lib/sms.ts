@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BantayBarangay SMS Dispatcher & Simulator
  *
  * Supports real dispatch via Semaphore if environment keys are present,
@@ -19,7 +19,7 @@ export interface SendSmsParams {
 
 export interface SendSmsResult {
   success: boolean;
-  provider: "SIMULATOR" | "SEMAPHORE";
+  provider: "SIMULATOR" | "SEMAPHORE" | "TEXTBEE";
   messageId?: string;
   error?: string;
 }
@@ -92,7 +92,55 @@ export async function sendSms(params: SendSmsParams): Promise<SendSmsResult> {
     isProduction,
   });
 
-  // 1. Attempt Semaphore delivery if API key is configured
+  // 1. Attempt TextBee dispatch if API key is configured
+  const textbeeApiKey = process.env.TEXTBEE_API_KEY;
+  if (textbeeApiKey) {
+    try {
+      const e164Number = to.startsWith("+") ? to : `+63${to.replace(/^0/, "")}`;
+      const payload: any = {
+        recipients: [e164Number],
+        message,
+      };
+      if (process.env.TEXTBEE_DEVICE_ID) {
+        payload.deviceId = process.env.TEXTBEE_DEVICE_ID;
+      }
+
+      logSmsEvent("info", "TEXTBEE_REQUEST_SENDING", {
+        requestId,
+        to: maskPhone(to),
+      });
+
+      const res = await fetch("https://api.textbee.dev/api/v1/gateway/send-sms", {
+        method: "POST",
+        headers: {
+          "x-api-key": textbeeApiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        logSmsEvent("info", "TEXTBEE_DELIVERY_SUCCESS", {
+          requestId,
+          to: maskPhone(to),
+          messageId: data?.data?.id || requestId,
+        });
+
+        return {
+          success: true,
+          provider: "TEXTBEE",
+          messageId: data?.data?.id || requestId,
+        };
+      }
+
+      console.warn("[SMS_GATEWAY] TextBee API response:", data);
+    } catch (err: any) {
+      console.error("[SMS_GATEWAY] TextBee dispatch error:", err?.message || err);
+    }
+  }
+
+  // 2. Attempt Semaphore delivery if API key is configured
   const semaphoreApiKey = process.env.SEMAPHORE_API_KEY;
 
   if (semaphoreApiKey) {
