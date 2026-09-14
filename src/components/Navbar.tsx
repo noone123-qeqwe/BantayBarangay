@@ -318,11 +318,30 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            <div style={{ display: "flex", gap: "8px" }}>
-              <NextLink href="/login" className="nav-pill" style={{ border: "1px solid var(--border-medium)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <NextLink
+                href="/login"
+                className={`nav-pill ${pathname === "/login" ? "active-outline" : ""}`}
+                style={{
+                  border: "1px solid var(--border-medium)",
+                  backgroundColor: pathname === "/login" ? "var(--primary-light)" : "transparent",
+                  color: pathname === "/login" ? "var(--primary)" : "var(--text-secondary)",
+                  fontWeight: 600,
+                  fontSize: "0.813rem",
+                  padding: "6px 14px",
+                }}
+              >
                 Login
               </NextLink>
-              <NextLink href="/register" className="nav-cta">
+              <NextLink
+                href="/register"
+                className="nav-cta"
+                style={{
+                  padding: "6px 16px",
+                  fontSize: "0.813rem",
+                  fontWeight: 700,
+                }}
+              >
                 Register
               </NextLink>
             </div>
@@ -373,13 +392,23 @@ export default function Navbar() {
             </>
           ) : (
             <div style={{ display: "flex", gap: "6px" }}>
-              <NextLink
-                href="/login"
-                className="btn btn-sm btn-primary"
-                style={{ borderRadius: "9999px", padding: "6px 14px", fontWeight: 700 }}
-              >
-                Sign In
-              </NextLink>
+              {pathname === "/login" ? (
+                <NextLink
+                  href="/register"
+                  className="btn btn-sm btn-primary"
+                  style={{ borderRadius: "9999px", padding: "6px 14px", fontWeight: 700 }}
+                >
+                  Register
+                </NextLink>
+              ) : (
+                <NextLink
+                  href="/login"
+                  className="btn btn-sm btn-primary"
+                  style={{ borderRadius: "9999px", padding: "6px 14px", fontWeight: 700 }}
+                >
+                  Sign In
+                </NextLink>
+              )}
             </div>
           )}
         </div>
