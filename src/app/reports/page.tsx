@@ -531,7 +531,7 @@ export default function ReportsListPage() {
           <div className="table-container desktop-reports-table">
             <table className="table">
               <thead>
-                <tr style={{ background: "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)" }}>
+                <tr style={{ background: "var(--bg-subtle)" }}>
                   <th>Reference #</th>
                   <th>Category</th>
                   <th>Issue Details</th>

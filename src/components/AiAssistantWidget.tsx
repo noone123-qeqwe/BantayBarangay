@@ -277,9 +277,9 @@ export function AiAssistantPanel({
         .ai-assistant-panel {
           display: flex;
           flex-direction: column;
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08);
+          background: var(--bg-card);
+          border: 1px solid var(--border-subtle);
+          box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
           overflow: hidden;
           position: relative;
           z-index: 50;
@@ -320,14 +320,14 @@ export function AiAssistantPanel({
           left: 0;
           right: 0;
           width: 100%;
-          background: #ffffff;
+          background: var(--bg-card);
           border-top-left-radius: 24px;
           border-top-right-radius: 24px;
           border-bottom-left-radius: 0;
           border-bottom-right-radius: 0;
-          border: 1px solid rgba(226, 232, 240, 0.9);
+          border: 1px solid var(--border-subtle);
           border-bottom: none;
-          box-shadow: 0 -8px 30px rgba(15, 23, 42, 0.22);
+          box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
           z-index: 90;
           transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
@@ -421,7 +421,7 @@ export function AiAssistantPanel({
           align-items: center;
           justify-content: space-between;
           padding: 12px 16px;
-          background: #ffffff;
+          background: var(--bg-surface);
           border-bottom: 1px solid var(--border-subtle);
           flex-shrink: 0;
         }
@@ -519,8 +519,8 @@ export function AiAssistantPanel({
         }
 
         .ai-close-btn:hover {
-          background: #fee2e2;
-          color: #dc2626;
+          background: rgba(239, 68, 68, 0.2);
+          color: #f87171;
         }
 
         /* ==========================================================================
@@ -531,7 +531,7 @@ export function AiAssistantPanel({
           align-items: center;
           justify-content: space-between;
           padding: 7px 14px;
-          background: #f8fafc;
+          background: var(--bg-surface);
           border-bottom: 1px solid var(--border-subtle);
           flex-shrink: 0;
           gap: 6px;
@@ -560,7 +560,7 @@ export function AiAssistantPanel({
           font-size: 0.75rem;
           font-weight: 700;
           border: 1px solid var(--border-medium);
-          background: #ffffff;
+          background: var(--bg-surface);
           color: var(--text-secondary);
           cursor: pointer;
           transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -593,7 +593,7 @@ export function AiAssistantPanel({
           display: flex;
           flex-direction: column;
           gap: 12px;
-          background: #f8fafc;
+          background: var(--bg-app);
           scroll-behavior: smooth;
         }
 
@@ -605,11 +605,11 @@ export function AiAssistantPanel({
           background: transparent;
         }
         .ai-messages-scroll-area::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
+          background: var(--border-medium);
           border-radius: 9999px;
         }
         .ai-messages-scroll-area::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
+          background: var(--text-muted);
         }
 
         .ai-message-bubble-wrapper {
@@ -642,9 +642,9 @@ export function AiAssistantPanel({
         }
 
         .bot-avatar {
-          background: #ffffff;
+          background: var(--bg-surface);
           color: var(--primary);
-          border: 1px solid var(--border-medium);
+          border: 1px solid var(--border-subtle);
         }
 
         .ai-message-bubble {
@@ -654,19 +654,19 @@ export function AiAssistantPanel({
           font-size: 0.813rem;
           line-height: 1.48;
           word-break: break-word;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         .user-bubble {
-          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
           color: #ffffff;
           border-top-right-radius: 4px;
         }
 
         .assistant-bubble {
-          background: #ffffff;
+          background: var(--bg-surface);
           color: var(--text-primary);
-          border: 1px solid rgba(226, 232, 240, 0.9);
+          border: 1px solid var(--border-subtle);
           border-top-left-radius: 4px;
         }
 
@@ -687,7 +687,7 @@ export function AiAssistantPanel({
            5. QUICK PROMPTS CHIPS SHELF
            ========================================================================== */
         .ai-chips-shelf {
-          background: #ffffff;
+          background: var(--bg-surface);
           border-top: 1px solid var(--border-subtle);
           padding: 6px 12px;
           flex-shrink: 0;
@@ -708,8 +708,8 @@ export function AiAssistantPanel({
         .ai-chip-pill {
           padding: 5px 11px;
           border-radius: 9999px;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
+          background: var(--bg-subtle);
+          border: 1px solid var(--border-subtle);
           font-size: 0.688rem;
           font-weight: 600;
           color: var(--text-secondary);
@@ -724,7 +724,7 @@ export function AiAssistantPanel({
 
         .ai-chip-pill:hover {
           background: var(--primary-light);
-          color: var(--primary-dark);
+          color: var(--primary);
           border-color: var(--primary);
           transform: translateY(-1px);
         }
@@ -742,7 +742,7 @@ export function AiAssistantPanel({
            6. FIXED INPUT DOCK
            ========================================================================== */
         .ai-input-dock {
-          background: #ffffff;
+          background: var(--bg-surface);
           border-top: 1px solid var(--border-subtle);
           padding: 10px 12px;
           flex-shrink: 0;
@@ -752,7 +752,7 @@ export function AiAssistantPanel({
           display: flex;
           align-items: center;
           gap: 8px;
-          background: #f8fafc;
+          background: var(--bg-app);
           border: 1px solid var(--border-medium);
           border-radius: 9999px;
           padding: 3px 4px 3px 14px;
@@ -761,8 +761,8 @@ export function AiAssistantPanel({
 
         .ai-input-container:focus-within {
           border-color: var(--primary);
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-          background: #ffffff;
+          box-shadow: 0 0 0 3px var(--primary-light);
+          background: var(--bg-app);
         }
 
         .ai-text-input {

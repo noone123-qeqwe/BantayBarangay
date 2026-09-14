@@ -1,91 +1,93 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-:root {
+:root,
+[data-theme="dark"],
+.dark {
   /* Brand Palette - Modern Civic Tech (Electric Sapphire & Emerald) */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-dark: #1e40af;
-  --primary-light: #eff6ff;
-  --primary-glow: rgba(37, 99, 235, 0.28);
+  --primary: #38bdf8;
+  --primary-hover: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: rgba(56, 189, 248, 0.15);
+  --primary-glow: rgba(56, 189, 248, 0.35);
   
-  --secondary: #0d9488;
-  --secondary-hover: #0f766e;
-  --secondary-light: #ccfbf1;
+  --secondary: #10b981;
+  --secondary-hover: #059669;
+  --secondary-light: rgba(16, 185, 129, 0.15);
 
   --accent: #f59e0b;
-  --accent-light: #fef3c7;
+  --accent-light: rgba(245, 158, 11, 0.15);
 
-  /* Semantic Status Colors (Standardized) */
-  --status-submitted: #2563eb;
-  --status-submitted-bg: #eff6ff;
+  /* Semantic Status Colors (Standardized for Dark Theme) */
+  --status-submitted: #38bdf8;
+  --status-submitted-bg: rgba(56, 189, 248, 0.15);
   
-  --status-review: #6366f1;
-  --status-review-bg: #e0e7ff;
+  --status-review: #818cf8;
+  --status-review-bg: rgba(129, 140, 248, 0.15);
 
-  --status-assigned: #0891b2;
-  --status-assigned-bg: #cffafe;
+  --status-assigned: #22d3ee;
+  --status-assigned-bg: rgba(34, 211, 238, 0.15);
 
-  --status-progress: #3b82f6;
-  --status-progress-bg: #dbeafe;
+  --status-progress: #60a5fa;
+  --status-progress-bg: rgba(96, 165, 250, 0.15);
 
-  --status-resolved: #10b981;
-  --status-resolved-bg: #d1fae5;
-  --status-resolved-dark: #065f46;
+  --status-resolved: #34d399;
+  --status-resolved-bg: rgba(52, 211, 153, 0.15);
+  --status-resolved-dark: #059669;
 
-  --status-closed: #64748b;
-  --status-closed-bg: #f1f5f9;
+  --status-closed: #94a3b8;
+  --status-closed-bg: rgba(148, 163, 184, 0.15);
 
-  --status-reopened: #f43f5e;
-  --status-reopened-bg: #ffe4e6;
+  --status-reopened: #fb7185;
+  --status-reopened-bg: rgba(251, 113, 133, 0.15);
 
-  --status-pending-verification: #d97706;
-  --status-pending-verification-bg: #fef3c7;
+  --status-pending-verification: #fbbf24;
+  --status-pending-verification-bg: rgba(251, 191, 36, 0.15);
 
   /* Risk Level Palette */
-  --risk-low: #059669;
-  --risk-low-bg: #ecfdf5;
-  --risk-medium: #d97706;
-  --risk-medium-bg: #fef3c7;
-  --risk-high: #dc2626;
-  --risk-high-bg: #fef2f2;
+  --risk-low: #34d399;
+  --risk-low-bg: rgba(52, 211, 153, 0.15);
+  --risk-medium: #fbbf24;
+  --risk-medium-bg: rgba(251, 191, 36, 0.15);
+  --risk-high: #f87171;
+  --risk-high-bg: rgba(248, 113, 113, 0.15);
 
   /* Priority Palette */
-  --priority-low: #059669;
-  --priority-low-bg: #ecfdf5;
-  --priority-medium: #2563eb;
-  --priority-medium-bg: #eff6ff;
-  --priority-high: #ea580c;
-  --priority-high-bg: #fff7ed;
-  --priority-critical: #dc2626;
-  --priority-critical-bg: #fef2f2;
+  --priority-low: #34d399;
+  --priority-low-bg: rgba(52, 211, 153, 0.15);
+  --priority-medium: #38bdf8;
+  --priority-medium-bg: rgba(56, 189, 248, 0.15);
+  --priority-high: #fb923c;
+  --priority-high-bg: rgba(251, 146, 60, 0.15);
+  --priority-critical: #f87171;
+  --priority-critical-bg: rgba(248, 113, 113, 0.22);
 
-  /* Neutrals & Surfaces */
-  --bg-app: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
-  --bg-subtle: #f1f5f9;
-  --bg-glass: rgba(255, 255, 255, 0.85);
-  --bg-glass-card: rgba(255, 255, 255, 0.75);
-  --bg-glass-dock: rgba(255, 255, 255, 0.9);
-  --bg-overlay: rgba(15, 23, 42, 0.65);
+  /* Neutrals & Surfaces - High-End Deep Civic Dark */
+  --bg-app: #080c15;
+  --bg-surface: #0e1526;
+  --bg-card: #121c32;
+  --bg-subtle: #17233e;
+  --bg-glass: rgba(14, 21, 38, 0.88);
+  --bg-glass-card: rgba(18, 28, 50, 0.82);
+  --bg-glass-dock: rgba(10, 15, 28, 0.94);
+  --bg-overlay: rgba(0, 0, 0, 0.82);
 
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --text-inverse: #ffffff;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-inverse: #080c15;
 
-  --border-subtle: #e2e8f0;
-  --border-medium: #cbd5e1;
-  --border-focus: #3b82f6;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-focus: #38bdf8;
 
   /* Elevations & Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 24px rgba(37, 99, 235, 0.28);
-  --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 20px 35px rgba(0, 0, 0, 0.65);
+  --shadow-glow: 0 0 28px rgba(56, 189, 248, 0.25);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
 
   /* Radius */
   --radius-xs: 6px;
@@ -112,38 +114,6 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-[data-theme="dark"] {
-  --bg-app: #090d16;
-  --bg-surface: #0f172a;
-  --bg-card: #141e33;
-  --bg-subtle: #1e293b;
-  --bg-glass: rgba(15, 23, 42, 0.88);
-  --bg-glass-card: rgba(20, 30, 51, 0.8);
-  --bg-glass-dock: rgba(15, 23, 42, 0.92);
-  --bg-overlay: rgba(0, 0, 0, 0.8);
-
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-
-  --border-subtle: #1e293b;
-  --border-medium: #334155;
-
-  --primary-light: rgba(37, 99, 235, 0.2);
-  --status-submitted-bg: rgba(37, 99, 235, 0.2);
-  --status-review-bg: rgba(99, 102, 241, 0.2);
-  --status-assigned-bg: rgba(8, 145, 178, 0.2);
-  --status-progress-bg: rgba(59, 130, 246, 0.2);
-  --status-resolved-bg: rgba(16, 185, 129, 0.2);
-  --status-closed-bg: rgba(100, 116, 139, 0.2);
-  --status-reopened-bg: rgba(244, 63, 94, 0.2);
-
-  --priority-low-bg: rgba(16, 185, 129, 0.2);
-  --priority-medium-bg: rgba(37, 99, 235, 0.2);
-  --priority-high-bg: rgba(234, 88, 12, 0.2);
-  --priority-critical-bg: rgba(220, 38, 38, 0.25);
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -155,9 +125,9 @@ html, body {
   font-family: var(--font-sans);
   background-color: var(--bg-app);
   background-image: 
-    radial-gradient(ellipse at 15% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 5%, rgba(6, 182, 212, 0.07) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 95%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at 15% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 5%, rgba(16, 185, 129, 0.09) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 95%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
   background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100vh;
@@ -165,6 +135,23 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   touch-action: manipulation;
+  color-scheme: dark;
+}
+
+/* Custom Sleek Dark Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #080c15;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 
 a {
@@ -344,7 +331,7 @@ h1, h2, h3, h4, h5, h6 {
 .nav-capsule {
   display: flex;
   align-items: center;
-  background: rgba(241, 245, 249, 0.7);
+  background: rgba(18, 28, 50, 0.85);
   backdrop-filter: blur(12px);
   padding: 4px;
   border-radius: var(--radius-full);
@@ -353,7 +340,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 [data-theme="dark"] .nav-capsule {
-  background: rgba(30, 41, 59, 0.65);
+  background: rgba(18, 28, 50, 0.85);
 }
 
 .nav-pill {
@@ -373,12 +360,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav-pill:hover {
   color: var(--text-primary);
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: rgba(51, 65, 85, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] .nav-pill:hover {
-  background-color: rgba(51, 65, 85, 0.8);
+  background-color: rgba(51, 65, 85, 0.7);
 }
 
 .nav-pill.active {
@@ -504,43 +491,43 @@ h1, h2, h3, h4, h5, h6 {
 
 .category-badge-road {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(217, 119, 6, 0.1) 100%);
-  color: #b45309;
+  color: #fbbf24;
   border: 1px solid rgba(245, 158, 11, 0.4);
 }
 
 .category-badge-light {
   background: linear-gradient(135deg, rgba(234, 179, 8, 0.18) 0%, rgba(202, 138, 4, 0.1) 100%);
-  color: #a16207;
+  color: #fde047;
   border: 1px solid rgba(234, 179, 8, 0.45);
 }
 
 .category-badge-water {
   background: linear-gradient(135deg, rgba(2, 132, 199, 0.16) 0%, rgba(14, 165, 233, 0.1) 100%);
-  color: #0369a1;
+  color: #38bdf8;
   border: 1px solid rgba(2, 132, 199, 0.4);
 }
 
 .category-badge-drainage {
   background: linear-gradient(135deg, rgba(6, 182, 212, 0.16) 0%, rgba(8, 145, 178, 0.1) 100%);
-  color: #0e7490;
+  color: #22d3ee;
   border: 1px solid rgba(6, 182, 212, 0.4);
 }
 
 .category-badge-waste {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(5, 150, 105, 0.1) 100%);
-  color: #047857;
+  color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 .category-badge-tree {
   background: linear-gradient(135deg, rgba(34, 197, 94, 0.16) 0%, rgba(22, 163, 74, 0.1) 100%);
-  color: #15803d;
+  color: #4ade80;
   border: 1px solid rgba(34, 197, 94, 0.4);
 }
 
 .category-badge-hazard {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.16) 0%, rgba(220, 38, 38, 0.1) 100%);
-  color: #b91c1c;
+  color: #f87171;
   border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
@@ -590,7 +577,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .badge-resolved {
   background-color: var(--status-resolved-bg);
-  color: var(--status-resolved-dark);
+  color: var(--status-resolved);
   border: 1px solid rgba(16, 185, 129, 0.35);
 }
 
@@ -653,8 +640,8 @@ h1, h2, h3, h4, h5, h6 {
   gap: 6px;
   padding: 4px 10px;
   background-color: var(--primary-light);
-  color: var(--primary-dark);
-  border: 1px solid rgba(2, 132, 199, 0.25);
+  color: var(--primary);
+  border: 1px solid rgba(56, 189, 248, 0.3);
   border-radius: var(--radius-full);
   font-size: 0.813rem;
   font-weight: 600;
@@ -669,8 +656,8 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   width: 16px;
   height: 16px;
-  background-color: rgba(2, 132, 199, 0.2);
-  color: var(--primary-dark);
+  background-color: rgba(56, 189, 248, 0.2);
+  color: var(--primary);
   transition: all 0.15s ease;
 }
 
@@ -1045,7 +1032,7 @@ textarea.form-control {
 
 .toast-success {
   border-left: 4px solid var(--status-resolved);
-  color: var(--status-resolved-dark);
+  color: var(--status-resolved);
 }
 
 .toast-error {
@@ -1055,7 +1042,7 @@ textarea.form-control {
 
 .toast-info {
   border-left: 4px solid var(--primary);
-  color: var(--primary-dark);
+  color: var(--primary);
 }
 
 /* Skeleton Loading */

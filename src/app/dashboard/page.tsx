@@ -107,7 +107,7 @@ export default function DashboardPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#f8fafc",
+          backgroundColor: "#080c15",
         }}
       >
         <div
@@ -115,8 +115,8 @@ export default function DashboardPage() {
             width: "36px",
             height: "36px",
             borderRadius: "50%",
-            border: "3px solid #e2e8f0",
-            borderTopColor: "#2563eb",
+            border: "3px solid rgba(255, 255, 255, 0.12)",
+            borderTopColor: "#38bdf8",
             animation: "spin 0.7s linear infinite",
           }}
         />
@@ -820,11 +820,11 @@ export default function DashboardPage() {
         /* Root Canvas */
         .dashboard-root {
           min-height: calc(100vh - var(--header-height, 60px));
-          background-color: #f8fafc;
+          background-color: #080c15;
           background-image: 
-            radial-gradient(circle at 10% 12%, rgba(37, 99, 235, 0.07) 0%, transparent 45%),
-            radial-gradient(circle at 90% 88%, rgba(16, 185, 129, 0.06) 0%, transparent 45%);
-          color: #0f172a;
+            radial-gradient(circle at 10% 12%, rgba(56, 189, 248, 0.1) 0%, transparent 45%),
+            radial-gradient(circle at 90% 88%, rgba(16, 185, 129, 0.08) 0%, transparent 45%);
+          color: #f8fafc;
           padding: 32px 20px 60px 20px;
           position: relative;
           overflow: hidden;
@@ -843,7 +843,7 @@ export default function DashboardPage() {
         .glow-emerald {
           width: 520px;
           height: 520px;
-          background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
           top: -80px;
           left: -80px;
         }
@@ -851,7 +851,7 @@ export default function DashboardPage() {
         .glow-blue {
           width: 500px;
           height: 500px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
           bottom: -60px;
           right: -60px;
         }
@@ -890,7 +890,7 @@ export default function DashboardPage() {
         .loading-text {
           font-size: 1.05rem;
           font-weight: 600;
-          color: #64748b;
+          color: #94a3b8;
         }
 
         /* Dashboard Header */
@@ -920,27 +920,27 @@ export default function DashboardPage() {
         }
 
         .pill-resident {
-          background: #eff6ff;
-          color: #1d4ed8;
-          border: 1px solid #bfdbfe;
+          background: rgba(56, 189, 248, 0.15);
+          color: #38bdf8;
+          border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
         .pill-staff {
-          background: #ecfdf5;
-          color: #047857;
-          border: 1px solid #a7f3d0;
+          background: rgba(16, 185, 129, 0.15);
+          color: #34d399;
+          border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .pill-admin {
-          background: #eef2ff;
-          color: #4338ca;
-          border: 1px solid #c7d2fe;
+          background: rgba(129, 140, 248, 0.15);
+          color: #818cf8;
+          border: 1px solid rgba(129, 140, 248, 0.3);
         }
 
         .pill-super {
-          background: #fffbeb;
-          color: #b45309;
-          border: 1px solid #fde68a;
+          background: rgba(251, 191, 36, 0.15);
+          color: #fbbf24;
+          border: 1px solid rgba(251, 191, 36, 0.3);
         }
 
         .status-live-indicator {
@@ -949,9 +949,9 @@ export default function DashboardPage() {
           gap: 6px;
           font-size: 0.75rem;
           font-weight: 700;
-          color: #059669;
-          background: #ecfdf5;
-          border: 1px solid #a7f3d0;
+          color: #34d399;
+          background: rgba(16, 185, 129, 0.15);
+          border: 1px solid rgba(16, 185, 129, 0.3);
           padding: 4px 12px;
           border-radius: 9999px;
         }
@@ -960,8 +960,8 @@ export default function DashboardPage() {
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background: #10b981;
-          box-shadow: 0 0 8px #10b981;
+          background: #34d399;
+          box-shadow: 0 0 8px #34d399;
           animation: pulseGreen 1.8s infinite;
         }
 
@@ -983,21 +983,21 @@ export default function DashboardPage() {
           font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
           font-size: clamp(1.65rem, 3.5vw, 2.25rem);
           font-weight: 800;
-          color: #0f172a;
+          color: #f8fafc;
           margin: 0 0 6px 0;
           letter-spacing: -0.03em;
           line-height: 1.2;
         }
 
         .greeting-name-highlight {
-          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+          background: linear-gradient(135deg, #38bdf8 0%, #34d399 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
 
         .greeting-subtext {
           font-size: 0.95rem;
-          color: #64748b;
+          color: #94a3b8;
           margin: 0;
           line-height: 1.5;
           max-width: 680px;
@@ -1027,13 +1027,13 @@ export default function DashboardPage() {
           font-size: 0.875rem;
           font-weight: 700;
           text-decoration: none;
-          box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .emerald-action-btn:hover {
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45);
+          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
         }
 
         .outline-action-btn {
@@ -1042,19 +1042,20 @@ export default function DashboardPage() {
           gap: 8px;
           padding: 10px 18px;
           border-radius: 12px;
-          background: #ffffff;
-          border: 1.5px solid #cbd5e1;
-          color: #334155;
+          background: #121c32;
+          border: 1.5px solid rgba(255, 255, 255, 0.12);
+          color: #f8fafc;
           font-size: 0.875rem;
           font-weight: 700;
           text-decoration: none;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
           transition: all 0.2s ease;
         }
 
         .outline-action-btn:hover {
-          background: #f8fafc;
-          border-color: #94a3b8;
+          background: #17233e;
+          border-color: #38bdf8;
+          color: #38bdf8;
         }
 
         /* Announcements */
@@ -1071,15 +1072,15 @@ export default function DashboardPage() {
         }
 
         .ann-urgent {
-          background: #fef2f2;
-          border: 1.5px solid #fecaca;
-          color: #991b1b;
+          background: rgba(239, 68, 68, 0.15);
+          border: 1.5px solid rgba(239, 68, 68, 0.3);
+          color: #fca5a5;
         }
 
         .ann-standard {
-          background: #eff6ff;
-          border: 1.5px solid #bfdbfe;
-          color: #1e40af;
+          background: rgba(56, 189, 248, 0.12);
+          border: 1.5px solid rgba(56, 189, 248, 0.25);
+          color: #7dd3fc;
         }
 
         .ann-icon-wrap {
@@ -1098,40 +1099,40 @@ export default function DashboardPage() {
           font-weight: 700;
         }
 
-        .ann-body {
-          font-size: 0.825rem;
+        .ann-content {
+          font-size: 0.813rem;
           line-height: 1.4;
-          opacity: 0.9;
+          opacity: 0.95;
         }
 
-        /* Section Header */
-        .section-header-bar {
+        /* Section Titles */
+        .section-header-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
         }
 
         .section-title {
-          font-size: 1.15rem;
+          font-size: 1.25rem;
           font-weight: 800;
-          color: #0f172a;
+          color: #f8fafc;
           letter-spacing: -0.02em;
           margin: 0;
         }
 
         .section-subtitle {
           font-size: 0.85rem;
-          color: #64748b;
+          color: #94a3b8;
           margin: 4px 0 0 0;
         }
 
         .section-badge-pill {
           font-size: 0.725rem;
           font-weight: 700;
-          color: #2563eb;
-          background: #eff6ff;
-          border: 1px solid #bfdbfe;
+          color: #38bdf8;
+          background: rgba(56, 189, 248, 0.15);
+          border: 1px solid rgba(56, 189, 248, 0.3);
           padding: 3px 10px;
           border-radius: 9999px;
         }
@@ -1143,17 +1144,18 @@ export default function DashboardPage() {
           justify-content: space-between;
           padding: 24px 28px;
           border-radius: 20px;
-          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
           color: #ffffff;
           text-decoration: none;
           margin-bottom: 28px;
-          box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.35);
+          box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.35);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .resident-report-hero-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 14px 38px -5px rgba(37, 99, 235, 0.45);
+          box-shadow: 0 14px 38px -5px rgba(2, 132, 199, 0.5);
         }
 
         .hero-left-content {
@@ -1237,17 +1239,17 @@ export default function DashboardPage() {
           gap: 6px;
           padding: 18px;
           border-radius: 16px;
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
+          background: #121c32;
+          border: 1.5px solid rgba(255, 255, 255, 0.08);
           text-decoration: none;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .dark-nav-card:hover {
           transform: translateY(-2px);
-          border-color: #2563eb;
-          box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.12);
+          border-color: #38bdf8;
+          box-shadow: 0 8px 24px -4px rgba(56, 189, 248, 0.25);
         }
 
         .nav-card-icon {
@@ -1261,34 +1263,34 @@ export default function DashboardPage() {
         }
 
         .icon-blue {
-          background: #eff6ff;
-          color: #2563eb;
+          background: rgba(56, 189, 248, 0.15);
+          color: #38bdf8;
         }
 
         .icon-emerald {
-          background: #ecfdf5;
-          color: #059669;
+          background: rgba(16, 185, 129, 0.15);
+          color: #34d399;
         }
 
         .icon-amber {
-          background: #fffbeb;
-          color: #d97706;
+          background: rgba(251, 191, 36, 0.15);
+          color: #fbbf24;
         }
 
         .icon-purple {
-          background: #f5f3ff;
-          color: #7c3aed;
+          background: rgba(129, 140, 248, 0.15);
+          color: #818cf8;
         }
 
         .nav-card-title {
           font-size: 0.95rem;
           font-weight: 700;
-          color: #0f172a;
+          color: #f8fafc;
         }
 
         .nav-card-subtitle {
           font-size: 0.775rem;
-          color: #64748b;
+          color: #94a3b8;
         }
 
         /* KPI Section */
@@ -1306,14 +1308,15 @@ export default function DashboardPage() {
         .kpi-card {
           padding: 20px;
           border-radius: 16px;
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          background: #121c32;
+          border: 1.5px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
           transition: all 0.2s ease;
         }
 
         .kpi-card:hover {
-          box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.08);
+          box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
+          border-color: rgba(255, 255, 255, 0.15);
           transform: translateY(-1px);
         }
 
@@ -1327,13 +1330,13 @@ export default function DashboardPage() {
         .kpi-label {
           font-size: 0.813rem;
           font-weight: 700;
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .kpi-number {
           font-size: 2.1rem;
           font-weight: 800;
-          color: #0f172a;
+          color: #f8fafc;
           line-height: 1.1;
           margin-bottom: 4px;
           letter-spacing: -0.03em;
@@ -1341,24 +1344,24 @@ export default function DashboardPage() {
 
         .kpi-caption {
           font-size: 0.75rem;
-          color: #94a3b8;
+          color: #64748b;
         }
 
-        .text-blue { color: #2563eb !important; }
-        .text-amber { color: #d97706 !important; }
-        .text-purple { color: #7c3aed !important; }
-        .text-emerald { color: #059669 !important; }
-        .text-crimson { color: #dc2626 !important; }
-        .text-rose { color: #e11d48 !important; }
+        .text-blue { color: #38bdf8 !important; }
+        .text-amber { color: #fbbf24 !important; }
+        .text-purple { color: #818cf8 !important; }
+        .text-emerald { color: #34d399 !important; }
+        .text-crimson { color: #f87171 !important; }
+        .text-rose { color: #fb7185 !important; }
 
         /* Live Municipal Dispatch Widget */
         .dispatch-live-widget {
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
+          background: #121c32;
+          border: 1.5px solid rgba(255, 255, 255, 0.08);
           border-radius: 18px;
           padding: 20px 22px;
           margin-bottom: 28px;
-          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
         }
 
         .dispatch-top-row {
@@ -1374,13 +1377,13 @@ export default function DashboardPage() {
           gap: 6px;
           font-size: 0.7rem;
           font-weight: 800;
-          color: #2563eb;
+          color: #38bdf8;
           letter-spacing: 0.05em;
           text-transform: uppercase;
         }
 
         .radio-icon {
-          color: #2563eb;
+          color: #38bdf8;
         }
 
         .dispatch-resolved-pill {
@@ -1389,9 +1392,9 @@ export default function DashboardPage() {
           gap: 4px;
           padding: 3px 8px;
           border-radius: 9999px;
-          background: #ecfdf5;
-          border: 1px solid #a7f3d0;
-          color: #047857;
+          background: rgba(16, 185, 129, 0.15);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          color: #34d399;
           font-size: 0.7rem;
           font-weight: 800;
           text-transform: uppercase;
@@ -1400,19 +1403,19 @@ export default function DashboardPage() {
         .dispatch-ticket-title {
           font-size: 1.05rem;
           font-weight: 700;
-          color: #0f172a;
+          color: #f8fafc;
           margin: 0 0 4px 0;
         }
 
         .dispatch-ticket-meta {
           font-size: 0.813rem;
-          color: #64748b;
+          color: #94a3b8;
           margin: 0 0 14px 0;
         }
 
         .dispatch-divider {
           height: 1px;
-          background-color: #f1f5f9;
+          background-color: rgba(255, 255, 255, 0.08);
           margin-bottom: 12px;
         }
 
@@ -1422,11 +1425,11 @@ export default function DashboardPage() {
           gap: 6px;
           font-size: 0.785rem;
           font-weight: 600;
-          color: #047857;
+          color: #34d399;
         }
 
         .verified-check {
-          color: #059669;
+          color: #10b981;
         }
 
         /* Staff Tools */
@@ -1443,17 +1446,17 @@ export default function DashboardPage() {
           gap: 16px;
           padding: 18px 20px;
           border-radius: 16px;
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
+          background: #121c32;
+          border: 1.5px solid rgba(255, 255, 255, 0.08);
           text-decoration: none;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
           transition: all 0.2s ease;
         }
 
         .tool-quick-card:hover {
-          border-color: #2563eb;
+          border-color: #38bdf8;
           transform: translateY(-2px);
-          box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.12);
+          box-shadow: 0 8px 20px -4px rgba(56, 189, 248, 0.2);
         }
 
         .tool-icon {
@@ -1469,13 +1472,13 @@ export default function DashboardPage() {
         .tool-title {
           font-size: 0.95rem;
           font-weight: 700;
-          color: #0f172a;
+          color: #f8fafc;
           display: block;
         }
 
         .tool-desc {
           font-size: 0.785rem;
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .tool-arrow {
@@ -1486,7 +1489,7 @@ export default function DashboardPage() {
 
         .tool-quick-card:hover .tool-arrow {
           transform: translateX(3px);
-          color: #2563eb;
+          color: #38bdf8;
         }
 
         /* Admin Hub */
@@ -1503,17 +1506,17 @@ export default function DashboardPage() {
           gap: 16px;
           padding: 18px 20px;
           border-radius: 16px;
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
+          background: #121c32;
+          border: 1.5px solid rgba(255, 255, 255, 0.08);
           text-decoration: none;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
           transition: all 0.2s ease;
         }
 
         .admin-hub-card:hover {
-          border-color: #2563eb;
+          border-color: #38bdf8;
           transform: translateY(-2px);
-          box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.12);
+          box-shadow: 0 8px 20px -4px rgba(56, 189, 248, 0.2);
         }
 
         .hub-icon-wrap {
@@ -1536,12 +1539,12 @@ export default function DashboardPage() {
         .hub-title {
           font-size: 0.95rem;
           font-weight: 700;
-          color: #0f172a;
+          color: #f8fafc;
         }
 
         .hub-desc {
           font-size: 0.785rem;
-          color: #64748b;
+          color: #94a3b8;
           margin: 0;
           line-height: 1.35;
         }
@@ -1553,7 +1556,7 @@ export default function DashboardPage() {
 
         .admin-hub-card:hover .hub-arrow {
           transform: translateX(3px);
-          color: #2563eb;
+          color: #38bdf8;
         }
 
         /* Reports Feed Section */
@@ -1567,21 +1570,21 @@ export default function DashboardPage() {
           gap: 4px;
           font-size: 0.813rem;
           font-weight: 700;
-          color: #2563eb;
+          color: #38bdf8;
           text-decoration: none;
           transition: color 0.15s ease;
         }
 
         .view-all-link:hover {
-          color: #1d4ed8;
+          color: #7dd3fc;
           text-decoration: underline;
         }
 
         .empty-state-card {
           padding: 48px 20px;
           text-align: center;
-          background: #ffffff;
-          border: 1.5px dashed #cbd5e1;
+          background: #121c32;
+          border: 1.5px dashed rgba(255, 255, 255, 0.12);
           border-radius: 18px;
           display: flex;
           flex-direction: column;
@@ -1597,13 +1600,13 @@ export default function DashboardPage() {
         .empty-title {
           font-size: 1.1rem;
           font-weight: 700;
-          color: #1e293b;
+          color: #f8fafc;
           margin: 0 0 6px 0;
         }
 
         .empty-desc {
           font-size: 0.85rem;
-          color: #64748b;
+          color: #94a3b8;
           max-width: 460px;
           margin: 0 0 20px 0;
           line-height: 1.5;
@@ -1621,17 +1624,17 @@ export default function DashboardPage() {
           gap: 18px;
           padding: 16px 20px;
           border-radius: 14px;
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
+          background: #121c32;
+          border: 1.5px solid rgba(255, 255, 255, 0.08);
           text-decoration: none;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .report-item-card:hover {
-          border-color: #2563eb;
+          border-color: #38bdf8;
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px -3px rgba(37, 99, 235, 0.1);
+          box-shadow: 0 6px 20px -3px rgba(56, 189, 248, 0.2);
         }
 
         .report-thumbnail-box {
@@ -1639,8 +1642,8 @@ export default function DashboardPage() {
           height: 72px;
           border-radius: 12px;
           overflow: hidden;
-          background-color: #f1f5f9;
-          border: 1px solid #e2e8f0;
+          background-color: #1a2438;
+          border: 1px solid rgba(255, 255, 255, 0.1);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1676,8 +1679,9 @@ export default function DashboardPage() {
           font-family: var(--font-mono, monospace);
           font-size: 0.725rem;
           font-weight: 700;
-          color: #475569;
-          background: #f1f5f9;
+          color: #94a3b8;
+          background: #1a2438;
+          border: 1px solid rgba(255, 255, 255, 0.08);
           padding: 2px 8px;
           border-radius: 6px;
         }
@@ -1685,7 +1689,7 @@ export default function DashboardPage() {
         .report-headline {
           font-size: 0.95rem;
           font-weight: 700;
-          color: #0f172a;
+          color: #f8fafc;
           margin-top: 2px;
           white-space: nowrap;
           overflow: hidden;
@@ -1694,7 +1698,7 @@ export default function DashboardPage() {
 
         .report-summary {
           font-size: 0.813rem;
-          color: #475569;
+          color: #94a3b8;
           margin: 0;
           line-height: 1.4;
           display: -webkit-box;
@@ -1715,26 +1719,26 @@ export default function DashboardPage() {
           align-items: center;
           gap: 4px;
           font-size: 0.75rem;
-          color: #64748b;
-        }
-
-        .meta-icon {
           color: #94a3b8;
         }
 
+        .meta-icon {
+          color: #64748b;
+        }
+
         .meta-bullet {
-          color: #cbd5e1;
+          color: #475569;
           font-size: 0.75rem;
         }
 
         .report-arrow {
-          color: #94a3b8;
+          color: #64748b;
           transition: transform 0.2s ease;
         }
 
         .report-item-card:hover .report-arrow {
           transform: translateX(3px);
-          color: #2563eb;
+          color: #38bdf8;
         }
 
         /* Bottom Seal */
@@ -1744,13 +1748,13 @@ export default function DashboardPage() {
           justify-content: center;
           gap: 8px;
           font-size: 0.75rem;
-          color: #94a3b8;
+          color: #64748b;
           padding-top: 24px;
-          border-top: 1px solid #e2e8f0;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .seal-shield {
-          color: #2563eb;
+          color: #38bdf8;
         }
 
         /* Responsive Breakpoints */

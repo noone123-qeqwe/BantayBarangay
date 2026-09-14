@@ -788,19 +788,19 @@ export default function NewReportWizard() {
                 alignItems: "flex-start",
                 gap: "12px",
                 padding: "14px 16px",
-                backgroundColor: "#FEF2F2",
-                border: "1.5px solid #DC2626",
+                backgroundColor: "rgba(220, 38, 38, 0.15)",
+                border: "1.5px solid rgba(239, 68, 68, 0.4)",
                 borderRadius: "var(--radius-md)",
                 marginBottom: "20px",
-                color: "#991B1B",
+                color: "#fca5a5",
               }}
             >
-              <ShieldAlert size={24} style={{ color: "#DC2626", flexShrink: 0, marginTop: "2px" }} />
+              <ShieldAlert size={24} style={{ color: "#f87171", flexShrink: 0, marginTop: "2px" }} />
               <div style={{ fontSize: "0.875rem" }}>
-                <strong style={{ display: "block", color: "#B91C1C", fontWeight: 800 }}>
+                <strong style={{ display: "block", color: "#f87171", fontWeight: 800 }}>
                   Immediate Safety Hazard Detected ({hazardCheck.matchedHazard || "Life-Safety Hazard"})
                 </strong>
-                <p style={{ margin: "4px 0 8px 0", color: "#7F1D1D", lineHeight: 1.4 }}>
+                <p style={{ margin: "4px 0 8px 0", color: "#fca5a5", lineHeight: 1.4 }}>
                   This issue poses an immediate danger to residents. If this is an active emergency requiring immediate dispatch:
                 </p>
                 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>

@@ -95,7 +95,7 @@ export default function BottomNav() {
         right: 0,
         zIndex: 45,
         height: "var(--bottom-nav-height)",
-        backgroundColor: "rgba(255, 255, 255, 0.94)",
+        backgroundColor: "var(--bg-glass-dock)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         borderTop: "1px solid var(--border-subtle)",
@@ -104,7 +104,7 @@ export default function BottomNav() {
         justifyContent: "space-around",
         padding: "0 6px",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        boxShadow: "0 -4px 20px rgba(15, 23, 42, 0.08)",
+        boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.45)",
       }}
     >
       {tabs.map((tab) => {

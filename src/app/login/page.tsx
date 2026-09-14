@@ -517,14 +517,17 @@ export default function LoginPage() {
         /* Pure Clean Auth Card */
         .login-unified-card {
           width: 100%;
+          max-width: 440px;
           display: flex;
           flex-direction: column;
           border-radius: 24px;
-          background: #ffffff;
-          border: 1.5px solid rgba(226, 232, 240, 0.9);
+          background: rgba(14, 21, 38, 0.9);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1.5px solid rgba(255, 255, 255, 0.1);
           box-shadow: 
-            0 25px 50px -12px rgba(15, 23, 42, 0.08),
-            0 0 0 1px rgba(255, 255, 255, 0.8);
+            0 25px 50px -12px rgba(0, 0, 0, 0.6),
+            0 0 0 1px rgba(255, 255, 255, 0.06);
           padding: 38px 34px;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -549,7 +552,7 @@ export default function LoginPage() {
           font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
           font-size: 1.75rem;
           font-weight: 800;
-          color: #0f172a;
+          color: #f8fafc;
           letter-spacing: -0.03em;
           line-height: 1.2;
           margin: 0 0 6px 0;
@@ -557,7 +560,7 @@ export default function LoginPage() {
 
         .auth-subtitle {
           font-size: 0.85rem;
-          color: #64748b;
+          color: #94a3b8;
           line-height: 1.5;
           margin: 0;
         }
@@ -574,15 +577,15 @@ export default function LoginPage() {
         }
 
         .banner-warning {
-          background-color: #fffbeb;
-          border: 1px solid #fde68a;
-          color: #b45309;
+          background-color: rgba(245, 158, 11, 0.15);
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          color: #fbbf24;
         }
 
         .banner-error {
-          background-color: #fef2f2;
-          border: 1px solid #fecaca;
-          color: #b91c1c;
+          background-color: rgba(239, 68, 68, 0.15);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: #fca5a5;
         }
 
         .banner-text {
@@ -614,52 +617,52 @@ export default function LoginPage() {
         .field-label {
           font-size: 0.813rem;
           font-weight: 700;
-          color: #1e293b;
+          color: #e2e8f0;
         }
 
         .phone-validation-hint {
           font-size: 0.725rem;
           font-weight: 700;
-          color: #059669;
-          background: #ecfdf5;
+          color: #34d399;
+          background: rgba(16, 185, 129, 0.15);
           padding: 2px 8px;
           border-radius: 9999px;
-          border: 1px solid #a7f3d0;
+          border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .forgot-link {
           font-size: 0.785rem;
           font-weight: 600;
-          color: #2563eb;
+          color: #38bdf8;
           text-decoration: none;
           transition: color 0.15s ease;
         }
 
         .forgot-link:hover {
-          color: #1d4ed8;
+          color: #7dd3fc;
           text-decoration: underline;
         }
 
         .composite-input {
           display: flex;
           align-items: center;
-          background: #f8fafc;
-          border: 1.5px solid #cbd5e1;
+          background: #080c15;
+          border: 1.5px solid rgba(255, 255, 255, 0.12);
           border-radius: 12px;
           overflow: hidden;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .composite-focus {
-          border-color: #2563eb;
-          background: #ffffff;
-          box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.12);
+          border-color: #38bdf8;
+          background: #0b1120;
+          box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.2);
         }
 
         .composite-error {
-          border-color: #ef4444;
-          background: #fff;
-          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+          border-color: #f87171;
+          background: #0b1120;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
         }
 
         .country-prefix-badge {
@@ -668,9 +671,9 @@ export default function LoginPage() {
           gap: 5px;
           padding: 0 13px;
           height: 44px;
-          background-color: #f1f5f9;
-          border-right: 1.5px solid #e2e8f0;
-          color: #334155;
+          background-color: #121c32;
+          border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+          color: #94a3b8;
           font-size: 0.813rem;
           font-weight: 700;
           user-select: none;
@@ -678,7 +681,7 @@ export default function LoginPage() {
         }
 
         .prefix-email, .prefix-lock {
-          color: #64748b;
+          color: #94a3b8;
           padding: 0 12px;
         }
 
@@ -690,12 +693,12 @@ export default function LoginPage() {
           border: none;
           outline: none;
           font-size: 0.875rem;
-          color: #0f172a;
+          color: #f8fafc;
           font-weight: 500;
         }
 
         .styled-text-input::placeholder {
-          color: #94a3b8;
+          color: #64748b;
           font-weight: 400;
         }
 
@@ -707,18 +710,18 @@ export default function LoginPage() {
           justify-content: center;
           background: transparent;
           border: none;
-          color: #64748b;
+          color: #94a3b8;
           cursor: pointer;
           transition: color 0.15s ease;
         }
 
         .eye-toggle-btn:hover {
-          color: #0f172a;
+          color: #f8fafc;
         }
 
         .field-hint-text {
           font-size: 0.725rem;
-          color: #64748b;
+          color: #94a3b8;
         }
 
         /* Primary Submit Button */
@@ -785,25 +788,25 @@ export default function LoginPage() {
         }
 
         .register-prompt {
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .register-bold-link {
-          color: #2563eb;
+          color: #38bdf8;
           font-weight: 700;
           text-decoration: none;
           transition: color 0.15s ease;
         }
 
         .register-bold-link:hover {
-          color: #1d4ed8;
+          color: #7dd3fc;
           text-decoration: underline;
         }
 
         /* Quick Test Roles Box */
         .quick-roles-container {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 16px;
           padding: 13px;
           margin-bottom: 16px;
@@ -822,16 +825,16 @@ export default function LoginPage() {
           gap: 6px;
           font-size: 0.735rem;
           font-weight: 700;
-          color: #334155;
+          color: #cbd5e1;
         }
 
         .sparkle-gold {
-          color: #d97706;
+          color: #fbbf24;
         }
 
         .quick-roles-sub {
           font-size: 0.688rem;
-          color: #64748b;
+          color: #94a3b8;
           font-weight: 500;
         }
 
@@ -847,8 +850,8 @@ export default function LoginPage() {
           gap: 5px;
           padding: 8px 10px;
           border-radius: 10px;
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
+          background: #0d1527;
+          border: 1.5px solid rgba(255, 255, 255, 0.08);
           cursor: pointer;
           text-align: left;
           transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
@@ -856,32 +859,32 @@ export default function LoginPage() {
 
         .role-select-card:hover {
           transform: translateY(-1px);
-          border-color: #cbd5e1;
-          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+          border-color: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         }
 
         .role-card-active {
-          border-color: #2563eb !important;
-          background: #eff6ff !important;
-          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+          border-color: #38bdf8 !important;
+          background: rgba(56, 189, 248, 0.15) !important;
+          box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3) !important;
         }
 
         .card-staff.role-card-active {
-          border-color: #059669 !important;
-          background: #ecfdf5 !important;
-          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+          border-color: #10b981 !important;
+          background: rgba(16, 185, 129, 0.15) !important;
+          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
         }
 
         .card-admin.role-card-active {
-          border-color: #6366f1 !important;
-          background: #eef2ff !important;
-          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+          border-color: #818cf8 !important;
+          background: rgba(129, 140, 248, 0.15) !important;
+          box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.3) !important;
         }
 
         .card-super.role-card-active {
-          border-color: #d97706 !important;
-          background: #fffbeb !important;
-          box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2) !important;
+          border-color: #fbbf24 !important;
+          background: rgba(251, 191, 36, 0.15) !important;
+          box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3) !important;
         }
 
         .role-card-top {
@@ -900,29 +903,29 @@ export default function LoginPage() {
         }
 
         .avatar-blue {
-          background: #eff6ff;
-          color: #2563eb;
+          background: rgba(56, 189, 248, 0.15);
+          color: #38bdf8;
         }
 
         .avatar-emerald {
-          background: #ecfdf5;
-          color: #059669;
+          background: rgba(16, 185, 129, 0.15);
+          color: #34d399;
         }
 
         .avatar-indigo {
-          background: #eef2ff;
-          color: #6366f1;
+          background: rgba(129, 140, 248, 0.15);
+          color: #818cf8;
         }
 
         .avatar-amber {
-          background: #fffbeb;
-          color: #d97706;
+          background: rgba(251, 191, 36, 0.15);
+          color: #fbbf24;
         }
 
-        .text-blue { color: #2563eb; }
-        .text-emerald { color: #059669; }
-        .text-indigo { color: #6366f1; }
-        .text-amber { color: #d97706; }
+        .text-blue { color: #38bdf8; }
+        .text-emerald { color: #34d399; }
+        .text-indigo { color: #818cf8; }
+        .text-amber { color: #fbbf24; }
 
         .role-card-meta {
           display: flex;
@@ -932,13 +935,13 @@ export default function LoginPage() {
         .role-name {
           font-size: 0.75rem;
           font-weight: 700;
-          color: #0f172a;
+          color: #f8fafc;
           line-height: 1.2;
         }
 
         .role-user-name {
           font-size: 0.65rem;
-          color: #64748b;
+          color: #94a3b8;
           font-weight: 500;
         }
 
@@ -948,10 +951,10 @@ export default function LoginPage() {
           align-items: center;
           justify-content: center;
           gap: 6px;
-          font-size: 0.7rem;
-          color: #94a3b8;
+          font-size: 0.713rem;
+          color: #64748b;
           padding-top: 10px;
-          border-top: 1px solid #f1f5f9;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .footer-shield {
