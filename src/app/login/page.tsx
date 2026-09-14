@@ -188,17 +188,10 @@ export default function LoginPage() {
       <main className="login-center-container">
         <div className={`login-unified-card ${shake ? "card-shake" : ""}`}>
           
-          {/* Top Brand Header */}
-          <div className="card-brand-header">
-            <div className="card-logo-box">
-              <ShieldCheck size={26} className="card-logo-icon" />
-            </div>
-            <div className="card-brand-titles">
-              <span className="card-brand-name">
-                Bantay<span className="card-brand-accent">Barangay</span>
-              </span>
-              <span className="card-brand-subtitle">Civic Reporting & Response Portal</span>
-            </div>
+          {/* Top Brand Pill (Requested by user: BantayBarangay pill) */}
+          <div className="civic-portal-pill">
+            <ShieldCheck size={14} className="civic-pill-shield" />
+            <span>BantayBarangay</span>
           </div>
 
           {/* Intro Heading */}
@@ -553,56 +546,25 @@ export default function LoginPage() {
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* Brand Header Inside Card */
-        .card-brand-header {
-          display: flex;
+        /* Top Brand Pill */
+        .civic-portal-pill {
+          display: inline-flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 20px;
-          padding-bottom: 16px;
-          border-bottom: 1px solid #f1f5f9;
-        }
-
-        .card-logo-box {
-          width: 46px;
-          height: 46px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #ffffff;
-          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-          flex-shrink: 0;
-        }
-
-        .card-logo-icon {
-          color: #ffffff;
-        }
-
-        .card-brand-titles {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .card-brand-name {
-          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-          font-size: 1.35rem;
+          gap: 7px;
+          padding: 5px 14px;
+          border-radius: 9999px;
+          background: #eff6ff;
+          border: 1.5px solid #bfdbfe;
+          color: #1d4ed8;
+          font-size: 0.775rem;
           font-weight: 800;
-          color: #0f172a;
-          line-height: 1.15;
-          letter-spacing: -0.03em;
+          letter-spacing: 0.03em;
+          margin-bottom: 16px;
+          width: fit-content;
         }
 
-        .card-brand-accent {
+        .civic-pill-shield {
           color: #2563eb;
-        }
-
-        .card-brand-subtitle {
-          font-size: 0.725rem;
-          color: #64748b;
-          font-weight: 600;
-          letter-spacing: 0.02em;
         }
 
         /* Intro Header */
