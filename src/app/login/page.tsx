@@ -51,12 +51,32 @@ export default function LoginPage() {
   // Smart input detection
   const isEmailInput = identifier.includes("@");
 
-  // If already logged in, redirect to dashboard
+  const navigateToDashboard = (roleName?: string) => {
+    if (typeof window === "undefined") return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const fromParam = searchParams.get("from");
+    const upperRole = roleName?.toUpperCase();
+    const defaultRoute = (upperRole === "ADMIN" || upperRole === "SUPER_ADMIN") ? "/admin" : "/dashboard";
+    const targetUrl = fromParam && fromParam.startsWith("/") && !fromParam.startsWith("/login") ? fromParam : defaultRoute;
+
+    // Refresh Next.js router cache and navigate
+    router.refresh();
+    router.replace(targetUrl);
+
+    // Guaranteed hard navigation fallback to ensure instant transition even if router cache is stale
+    setTimeout(() => {
+      if (window.location.pathname === "/login") {
+        window.location.replace(targetUrl);
+      }
+    }, 150);
+  };
+
+  // If already logged in, redirect to destination
   useEffect(() => {
     if (user) {
-      router.push("/dashboard");
+      navigateToDashboard(user.role);
     }
-  }, [user, router]);
+  }, [user]);
 
   // Network connection listener
   useEffect(() => {
@@ -146,11 +166,9 @@ export default function LoginPage() {
     try {
       const result = await login(trimmedIdentifier, password);
 
-      if (result.success) {
+      if (result.success && result.user) {
         setStatus("success");
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 400);
+        navigateToDashboard(result.user.role);
       } else {
         setStatus("error");
         triggerShake();
@@ -204,7 +222,7 @@ export default function LoginPage() {
 
       <main className="login-center-container">
         <div className={`login-unified-card ${shake ? "card-shake" : ""}`}>
-          
+
           {/* Intro Heading */}
           <div className="auth-card-header">
             <h1 className="auth-title">Welcome back</h1>
@@ -234,7 +252,7 @@ export default function LoginPage() {
 
           {/* Authentication Form */}
           <form onSubmit={handleSubmit} noValidate className="auth-form">
-            
+
             {/* Field 1: Mobile number / Email */}
             <div className="form-field-group">
               <div className="field-top-row">
@@ -249,9 +267,8 @@ export default function LoginPage() {
               </div>
 
               <div
-                className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${
-                  identifierError ? "composite-error" : ""
-                }`}
+                className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${identifierError ? "composite-error" : ""
+                  }`}
               >
                 {!isEmailInput ? (
                   <div className="country-prefix-badge" title="Philippines country code">
@@ -313,9 +330,8 @@ export default function LoginPage() {
               </div>
 
               <div
-                className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${
-                  passwordError ? "composite-error" : ""
-                }`}
+                className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${passwordError ? "composite-error" : ""
+                  }`}
               >
                 <div className="country-prefix-badge prefix-lock">
                   <Lock size={15} />
@@ -380,7 +396,7 @@ export default function LoginPage() {
               {status === "success" && (
                 <>
                   <CheckCircle2 size={18} />
-                  <span>Verified! Redirecting...</span>
+                  <span>Redirecting to Dashboard...</span>
                 </>
               )}
 
