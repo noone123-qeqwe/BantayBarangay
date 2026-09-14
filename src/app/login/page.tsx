@@ -106,7 +106,7 @@ export default function LoginPage() {
     const trimmedIdentifier = identifier.trim();
 
     if (!trimmedIdentifier) {
-      setError("Please enter your mobile number or email.");
+      setError("Please enter your mobile number.");
       identifierInputRef.current?.focus();
       triggerShake();
       return;
@@ -123,7 +123,7 @@ export default function LoginPage() {
     if (hasOnlyPhoneChars && !trimmedIdentifier.includes("@")) {
       const normalized = normalizePhoneNumber(trimmedIdentifier);
       if (!normalized) {
-        setError("Please enter a valid Philippine mobile number (e.g. 0917 123 4567) or email.");
+        setError("Please enter a valid Philippine mobile number (e.g. 0917 123 4567).");
         identifierInputRef.current?.focus();
         triggerShake();
         return;
@@ -147,7 +147,7 @@ export default function LoginPage() {
 
         const rawError = (result.error || "").toLowerCase();
         if (rawError.includes("invalid") || rawError.includes("credential") || rawError.includes("401")) {
-          setError("Incorrect mobile number/email or password. Please try again.");
+          setError("Incorrect mobile number or password. Please try again.");
         } else if (rawError.includes("deactivated")) {
           setError("Your account is currently deactivated. Please contact your Barangay Hall.");
         } else if (rawError.includes("too many") || rawError.includes("rate") || rawError.includes("429")) {
@@ -218,11 +218,11 @@ export default function LoginPage() {
           {/* Authentication Form */}
           <form onSubmit={handleSubmit} noValidate className="auth-form">
             
-            {/* Field 1: Mobile number or email */}
+            {/* Field 1: Mobile number */}
             <div className="form-field-group">
               <div className="field-top-row">
                 <label htmlFor="identifier" className="field-label">
-                  Mobile number or email
+                  Mobile number
                 </label>
                 {phonePreview && (
                   <span className="phone-validation-hint">
@@ -251,7 +251,7 @@ export default function LoginPage() {
                   inputMode={isEmailInput ? "email" : "tel"}
                   autoComplete="username"
                   className="styled-text-input"
-                  placeholder="09XXXXXXXXX or staff@bantay"
+                  placeholder="09XXXXXXXXX"
                   value={identifier}
                   onChange={(e) => {
                     setIdentifier(e.target.value);
