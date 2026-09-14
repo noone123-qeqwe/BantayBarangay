@@ -421,7 +421,29 @@ export default function Navbar() {
                 />
               </NextLink>
             </>
-          ) : isAuthPage ? null : (
+          ) : isAuthPage ? (
+            <a
+              href="tel:0286431111"
+              title="Call Emergency Hotline"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "5px 12px",
+                borderRadius: "9999px",
+                backgroundColor: "rgba(239, 68, 68, 0.12)",
+                border: "1px solid rgba(239, 68, 68, 0.45)",
+                color: "#fca5a5",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                textDecoration: "none",
+                boxShadow: "0 2px 8px rgba(239, 68, 68, 0.2)",
+              }}
+            >
+              <PhoneCall size={12} style={{ color: "#ef4444" }} />
+              <span>Hotline</span>
+            </a>
+          ) : (
             <div style={{ display: "flex", gap: "6px" }}>
               {pathname === "/login" ? (
                 <NextLink

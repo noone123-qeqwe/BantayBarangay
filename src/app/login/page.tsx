@@ -222,6 +222,14 @@ export default function LoginPage() {
 
       <main className="login-center-container">
         <div className={`login-unified-card ${shake ? "card-shake" : ""}`}>
+          {/* Top Decorative Edge Specular Shine */}
+          <div className="card-top-shine" aria-hidden="true" />
+
+          {/* Civic Badge Pill */}
+          <div className="civic-badge-pill">
+            <span className="civic-status-dot" />
+            <span className="civic-badge-text">Barangay Citizen Portal</span>
+          </div>
 
           {/* Intro Heading */}
           <div className="auth-card-header">
@@ -252,7 +260,6 @@ export default function LoginPage() {
 
           {/* Authentication Form */}
           <form onSubmit={handleSubmit} noValidate className="auth-form">
-
             {/* Field 1: Mobile number / Email */}
             <div className="form-field-group">
               <div className="field-top-row">
@@ -267,11 +274,12 @@ export default function LoginPage() {
               </div>
 
               <div
-                className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${identifierError ? "composite-error" : ""
-                  }`}
+                className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${
+                  identifierError ? "composite-error" : ""
+                }`}
               >
                 {!isEmailInput ? (
-                  <div className="country-prefix-badge" title="Philippines country code">
+                  <div className="country-prefix-badge" title="Philippines (+63)">
                     <span className="flag-icon">🇵🇭</span>
                     <span className="prefix-num">+63</span>
                   </div>
@@ -330,8 +338,9 @@ export default function LoginPage() {
               </div>
 
               <div
-                className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${passwordError ? "composite-error" : ""
-                  }`}
+                className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${
+                  passwordError ? "composite-error" : ""
+                }`}
               >
                 <div className="country-prefix-badge prefix-lock">
                   <Lock size={15} />
@@ -411,9 +420,10 @@ export default function LoginPage() {
 
           {/* Registration Secondary Section */}
           <div className="register-redirect-banner">
-            <span className="register-prompt">Don't have an account yet?</span>{" "}
+            <span className="register-prompt">Don't have an account yet?</span>
             <NextLink href="/register" className="register-bold-link">
-              Register as Resident
+              <span>Register as Resident</span>
+              <ArrowRight size={13} className="register-arrow-icon" />
             </NextLink>
           </div>
 
@@ -422,7 +432,7 @@ export default function LoginPage() {
             <div className="quick-roles-header">
               <div className="quick-roles-title">
                 <Sparkles size={13} className="sparkle-cyan" />
-                <span>Dev Test Accounts</span>
+                <span>Quick Test Accounts</span>
               </div>
               {autofillNotice ? (
                 <span className="autofill-feedback-pill">
@@ -506,31 +516,35 @@ export default function LoginPage() {
 
           {/* Bottom Security Footer */}
           <footer className="auth-card-footer">
-            <Shield size={12} className="footer-shield" />
-            <span>Official Civic Platform · 256-bit SSL · RA 10173</span>
+            <div className="footer-security-pill">
+              <Shield size={12} className="footer-shield" />
+              <span>Official Civic Portal</span>
+              <span className="footer-sep">·</span>
+              <span>256-Bit SSL</span>
+              <span className="footer-sep">·</span>
+              <span>RA 10173</span>
+            </div>
           </footer>
-
         </div>
       </main>
 
       {/* ===============================================================
-          STYLES: Mobile-First Modern Dark Theme Civic Login
+          STYLES: Elevated Obsidian Glass Civic Login
          =============================================================== */}
       <style jsx>{`
-        /* Canvas Wrapper - Complete Dark Theme */
+        /* Canvas Wrapper - Complete Dark Theme Atmosphere */
         .login-canvas-wrapper {
           min-height: calc(100dvh - var(--header-height, 54px));
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 16px 12px 28px 12px;
-          background-color: var(--bg-app, #080c15);
+          padding: 16px 14px 28px 14px;
+          background-color: #060911;
           background-image: 
-            radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-            radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.16) 0%, transparent 50%),
-            radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.14) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 55%);
-          background-size: 28px 28px, 100% 100%, 100% 100%, 100% 100%;
+            radial-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+            linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+          background-size: 24px 24px, 48px 48px, 48px 48px;
           position: relative;
           overflow: hidden;
         }
@@ -539,40 +553,40 @@ export default function LoginPage() {
         .ambient-sphere {
           position: absolute;
           border-radius: 9999px;
-          filter: blur(140px);
+          filter: blur(130px);
           pointer-events: none;
           z-index: 0;
-          opacity: 0.55;
+          opacity: 0.6;
         }
 
         .sphere-sapphire {
-          width: 480px;
-          height: 480px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.28) 0%, transparent 70%);
-          top: -80px;
-          left: -80px;
+          width: 440px;
+          height: 440px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
+          top: -60px;
+          left: -60px;
         }
 
         .sphere-cyan {
-          width: 440px;
-          height: 440px;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%);
-          bottom: -60px;
-          right: -60px;
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, transparent 70%);
+          bottom: -40px;
+          right: -40px;
         }
 
         .sphere-emerald {
-          width: 380px;
-          height: 380px;
-          background: radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, transparent 70%);
-          top: 35%;
-          left: 42%;
+          width: 320px;
+          height: 320px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+          top: 40%;
+          left: 45%;
         }
 
         /* Centered Container */
         .login-center-container {
           width: 100%;
-          max-width: 440px;
+          max-width: 436px;
           position: relative;
           z-index: 1;
           margin: 0 auto;
@@ -583,17 +597,30 @@ export default function LoginPage() {
           width: 100%;
           display: flex;
           flex-direction: column;
-          border-radius: 20px;
-          background: rgba(13, 20, 36, 0.94);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 22px;
+          background: linear-gradient(180deg, rgba(14, 22, 40, 0.9) 0%, rgba(9, 14, 28, 0.95) 100%);
+          backdrop-filter: blur(28px);
+          -webkit-backdrop-filter: blur(28px);
+          border: 1px solid rgba(56, 189, 248, 0.18);
           box-shadow: 
-            0 20px 50px -10px rgba(0, 0, 0, 0.8),
-            0 0 35px -5px rgba(56, 189, 248, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.12);
-          padding: 24px 20px;
+            0 24px 60px -12px rgba(0, 0, 0, 0.75),
+            0 0 40px -8px rgba(2, 132, 199, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.14);
+          padding: 24px 20px 20px 20px;
+          position: relative;
+          overflow: hidden;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Top Specular Edge Shine */
+        .card-top-shine {
+          position: absolute;
+          top: 0;
+          left: 10%;
+          right: 10%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6), rgba(255, 255, 255, 0.8), rgba(56, 189, 248, 0.6), transparent);
+          pointer-events: none;
         }
 
         .card-shake {
@@ -607,6 +634,41 @@ export default function LoginPage() {
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
+        /* Civic Badge Pill */
+        .civic-badge-pill {
+          align-self: flex-start;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 4px 10px;
+          border-radius: 9999px;
+          background: rgba(56, 189, 248, 0.08);
+          border: 1px solid rgba(56, 189, 248, 0.22);
+          margin-bottom: 12px;
+        }
+
+        .civic-status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #34d399;
+          box-shadow: 0 0 8px #34d399;
+          animation: livePulseDot 2s infinite ease-in-out;
+        }
+
+        @keyframes livePulseDot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        .civic-badge-text {
+          font-size: 0.688rem;
+          font-weight: 700;
+          color: #7dd3fc;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
         /* Intro Header */
         .auth-card-header {
           margin-bottom: 16px;
@@ -614,12 +676,15 @@ export default function LoginPage() {
 
         .auth-title {
           font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-          font-size: 1.45rem;
+          font-size: 1.55rem;
           font-weight: 800;
           color: #f8fafc;
-          letter-spacing: -0.025em;
-          line-height: 1.2;
-          margin: 0 0 5px 0;
+          background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          letter-spacing: -0.03em;
+          line-height: 1.15;
+          margin: 0 0 6px 0;
         }
 
         .auth-subtitle {
@@ -635,19 +700,19 @@ export default function LoginPage() {
           align-items: flex-start;
           gap: 10px;
           padding: 10px 12px;
-          border-radius: 10px;
+          border-radius: 12px;
           font-size: 0.813rem;
           margin-bottom: 14px;
         }
 
         .banner-warning {
-          background-color: rgba(245, 158, 11, 0.15);
+          background-color: rgba(245, 158, 11, 0.12);
           border: 1px solid rgba(245, 158, 11, 0.3);
           color: #fbbf24;
         }
 
         .banner-error {
-          background-color: rgba(239, 68, 68, 0.15);
+          background-color: rgba(239, 68, 68, 0.12);
           border: 1px solid rgba(239, 68, 68, 0.3);
           color: #fca5a5;
         }
@@ -663,13 +728,13 @@ export default function LoginPage() {
           display: flex;
           flex-direction: column;
           gap: 14px;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
         }
 
         .form-field-group {
           display: flex;
           flex-direction: column;
-          gap: 5px;
+          gap: 6px;
         }
 
         .field-top-row {
@@ -682,16 +747,20 @@ export default function LoginPage() {
           font-size: 0.813rem;
           font-weight: 700;
           color: #e2e8f0;
+          letter-spacing: -0.01em;
         }
 
         .phone-validation-hint {
           font-size: 0.725rem;
           font-weight: 700;
           color: #34d399;
-          background: rgba(16, 185, 129, 0.15);
+          background: rgba(16, 185, 129, 0.14);
           padding: 2px 8px;
           border-radius: 9999px;
-          border: 1px solid rgba(16, 185, 129, 0.3);
+          border: 1px solid rgba(16, 185, 129, 0.35);
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
         }
 
         .forgot-link {
@@ -700,7 +769,7 @@ export default function LoginPage() {
           color: #38bdf8;
           text-decoration: none;
           padding: 2px 0;
-          transition: color 0.15s ease;
+          transition: all 0.15s ease;
         }
 
         .forgot-link:hover, .forgot-link:focus {
@@ -711,23 +780,23 @@ export default function LoginPage() {
         .composite-input {
           display: flex;
           align-items: center;
-          background: #080c16;
-          border: 1.5px solid rgba(255, 255, 255, 0.12);
-          border-radius: 12px;
+          background: rgba(7, 12, 23, 0.85);
+          border: 1.5px solid rgba(255, 255, 255, 0.1);
+          border-radius: 13px;
           overflow: hidden;
-          height: 46px;
-          transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+          height: 48px;
+          transition: all 0.2s ease;
         }
 
         .composite-focus {
-          border-color: #38bdf8;
-          background: #0a1122;
-          box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+          border-color: #38bdf8 !important;
+          background: rgba(10, 18, 36, 0.95);
+          box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25), 0 4px 18px rgba(56, 189, 248, 0.12);
         }
 
         .composite-error {
           border-color: #f87171 !important;
-          background: #140d12;
+          background: rgba(24, 12, 16, 0.95);
           box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22);
         }
 
@@ -744,21 +813,35 @@ export default function LoginPage() {
         .country-prefix-badge {
           display: flex;
           align-items: center;
-          gap: 5px;
-          padding: 0 11px;
+          gap: 6px;
+          padding: 0 12px;
           height: 100%;
-          background-color: #0f182c;
-          border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+          background-color: rgba(255, 255, 255, 0.035);
+          border-right: 1.5px solid rgba(255, 255, 255, 0.08);
           color: #cbd5e1;
           font-size: 0.813rem;
           font-weight: 700;
           user-select: none;
           flex-shrink: 0;
+          transition: background-color 0.2s ease;
+        }
+
+        .flag-icon {
+          font-size: 1rem;
+        }
+
+        .prefix-num {
+          color: #38bdf8;
+          font-weight: 800;
         }
 
         .prefix-email, .prefix-lock {
           color: #94a3b8;
-          padding: 0 12px;
+          padding: 0 13px;
+        }
+
+        .composite-focus .prefix-lock {
+          color: #38bdf8;
         }
 
         .styled-text-input {
@@ -768,7 +851,7 @@ export default function LoginPage() {
           background: transparent;
           border: none;
           outline: none;
-          font-size: 0.875rem;
+          font-size: 0.885rem;
           color: #f8fafc;
           font-weight: 500;
           min-width: 0;
@@ -777,34 +860,37 @@ export default function LoginPage() {
         .styled-text-input::placeholder {
           color: #64748b;
           font-weight: 400;
-          font-size: 0.813rem;
+          font-size: 0.825rem;
         }
 
         .styled-text-input:-webkit-autofill,
         .styled-text-input:-webkit-autofill:hover, 
         .styled-text-input:-webkit-autofill:focus {
           -webkit-text-fill-color: #f8fafc !important;
-          -webkit-box-shadow: 0 0 0px 1000px #080c16 inset !important;
-          box-shadow: 0 0 0px 1000px #080c16 inset !important;
+          -webkit-box-shadow: 0 0 0px 1000px #070c17 inset !important;
+          box-shadow: 0 0 0px 1000px #070c17 inset !important;
           transition: background-color 5000s ease-in-out 0s;
         }
 
         .eye-toggle-btn {
-          height: 44px;
-          width: 44px;
+          height: 38px;
+          width: 38px;
+          margin-right: 5px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: transparent;
           border: none;
+          border-radius: 9px;
           color: #94a3b8;
           cursor: pointer;
           flex-shrink: 0;
-          transition: color 0.15s ease;
+          transition: all 0.18s ease;
         }
 
         .eye-toggle-btn:hover {
-          color: #f8fafc;
+          color: #38bdf8;
+          background: rgba(56, 189, 248, 0.1);
         }
 
         .field-hint-text {
@@ -820,14 +906,16 @@ export default function LoginPage() {
           justify-content: center;
           gap: 8px;
           height: 48px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
+          border-radius: 13px;
+          background: linear-gradient(135deg, #0284c7 0%, #2563eb 55%, #1d4ed8 100%);
           color: #ffffff;
-          font-size: 0.925rem;
+          font-size: 0.935rem;
           font-weight: 700;
-          border: none;
+          border: 1px solid rgba(255, 255, 255, 0.18);
           cursor: pointer;
-          box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+          box-shadow: 
+            inset 0 1px 0 rgba(255, 255, 255, 0.25),
+            0 8px 24px -4px rgba(37, 99, 235, 0.45);
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           margin-top: 4px;
           touch-action: manipulation;
@@ -835,22 +923,26 @@ export default function LoginPage() {
 
         .primary-submit-btn:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5);
-          background: linear-gradient(135deg, #1d4ed8 0%, #0369a1 100%);
+          box-shadow: 
+            inset 0 1px 0 rgba(255, 255, 255, 0.35),
+            0 10px 28px -4px rgba(37, 99, 235, 0.6);
+          background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 55%, #1e40af 100%);
         }
 
         .primary-submit-btn:active:not(:disabled) {
-          transform: scale(0.98);
+          transform: scale(0.985);
         }
 
         .primary-submit-btn:disabled {
-          opacity: 0.75;
+          opacity: 0.8;
           cursor: not-allowed;
         }
 
         .btn-success-state {
-          background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-          box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important;
+          background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+          box-shadow: 
+            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+            0 8px 24px -4px rgba(16, 185, 129, 0.45) !important;
         }
 
         .spin-loader {
@@ -878,10 +970,9 @@ export default function LoginPage() {
           gap: 6px;
           flex-wrap: wrap;
           font-size: 0.813rem;
-          padding: 12px 0;
-          margin-bottom: 14px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 10px 0 12px 0;
+          margin-bottom: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         .register-prompt {
@@ -889,40 +980,51 @@ export default function LoginPage() {
         }
 
         .register-bold-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
           color: #38bdf8;
           font-weight: 700;
           text-decoration: none;
-          padding: 4px 0;
-          transition: color 0.15s ease;
+          padding: 3px 0;
+          transition: all 0.15s ease;
         }
 
         .register-bold-link:hover {
           color: #7dd3fc;
-          text-decoration: underline;
+        }
+
+        .register-arrow-icon {
+          transition: transform 0.15s ease;
+        }
+
+        .register-bold-link:hover .register-arrow-icon {
+          transform: translateX(2px);
         }
 
         /* Streamlined Dev Test Accounts Box */
         .quick-roles-container {
-          background: rgba(10, 16, 28, 0.6);
-          border: 1px dashed rgba(255, 255, 255, 0.12);
-          border-radius: 14px;
-          padding: 10px;
-          margin-bottom: 14px;
+          background: rgba(8, 14, 26, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 16px;
+          padding: 11px;
+          margin-bottom: 12px;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
 
         .quick-roles-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 8px;
-          padding: 0 2px;
+          margin-bottom: 9px;
+          padding: 0 3px;
         }
 
         .quick-roles-title {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 0.735rem;
+          font-size: 0.75rem;
           font-weight: 700;
           color: #cbd5e1;
         }
@@ -935,6 +1037,9 @@ export default function LoginPage() {
           font-size: 0.688rem;
           color: #64748b;
           font-weight: 600;
+          background: rgba(255, 255, 255, 0.04);
+          padding: 2px 7px;
+          border-radius: 6px;
         }
 
         .autofill-feedback-pill {
@@ -944,10 +1049,10 @@ export default function LoginPage() {
           font-size: 0.688rem;
           font-weight: 700;
           color: #34d399;
-          background: rgba(16, 185, 129, 0.15);
-          padding: 2px 7px;
+          background: rgba(16, 185, 129, 0.14);
+          padding: 2px 8px;
           border-radius: 9999px;
-          border: 1px solid rgba(16, 185, 129, 0.3);
+          border: 1px solid rgba(16, 185, 129, 0.35);
           animation: fadeIn 0.2s ease-in-out;
         }
 
@@ -959,7 +1064,7 @@ export default function LoginPage() {
         .quick-roles-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 6px;
+          gap: 7px;
         }
 
         /* Compact Role Chip */
@@ -967,50 +1072,55 @@ export default function LoginPage() {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 6px 9px;
-          border-radius: 9px;
-          background: #0c1424;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 7px 10px;
+          border-radius: 11px;
+          background: rgba(14, 22, 38, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.07);
           cursor: pointer;
           text-align: left;
-          transition: all 0.16s ease;
+          transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
           touch-action: manipulation;
-          min-height: 38px;
+          min-height: 42px;
         }
 
         .role-chip:hover {
-          background: #111a30;
-          border-color: rgba(255, 255, 255, 0.18);
+          background: rgba(20, 31, 54, 0.8);
+          border-color: rgba(255, 255, 255, 0.16);
+          transform: translateY(-1px);
         }
 
-        .role-chip-active {
-          box-shadow: 0 0 0 1.5px rgba(56, 189, 248, 0.4);
+        .role-chip:active {
+          transform: scale(0.97);
         }
 
         .chip-resident.role-chip-active {
           border-color: #38bdf8 !important;
-          background: rgba(56, 189, 248, 0.12) !important;
+          background: rgba(56, 189, 248, 0.14) !important;
+          box-shadow: 0 0 14px -2px rgba(56, 189, 248, 0.3);
         }
 
         .chip-staff.role-chip-active {
           border-color: #10b981 !important;
-          background: rgba(16, 185, 129, 0.12) !important;
+          background: rgba(16, 185, 129, 0.14) !important;
+          box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.3);
         }
 
         .chip-admin.role-chip-active {
           border-color: #818cf8 !important;
-          background: rgba(129, 140, 248, 0.12) !important;
+          background: rgba(129, 140, 248, 0.14) !important;
+          box-shadow: 0 0 14px -2px rgba(129, 140, 248, 0.3);
         }
 
         .chip-super.role-chip-active {
           border-color: #fbbf24 !important;
-          background: rgba(251, 191, 36, 0.12) !important;
+          background: rgba(251, 191, 36, 0.14) !important;
+          box-shadow: 0 0 14px -2px rgba(251, 191, 36, 0.3);
         }
 
         .role-icon-circle {
-          width: 22px;
-          height: 22px;
-          border-radius: 6px;
+          width: 24px;
+          height: 24px;
+          border-radius: 7px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1018,22 +1128,22 @@ export default function LoginPage() {
         }
 
         .icon-blue {
-          background: rgba(56, 189, 248, 0.15);
+          background: rgba(56, 189, 248, 0.18);
           color: #38bdf8;
         }
 
         .icon-emerald {
-          background: rgba(16, 185, 129, 0.15);
+          background: rgba(16, 185, 129, 0.18);
           color: #34d399;
         }
 
         .icon-indigo {
-          background: rgba(129, 140, 248, 0.15);
+          background: rgba(129, 140, 248, 0.18);
           color: #818cf8;
         }
 
         .icon-amber {
-          background: rgba(251, 191, 36, 0.15);
+          background: rgba(251, 191, 36, 0.18);
           color: #fbbf24;
         }
 
@@ -1045,7 +1155,7 @@ export default function LoginPage() {
         }
 
         .role-chip-title {
-          font-size: 0.725rem;
+          font-size: 0.735rem;
           font-weight: 700;
           color: #f8fafc;
           line-height: 1.15;
@@ -1077,42 +1187,52 @@ export default function LoginPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 5px;
+          padding-top: 4px;
+        }
+
+        .footer-security-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
           font-size: 0.688rem;
           color: #64748b;
-          padding-top: 8px;
+          font-weight: 500;
+        }
+
+        .footer-sep {
+          color: #334155;
         }
 
         .footer-shield {
-          color: #64748b;
+          color: #0284c7;
           flex-shrink: 0;
         }
 
-        /* Desktop Adjustments */
+        /* Responsive Breakpoints */
         @media (min-width: 481px) {
           .login-canvas-wrapper {
             padding: 36px 20px;
           }
 
           .login-unified-card {
-            border-radius: 24px;
+            border-radius: 26px;
             padding: 34px 28px;
           }
 
           .auth-title {
-            font-size: 1.65rem;
+            font-size: 1.75rem;
           }
         }
 
-        /* Ultra-compact phones (<= 360px) */
+        /* Compact phones (<= 360px) */
         @media (max-width: 360px) {
           .login-unified-card {
             padding: 20px 14px;
-            border-radius: 16px;
+            border-radius: 18px;
           }
 
           .auth-title {
-            font-size: 1.3rem;
+            font-size: 1.35rem;
           }
 
           .quick-roles-grid {
