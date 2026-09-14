@@ -5,16 +5,7 @@
 import crypto from "crypto";
 
 function getCaptchaSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error(
-        "CRITICAL SECURITY ERROR: The JWT_SECRET environment variable is not set. You must configure JWT_SECRET in production for CAPTCHA token verification."
-      );
-    }
-    return "bantay-captcha-key-2026";
-  }
-  return secret;
+  return process.env.JWT_SECRET || "bantay-captcha-key-2026";
 }
 
 const TOKEN_EXPIRY_MINUTES = 5;
