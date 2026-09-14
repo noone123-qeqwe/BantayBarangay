@@ -222,7 +222,7 @@ export default function LoginPage() {
             <div className="form-field-group">
               <div className="field-top-row">
                 <label htmlFor="identifier" className="field-label">
-                  Mobile number
+                  Mobile number or email
                 </label>
                 {phonePreview && (
                   <span className="phone-validation-hint">
@@ -452,21 +452,23 @@ export default function LoginPage() {
       </main>
 
       {/* ===============================================================
-          STYLES: Centered Luminous Authentication Card
+          STYLES: Centered Luminous Dark Theme Authentication Card
          =============================================================== */}
       <style jsx>{`
-        /* Canvas Wrapper */
+        /* Canvas Wrapper - Complete Dark Theme */
         .login-canvas-wrapper {
           min-height: calc(100vh - var(--header-height, 60px));
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 36px 20px;
-          background-color: #f8fafc;
+          background-color: var(--bg-app, #080c15);
           background-image: 
-            radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.07) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 55%);
+            radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.16) 0%, transparent 50%),
+            radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.14) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.09) 0%, transparent 55%);
+          background-size: 28px 28px, 100% 100%, 100% 100%, 100% 100%;
           position: relative;
           overflow: hidden;
         }
@@ -475,34 +477,34 @@ export default function LoginPage() {
         .ambient-sphere {
           position: absolute;
           border-radius: 9999px;
-          filter: blur(130px);
+          filter: blur(140px);
           pointer-events: none;
           z-index: 0;
-          opacity: 0.65;
+          opacity: 0.6;
         }
 
         .sphere-sapphire {
-          width: 480px;
-          height: 480px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.16) 0%, transparent 70%);
-          top: -60px;
-          left: -60px;
+          width: 520px;
+          height: 520px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, transparent 70%);
+          top: -80px;
+          left: -80px;
         }
 
         .sphere-cyan {
-          width: 440px;
-          height: 440px;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.14) 0%, transparent 70%);
-          bottom: -50px;
-          right: -50px;
+          width: 480px;
+          height: 480px;
+          background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, transparent 70%);
+          bottom: -60px;
+          right: -60px;
         }
 
         .sphere-emerald {
-          width: 380px;
-          height: 380px;
-          background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+          width: 420px;
+          height: 420px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, transparent 70%);
           top: 35%;
-          left: 45%;
+          left: 42%;
         }
 
         /* Centered Container */
@@ -521,13 +523,14 @@ export default function LoginPage() {
           display: flex;
           flex-direction: column;
           border-radius: 24px;
-          background: rgba(14, 21, 38, 0.9);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1.5px solid rgba(255, 255, 255, 0.1);
+          background: rgba(14, 21, 38, 0.92);
+          backdrop-filter: blur(28px);
+          -webkit-backdrop-filter: blur(28px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow: 
-            0 25px 50px -12px rgba(0, 0, 0, 0.6),
-            0 0 0 1px rgba(255, 255, 255, 0.06);
+            0 25px 60px -15px rgba(0, 0, 0, 0.8),
+            0 0 40px -10px rgba(56, 189, 248, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
           padding: 38px 34px;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -700,6 +703,15 @@ export default function LoginPage() {
         .styled-text-input::placeholder {
           color: #64748b;
           font-weight: 400;
+        }
+
+        .styled-text-input:-webkit-autofill,
+        .styled-text-input:-webkit-autofill:hover, 
+        .styled-text-input:-webkit-autofill:focus {
+          -webkit-text-fill-color: #f8fafc !important;
+          -webkit-box-shadow: 0 0 0px 1000px #080c15 inset !important;
+          box-shadow: 0 0 0px 1000px #080c15 inset !important;
+          transition: background-color 5000s ease-in-out 0s;
         }
 
         .eye-toggle-btn {
