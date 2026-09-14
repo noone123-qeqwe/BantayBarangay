@@ -188,12 +188,6 @@ export default function LoginPage() {
       <main className="login-center-container">
         <div className={`login-unified-card ${shake ? "card-shake" : ""}`}>
           
-          {/* Top Brand Pill (Requested by user: BantayBarangay pill) */}
-          <div className="civic-portal-pill">
-            <ShieldCheck size={14} className="civic-pill-shield" />
-            <span>BantayBarangay</span>
-          </div>
-
           {/* Intro Heading */}
           <div className="auth-card-header">
             <h2 className="auth-title">Welcome back</h2>
@@ -544,27 +538,6 @@ export default function LoginPage() {
           20%, 80% { transform: translate3d(3px, 0, 0); }
           30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
           40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        /* Top Brand Pill */
-        .civic-portal-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          padding: 5px 14px;
-          border-radius: 9999px;
-          background: #eff6ff;
-          border: 1.5px solid #bfdbfe;
-          color: #1d4ed8;
-          font-size: 0.775rem;
-          font-weight: 800;
-          letter-spacing: 0.03em;
-          margin-bottom: 16px;
-          width: fit-content;
-        }
-
-        .civic-pill-shield {
-          color: #2563eb;
         }
 
         /* Intro Header */

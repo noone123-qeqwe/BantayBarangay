@@ -99,38 +99,32 @@ export default function DashboardPage() {
   };
 
   if (loading || !user) {
+    if (!user && !loading) return null;
     return (
       <div
         style={{
           minHeight: "calc(100vh - var(--header-height, 60px))",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "100px 20px",
-          textAlign: "center",
           backgroundColor: "#f8fafc",
         }}
       >
         <div
           style={{
-            width: "56px",
-            height: "56px",
-            borderRadius: "14px",
-            background: "linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#ffffff",
-            boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)",
-            marginBottom: "16px",
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            border: "3px solid #e2e8f0",
+            borderTopColor: "#2563eb",
+            animation: "dashboardSpin 0.7s linear infinite",
           }}
-        >
-          <ShieldCheck size={28} />
-        </div>
-        <div style={{ fontSize: "1.05rem", fontWeight: 600, color: "#64748b" }}>
-          Loading your civic dashboard...
-        </div>
+        />
+        <style jsx>{`
+          @keyframes dashboardSpin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -188,7 +182,7 @@ export default function DashboardPage() {
             {isResident && (
               <div className="role-pill pill-resident">
                 <Shield size={12} />
-                <span>verified resident portal</span>
+                <span>verified resident</span>
               </div>
             )}
             {isStaff && (
