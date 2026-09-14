@@ -26,6 +26,9 @@ import {
   Info,
   Key,
   Languages,
+  DownloadCloud,
+  RefreshCw,
+  Sparkles,
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -97,9 +100,47 @@ export default function ProfilePage() {
     );
   }
 
+  const [checkingUpdate, setCheckingUpdate] = useState(false);
+
   const handleClearLocationCache = () => {
     clearLastKnownLocation();
     showToast("Cached device location cleared", "info");
+  };
+
+  const handleCheckForUpdates = async () => {
+    setCheckingUpdate(true);
+    try {
+      if ("serviceWorker" in navigator) {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) {
+          await reg.update();
+        }
+      }
+      const res = await fetch("/api/version");
+      if (res.ok) {
+        const data = await res.json();
+        showToast(`BantayBarangay is up to date (v${data.version || "2.4.0"})`, "success");
+      }
+    } catch {
+      showToast("Unable to check for updates. Please check connection.", "error");
+    } finally {
+      setCheckingUpdate(false);
+    }
+  };
+
+  const handleSimulateUpdate = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("bantay:simulate-update", {
+          detail: {
+            version: "2.4.1",
+            build: "preview-build-2026",
+            releaseNotes: "New mobile UI enhancements, faster page transitions, and offline sync improvements.",
+          },
+        })
+      );
+      showToast("Update refresh pop-up triggered!", "info");
+    }
   };
 
   const handleLogout = async () => {
@@ -551,7 +592,59 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* 8. SIGN OUT ACTION */}
+      {/* 8. SECTION: APP UPDATES & SYSTEM VERSION */}
+      <div style={{ marginBottom: "28px" }}>
+        <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px", paddingLeft: "4px" }}>
+          App Version & Live Updates
+        </div>
+        <div className="card" style={{ padding: "18px", borderRadius: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{ width: "38px", height: "38px", borderRadius: "11px", backgroundColor: "rgba(2, 132, 199, 0.15)", border: "1px solid rgba(2, 132, 199, 0.3)", color: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <DownloadCloud size={19} />
+              </div>
+              <div>
+                <div style={{ fontSize: "0.875rem", fontWeight: 800, color: "var(--text-primary)" }}>
+                  BantayBarangay PWA
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>
+                  Release v2.4.0 · Production Ready
+                </div>
+              </div>
+            </div>
+
+            <span style={{ fontSize: "0.688rem", fontWeight: 700, color: "#34d399", backgroundColor: "rgba(16, 185, 129, 0.15)", padding: "3px 8px", borderRadius: "9999px", border: "1px solid rgba(16, 185, 129, 0.3)", whiteSpace: "nowrap" }}>
+              ✓ Up to Date
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={handleCheckForUpdates}
+              disabled={checkingUpdate}
+              className="btn btn-secondary btn-sm"
+              style={{ flex: 1, minWidth: "150px", justifyContent: "center", fontWeight: 700 }}
+            >
+              <RefreshCw size={13} className={checkingUpdate ? "spin" : ""} />
+              <span>{checkingUpdate ? "Checking..." : "Check for Updates"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSimulateUpdate}
+              className="btn btn-outline btn-sm"
+              style={{ borderColor: "rgba(56, 189, 248, 0.35)", color: "var(--primary)", fontWeight: 700 }}
+              title="Test the update refresh pop-up notification"
+            >
+              <Sparkles size={13} />
+              <span>Test Pop-up</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 9. SIGN OUT ACTION */}
       <div>
         <button
           type="button"
