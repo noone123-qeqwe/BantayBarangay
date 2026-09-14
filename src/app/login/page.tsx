@@ -20,15 +20,16 @@ import {
   User,
   Crown,
   WifiOff,
-  ChevronDown,
-  ChevronUp,
   Shield,
   ArrowRight,
   MapPin,
-  Clock,
   Check,
   Activity,
   FileCheck2,
+  Zap,
+  Building2,
+  Wrench,
+  Clock,
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -43,16 +44,16 @@ export default function LoginPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [shake, setShake] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
-  const [showDemoDrawer, setShowDemoDrawer] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
-  // Field focus states for visual highlights
+  // Field focus states
   const [isIdentifierFocused, setIsIdentifierFocused] = useState(false);
   const [isPassFocused, setIsPassFocused] = useState(false);
 
   const identifierInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-detect whether user is typing an email or phone number
+  // Smart input detection
   const isEmailInput = identifier.includes("@");
 
   // If already logged in, seamlessly forward to dashboard
@@ -70,7 +71,7 @@ export default function LoginPage() {
     };
     const handleOffline = () => {
       setIsOffline(true);
-      setError("Unable to connect. Please check your internet connection and try again.");
+      setError("Unable to connect. Please check your internet connection.");
     };
 
     if (typeof window !== "undefined") {
@@ -103,18 +104,16 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check offline state
     if (typeof window !== "undefined" && !window.navigator.onLine) {
-      setError("Unable to connect. Please check your internet connection and try again.");
+      setError("Unable to connect. Please check your internet connection.");
       triggerShake();
       return;
     }
 
     const trimmedIdentifier = identifier.trim();
 
-    // Field-level validation
     if (!trimmedIdentifier) {
-      setError("Please enter your mobile number or email address.");
+      setError("Please enter your mobile number or email.");
       identifierInputRef.current?.focus();
       triggerShake();
       return;
@@ -127,12 +126,11 @@ export default function LoginPage() {
       return;
     }
 
-    // If looks like a phone number but fails Philippine format
     const hasOnlyPhoneChars = /^[\d\s\+\-\(\)]+$/.test(trimmedIdentifier);
     if (hasOnlyPhoneChars && !trimmedIdentifier.includes("@")) {
       const normalized = normalizePhoneNumber(trimmedIdentifier);
       if (!normalized) {
-        setError("Please enter a valid Philippine mobile number (e.g. 0917 123 4567) or staff email.");
+        setError("Please enter a valid Philippine mobile number (e.g. 0917 123 4567) or email.");
         identifierInputRef.current?.focus();
         triggerShake();
         return;
@@ -156,13 +154,13 @@ export default function LoginPage() {
 
         const rawError = (result.error || "").toLowerCase();
         if (rawError.includes("invalid") || rawError.includes("credential") || rawError.includes("401")) {
-          setError("Incorrect mobile number/email or password. Please check your credentials.");
+          setError("Incorrect mobile number/email or password. Please try again.");
         } else if (rawError.includes("deactivated")) {
           setError("Your account is currently deactivated. Please contact your Barangay Hall.");
         } else if (rawError.includes("too many") || rawError.includes("rate") || rawError.includes("429")) {
           setError("Too many login attempts. Please wait a moment and try again.");
         } else if (rawError.includes("network") || rawError.includes("fetch") || rawError.includes("connection")) {
-          setError("Unable to connect. Please check your internet connection and try again.");
+          setError("Unable to connect. Please check your internet connection.");
         } else {
           setError(result.error || "Incorrect credentials. Please try again.");
         }
@@ -170,7 +168,7 @@ export default function LoginPage() {
     } catch {
       setStatus("error");
       triggerShake();
-      setError("Unable to connect. Please check your internet connection and try again.");
+      setError("Unable to connect. Please check your internet connection.");
     }
   };
 
@@ -179,196 +177,216 @@ export default function LoginPage() {
     setTimeout(() => setShake(false), 500);
   };
 
-  const handleQuickLogin = (demoIdentifier: string) => {
+  const handleQuickLogin = (demoIdentifier: string, roleName: string) => {
     setIdentifier(demoIdentifier);
     setPassword("Password123!");
+    setSelectedRole(roleName);
     setError(null);
     setStatus("idle");
   };
 
   return (
-    <div className="login-screen-wrapper">
-      {/* Decorative ambient background glows */}
-      <div className="ambient-glow ambient-glow-1" />
-      <div className="ambient-glow ambient-glow-2" />
-      <div className="ambient-glow ambient-glow-3" />
+    <div className="login-root-container">
+      {/* Dynamic Background Mesh */}
+      <div className="bg-mesh-glow glow-primary" />
+      <div className="bg-mesh-glow glow-secondary" />
+      <div className="bg-mesh-glow glow-accent" />
 
-      <main className="login-container">
-        {/* Dual-Panel Showcase Card */}
-        <div className={`split-card-wrapper ${shake ? "shake-card" : ""}`}>
-          
-          {/* ========================================================
-              LEFT PANEL: Brand Showcase & Civic Highlights (Desktop)
-             ======================================================== */}
-          <section className="showcase-panel">
-            {/* Subtle background mesh & decorative grid */}
-            <div className="showcase-grid-bg" />
-            <div className="showcase-glow" />
+      <div className="login-full-wrapper">
+        {/* ===============================================================
+            LEFT SECTION: Immersive Civic Intelligence Showcase (Hero)
+           =============================================================== */}
+        <section className="civic-showcase-panel">
+          {/* Subtle blueprint grid overlay */}
+          <div className="showcase-grid-overlay" />
 
-            <div className="showcase-content">
-              {/* Header Badge & Brand */}
-              <div className="showcase-brand-header">
-                <div className="showcase-logo-box">
-                  <img
-                    src="/logo.png"
-                    alt="BantayBarangay Official Logo"
-                    width={46}
-                    height={46}
-                    className="showcase-logo"
-                  />
-                </div>
-                <div>
-                  <div className="showcase-brand-title">BantayBarangay</div>
-                  <div className="showcase-brand-pill">
-                    <Shield size={11} />
-                    <span>Civic Action Platform</span>
-                  </div>
-                </div>
+          {/* Top Brand Header */}
+          <div className="showcase-header">
+            <div className="showcase-brand-mark">
+              <div className="logo-glow-container">
+                <img
+                  src="/logo.png"
+                  alt="BantayBarangay Official Logo"
+                  width={48}
+                  height={48}
+                  className="brand-logo-img"
+                />
               </div>
-
-              {/* Showcase Heading */}
-              <div className="showcase-hero-text">
-                <h2 className="showcase-headline">
-                  Empowering communities through <span className="text-highlight">rapid action</span>.
-                </h2>
-                <p className="showcase-subtext">
-                  Directly report civic issues, monitor repair timelines in real-time, and verify completed solutions together.
-                </p>
-              </div>
-
-              {/* 3 Core Value Pillars */}
-              <div className="showcase-features">
-                <div className="feature-item">
-                  <div className="feature-icon-box blue-box">
-                    <MapPin size={18} />
-                  </div>
-                  <div className="feature-text">
-                    <strong>Pinpoint GPS Geotagging</strong>
-                    <span>Instant coordinate lock & duplicate report prevention.</span>
-                  </div>
+              <div>
+                <h2 className="brand-name">BantayBarangay</h2>
+                <div className="brand-badge">
+                  <span className="badge-live-pulse" />
+                  <span>Civic Infrastructure Platform</span>
                 </div>
-
-                <div className="feature-item">
-                  <div className="feature-icon-box emerald-box">
-                    <Activity size={18} />
-                  </div>
-                  <div className="feature-text">
-                    <strong>Transparent Status Timelines</strong>
-                    <span>Track progress from triage to agency assignment and resolution.</span>
-                  </div>
-                </div>
-
-                <div className="feature-item">
-                  <div className="feature-icon-box amber-box">
-                    <FileCheck2 size={18} />
-                  </div>
-                  <div className="feature-text">
-                    <strong>Citizen Verification Loop</strong>
-                    <span>Residents confirm with photo proof before reports are closed.</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Simulated Live Ticket Card */}
-              <div className="showcase-live-card">
-                <div className="live-card-top">
-                  <span className="live-tag">
-                    <span className="pulse-dot" />
-                    Live Community Proof
-                  </span>
-                  <span className="resolved-status-badge">
-                    <Check size={12} strokeWidth={3} />
-                    Resolved
-                  </span>
-                </div>
-                <div className="live-card-title">Streetlight Power Restored</div>
-                <div className="live-card-meta">
-                  <span>Verified by Resident</span> • <span>Completed in 18 hrs</span>
-                </div>
-              </div>
-
-              {/* Bottom Quote / Security Note */}
-              <div className="showcase-footer">
-                <ShieldCheck size={15} className="footer-shield-icon" />
-                <span>Encrypted & Protected Community Civic Network</span>
               </div>
             </div>
-          </section>
+          </div>
 
-          {/* ========================================================
-              RIGHT PANEL: Focused Authentication Form
-             ======================================================== */}
-          <section className="form-panel">
-            {/* Mobile Header (Shown on small screens) */}
-            <div className="mobile-header">
+          {/* Hero Typography */}
+          <div className="showcase-hero-body">
+            <div className="hero-pill-tag">
+              <Sparkles size={13} className="sparkle-svg" />
+              <span>Smart Community Governance</span>
+            </div>
+            <h1 className="hero-title">
+              Empowering communities through <span className="hero-highlight">transparent action</span>.
+            </h1>
+            <p className="hero-description">
+              Report infrastructure hazards, track emergency responses in real-time, and verify completed municipal fixes together.
+            </p>
+          </div>
+
+          {/* Live Community Activity HUD Card */}
+          <div className="showcase-live-hud">
+            <div className="hud-header">
+              <div className="hud-title-wrap">
+                <Activity size={15} className="hud-pulse-icon" />
+                <span className="hud-label">Live Municipal Dispatch</span>
+              </div>
+              <span className="hud-status-badge">
+                <Check size={12} strokeWidth={3} />
+                <span>Resolved</span>
+              </span>
+            </div>
+            
+            <div className="hud-body">
+              <div className="hud-ticket-title">Streetlight Cable Hazard Repaired</div>
+              <div className="hud-ticket-details">
+                <span className="hud-agency">
+                  <Wrench size={12} />
+                  <span>Barangay Engineering Team</span>
+                </span>
+                <span className="hud-time">
+                  <Clock size={12} />
+                  <span>Verified in 18 hrs</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="hud-footer">
+              <div className="citizen-verified-tag">
+                <CheckCircle2 size={13} className="check-verified" />
+                <span>Confirmed & Verified by Resident</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 3 Core Value Pillars */}
+          <div className="showcase-pillars">
+            <div className="pillar-item">
+              <div className="pillar-icon-box icon-blue">
+                <MapPin size={18} />
+              </div>
+              <div className="pillar-text">
+                <h4>Precise GPS Pinpointing</h4>
+                <p>Instant coordinates and automated duplicate detection.</p>
+              </div>
+            </div>
+
+            <div className="pillar-item">
+              <div className="pillar-icon-box icon-teal">
+                <Zap size={18} />
+              </div>
+              <div className="pillar-text">
+                <h4>Real-Time Status Progression</h4>
+                <p>Track issues from review to agency dispatch and completion.</p>
+              </div>
+            </div>
+
+            <div className="pillar-item">
+              <div className="pillar-icon-box icon-amber">
+                <FileCheck2 size={18} />
+              </div>
+              <div className="pillar-text">
+                <h4>Resident Verification Loop</h4>
+                <p>You confirm with photo proof before reports are closed.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Security Assurance */}
+          <div className="showcase-bottom-seal">
+            <ShieldCheck size={16} className="seal-icon" />
+            <span>256-Bit SSL Encrypted • Government & Civic Data Privacy Compliant</span>
+          </div>
+        </section>
+
+        {/* ===============================================================
+            RIGHT SECTION: Modern, Spacious Authentication Form
+           =============================================================== */}
+        <section className="civic-auth-panel">
+          <div className={`auth-inner-content ${shake ? "shake-effect" : ""}`}>
+            
+            {/* Mobile Header Branding (Visible on mobile/tablets) */}
+            <div className="mobile-brand-banner">
               <img
                 src="/logo.png"
                 alt="BantayBarangay Logo"
-                width={52}
-                height={52}
-                className="mobile-logo"
+                width={50}
+                height={50}
+                className="mobile-logo-img"
               />
-              <span className="civic-portal-pill">
+              <span className="mobile-portal-badge">
                 <Shield size={12} />
                 <span>Official Civic Portal</span>
               </span>
             </div>
 
             {/* Form Title & Subtitle */}
-            <div className="form-heading-group">
-              <div className="desktop-badge">
+            <div className="auth-header">
+              <div className="portal-badge-desktop">
                 <Shield size={12} />
                 <span>Official Civic Portal</span>
               </div>
-              <h1 className="form-title">Welcome Back</h1>
-              <p className="form-subtitle">
-                Sign in to report issues, track tickets, and view updates.
+              <h2 className="auth-title">Welcome Back</h2>
+              <p className="auth-subtitle">
+                Sign in to report issues, track tickets, or access barangay operations.
               </p>
             </div>
 
-            {/* Network Offline Warning */}
+            {/* Offline Alert */}
             {isOffline && (
-              <div className="alert-box alert-warning" role="alert">
-                <WifiOff size={18} className="alert-icon" />
+              <div className="status-banner banner-warning" role="alert">
+                <WifiOff size={18} className="banner-icon" />
                 <span>You appear to be offline. Please check your internet connection.</span>
               </div>
             )}
 
-            {/* Friendly Error Alert */}
+            {/* Error Alert */}
             {error && (
-              <div className="alert-box alert-danger" role="alert" aria-live="assertive">
-                <AlertCircle size={18} className="alert-icon" />
-                <div className="alert-text-wrapper">
-                  <span className="alert-title">Sign In Failed</span>
-                  <span className="alert-description">{error}</span>
+              <div className="status-banner banner-error" role="alert">
+                <AlertCircle size={18} className="banner-icon" />
+                <div className="banner-text">
+                  <strong>Sign In Failed</strong>
+                  <span>{error}</span>
                 </div>
               </div>
             )}
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} noValidate className="login-form">
+            {/* Main Login Form */}
+            <form onSubmit={handleSubmit} noValidate className="auth-form">
               
-              {/* 1. Mobile Number or Email */}
-              <div className="form-group">
-                <div className="label-row">
+              {/* Field 1: Mobile Number or Email */}
+              <div className="form-field-group">
+                <div className="field-label-row">
                   <label htmlFor="identifier" className="field-label">
                     Mobile Number or Email
                   </label>
                   {phonePreview && (
-                    <span className="format-preview" aria-live="polite">
+                    <span className="phone-format-pill">
                       ✓ {phonePreview}
                     </span>
                   )}
                 </div>
 
-                <div className={`input-container ${isIdentifierFocused ? "is-focused" : ""} ${error && !identifier.trim() ? "is-error" : ""}`}>
+                <div className={`field-input-box ${isIdentifierFocused ? "focused" : ""} ${error && !identifier.trim() ? "has-error" : ""}`}>
                   {!isEmailInput ? (
-                    <div className="input-prefix-flag" title="Philippines (+63)">
+                    <div className="flag-prefix-pill" title="Philippines Country Code (+63)">
                       <span className="flag-emoji" aria-hidden="true">🇵🇭</span>
                       <span className="country-code">+63</span>
                     </div>
                   ) : (
-                    <div className="input-prefix-icon">
+                    <div className="email-prefix-icon">
                       <Mail size={18} />
                     </div>
                   )}
@@ -380,7 +398,7 @@ export default function LoginPage() {
                     type={isEmailInput ? "email" : "tel"}
                     inputMode={isEmailInput ? "email" : "tel"}
                     autoComplete="username"
-                    className="native-input"
+                    className="core-input"
                     placeholder="09XXXXXXXXX or staff@bantay.ph"
                     value={identifier}
                     onChange={(e) => {
@@ -393,36 +411,31 @@ export default function LoginPage() {
                     disabled={status === "loading" || status === "success"}
                     aria-required="true"
                     aria-invalid={!!error && !identifier.trim()}
-                    aria-describedby="identifier-hint"
                   />
 
-                  <div className="input-suffix-icon">
+                  <div className="field-suffix-icon">
                     {isEmailInput ? <Mail size={18} /> : <Smartphone size={18} />}
                   </div>
                 </div>
 
-                <p id="identifier-hint" className="field-helper">
-                  Enter your 11-digit mobile number or registered barangay account.
+                <p className="field-hint-text">
+                  Enter your 11-digit mobile number or official barangay email account.
                 </p>
               </div>
 
-              {/* 2. Password Field */}
-              <div className="form-group">
-                <div className="label-row">
+              {/* Field 2: Password */}
+              <div className="form-field-group">
+                <div className="field-label-row">
                   <label htmlFor="password" className="field-label">
                     Password
                   </label>
-                  <NextLink
-                    href="/forgot-password"
-                    className="forgot-link"
-                    tabIndex={0}
-                  >
+                  <NextLink href="/forgot-password" className="forgot-password-link">
                     Forgot Password?
                   </NextLink>
                 </div>
 
-                <div className={`input-container ${isPassFocused ? "is-focused" : ""} ${error && !password ? "is-error" : ""}`}>
-                  <div className="input-prefix-icon">
+                <div className={`field-input-box ${isPassFocused ? "focused" : ""} ${error && !password ? "has-error" : ""}`}>
+                  <div className="password-prefix-icon">
                     <Lock size={18} />
                   </div>
 
@@ -432,7 +445,7 @@ export default function LoginPage() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
-                    className="native-input native-input-masked"
+                    className="core-input"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => {
@@ -450,211 +463,183 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="password-toggle-btn"
+                    className="eye-toggle-button"
                     aria-label={showPassword ? "Hide password" : "Show password"}
-                    title={showPassword ? "Hide password" : "Show password"}
                     disabled={status === "loading" || status === "success"}
-                    tabIndex={0}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
 
-              {/* 3. Multi-State Submit Button */}
+              {/* Sign In Primary Action Button */}
               <button
                 type="submit"
                 disabled={status === "loading" || status === "success"}
-                className={`primary-submit-btn ${status === "success" ? "btn-state-success" : ""}`}
-                aria-live="polite"
+                className={`auth-submit-btn ${status === "success" ? "btn-success" : ""}`}
               >
                 {status === "loading" && (
                   <>
-                    <Loader2 size={20} className="spin-animation" />
-                    <span>Signing in...</span>
+                    <Loader2 size={19} className="animate-spin" />
+                    <span>Signing you in...</span>
                   </>
                 )}
 
                 {status === "success" && (
                   <>
-                    <CheckCircle2 size={20} className="success-bounce" />
+                    <CheckCircle2 size={19} className="animate-bounce-in" />
                     <span>Login Successful</span>
                   </>
                 )}
 
                 {status !== "loading" && status !== "success" && (
                   <>
-                    <LogIn size={20} />
+                    <LogIn size={19} />
                     <span>Sign In</span>
                   </>
                 )}
               </button>
             </form>
 
-            {/* Registration Callout */}
-            <div className="register-callout">
-              <span className="register-prompt">Don't have an account?</span>{" "}
-              <NextLink href="/register" className="register-link">
-                Create an account
-                <ArrowRight size={14} className="link-arrow" />
+            {/* Registration Navigation */}
+            <div className="auth-footer-callout">
+              <span>Don't have an account yet?</span>{" "}
+              <NextLink href="/register" className="callout-link">
+                <span>Create an account</span>
+                <ArrowRight size={14} className="arrow-slide" />
               </NextLink>
             </div>
 
-            {/* Demo Accounts Pill & Drawer (Convenient for evaluators & testing) */}
-            <div className="demo-accordion-card">
-              <button
-                type="button"
-                onClick={() => setShowDemoDrawer(!showDemoDrawer)}
-                className="demo-accordion-toggle"
-                aria-expanded={showDemoDrawer}
-              >
-                <div className="demo-toggle-left">
-                  <Sparkles size={14} className="sparkle-icon" />
-                  <span>One-Click Demo Accounts</span>
-                </div>
-                {showDemoDrawer ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </button>
+            {/* Quick Demo Accounts Bar (Convenient 1-Click Role Selector) */}
+            <div className="quick-demo-container">
+              <div className="demo-bar-header">
+                <Sparkles size={13} className="sparkle-colored" />
+                <span>Quick Test Roles (One-Click Auto-Fill)</span>
+              </div>
+              
+              <div className="demo-chips-grid">
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin("09204443333", "Resident")}
+                  className={`role-chip ${selectedRole === "Resident" ? "chip-active" : ""}`}
+                >
+                  <User size={13} className="chip-icon icon-resident" />
+                  <span className="chip-name">Resident</span>
+                  <span className="chip-sub">Juan</span>
+                </button>
 
-              {showDemoDrawer && (
-                <div className="demo-grid-body">
-                  <p className="demo-hint-text">
-                    Select any role to autofill test credentials:
-                  </p>
-                  <div className="demo-buttons-grid">
-                    <button
-                      type="button"
-                      onClick={() => handleQuickLogin("09204443333")}
-                      className="demo-role-btn"
-                    >
-                      <User size={14} className="role-icon resident-icon" />
-                      <div className="role-text">
-                        <span className="role-title">Resident</span>
-                        <span className="role-meta">Juan Dela Cruz</span>
-                      </div>
-                    </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin("09193332222", "Staff")}
+                  className={`role-chip ${selectedRole === "Staff" ? "chip-active" : ""}`}
+                >
+                  <Wrench size={13} className="chip-icon icon-staff" />
+                  <span className="chip-name">Staff</span>
+                  <span className="chip-sub">Alex</span>
+                </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleQuickLogin("09193332222")}
-                      className="demo-role-btn"
-                    >
-                      <ShieldCheck size={14} className="role-icon staff-icon" />
-                      <div className="role-text">
-                        <span className="role-title">Barangay Staff</span>
-                        <span className="role-meta">Alex Santos</span>
-                      </div>
-                    </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin("09182221111", "Admin")}
+                  className={`role-chip ${selectedRole === "Admin" ? "chip-active" : ""}`}
+                >
+                  <Building2 size={13} className="chip-icon icon-admin" />
+                  <span className="chip-name">Admin</span>
+                  <span className="chip-sub">Roberto</span>
+                </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleQuickLogin("09182221111")}
-                      className="demo-role-btn"
-                    >
-                      <Crown size={14} className="role-icon admin-icon" />
-                      <div className="role-text">
-                        <span className="role-title">Barangay Admin</span>
-                        <span className="role-meta">Roberto Tan</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleQuickLogin("09171110000")}
-                      className="demo-role-btn"
-                    >
-                      <Crown size={14} className="role-icon super-icon" />
-                      <div className="role-text">
-                        <span className="role-title">Super Admin</span>
-                        <span className="role-meta">System Operator</span>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              )}
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin("09171110000", "Super Admin")}
+                  className={`role-chip ${selectedRole === "Super Admin" ? "chip-active" : ""}`}
+                >
+                  <Crown size={13} className="chip-icon icon-super" />
+                  <span className="chip-name">Super</span>
+                  <span className="chip-sub">Operator</span>
+                </button>
+              </div>
             </div>
 
-            {/* Security Trust Footer */}
-            <footer className="form-trust-footer">
-              <ShieldCheck size={14} className="trust-icon" />
+            {/* End-to-End Security Seal */}
+            <div className="security-seal-row">
+              <ShieldCheck size={14} className="seal-shield" />
               <span>Official Civic Platform • 256-Bit SSL Encrypted</span>
-            </footer>
-          </section>
+            </div>
+          </div>
+        </section>
 
-        </div>
-      </main>
+      </div>
 
-      {/* ========================================================
-          STYLES (Responsive Split-Screen Layout)
-         ======================================================== */}
+      {/* ===============================================================
+          STYLES: High-Impact, Responsive Modern Architecture
+         =============================================================== */}
       <style jsx>{`
-        .login-screen-wrapper {
+        .login-root-container {
           min-height: calc(100vh - var(--header-height, 64px));
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 32px 20px;
+          padding: 40px 24px;
+          background: #f1f5f9;
           position: relative;
           overflow: hidden;
-          background: #f8fafc;
         }
 
-        /* Ambient Dynamic Glows */
-        .ambient-glow {
+        /* Ambient Dynamic Background Meshes */
+        .bg-mesh-glow {
           position: absolute;
           border-radius: 9999px;
-          filter: blur(90px);
+          filter: blur(100px);
           pointer-events: none;
           z-index: 0;
+          opacity: 0.6;
         }
 
-        .ambient-glow-1 {
-          width: 440px;
-          height: 440px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.18) 0%, transparent 70%);
-          top: -120px;
-          left: 10%;
+        .glow-primary {
+          width: 520px;
+          height: 520px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, transparent 70%);
+          top: -140px;
+          left: 5%;
         }
 
-        .ambient-glow-2 {
-          width: 480px;
-          height: 480px;
-          background: radial-gradient(circle, rgba(13, 148, 136, 0.14) 0%, transparent 70%);
-          bottom: -100px;
+        .glow-secondary {
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(13, 148, 136, 0.18) 0%, transparent 70%);
+          bottom: -120px;
           right: 5%;
         }
 
-        .ambient-glow-3 {
-          width: 320px;
-          height: 320px;
-          background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
-          top: 40%;
-          right: 35%;
+        .glow-accent {
+          width: 360px;
+          height: 360px;
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+          top: 35%;
+          left: 45%;
         }
 
-        .login-container {
+        /* Full Outer Card Container */
+        .login-full-wrapper {
           width: 100%;
-          max-width: 1020px;
-          margin: 0 auto;
-          position: relative;
-          z-index: 1;
-        }
-
-        /* Dual-Panel Card Wrapper */
-        .split-card-wrapper {
+          max-width: 1120px;
+          min-height: 640px;
           display: grid;
           grid-template-columns: 1.15fr 1fr;
           background: #ffffff;
-          border: 1px solid #e2e8f0;
+          border: 1px solid #cbd5e1;
           border-radius: 28px;
-          box-shadow: 0 20px 48px -12px rgba(15, 23, 42, 0.12), 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.14), 0 8px 24px -4px rgba(15, 23, 42, 0.06);
           overflow: hidden;
-          animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+          position: relative;
+          z-index: 1;
+          animation: slideUpFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        @keyframes fadeInUp {
+        @keyframes slideUpFade {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(22px);
           }
           to {
             opacity: 1;
@@ -662,7 +647,7 @@ export default function LoginPage() {
           }
         }
 
-        .shake-card {
+        .shake-effect {
           animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
 
@@ -673,132 +658,241 @@ export default function LoginPage() {
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* ----------------------------------------------------
+        /* -----------------------------------------------------------
            LEFT SHOWCASE PANEL
-           ---------------------------------------------------- */
-        .showcase-panel {
-          position: relative;
-          background: linear-gradient(145deg, #091329 0%, #0d1e3d 45%, #152b55 100%);
+           ----------------------------------------------------------- */
+        .civic-showcase-panel {
+          background: linear-gradient(150deg, #091224 0%, #0d1b38 45%, #13274e 100%);
           color: #ffffff;
-          padding: 44px 38px;
+          padding: 48px 44px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+          position: relative;
           overflow: hidden;
         }
 
-        .showcase-grid-bg {
+        .showcase-grid-overlay {
           position: absolute;
           inset: 0;
-          background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-          background-size: 24px 24px;
-          opacity: 0.7;
+          background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+          background-size: 26px 26px;
+          opacity: 0.65;
           pointer-events: none;
         }
 
-        .showcase-glow {
-          position: absolute;
-          width: 300px;
-          height: 300px;
-          border-radius: 9999px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.4) 0%, transparent 70%);
-          top: -60px;
-          left: -60px;
-          filter: blur(60px);
-          pointer-events: none;
-        }
-
-        .showcase-content {
+        .showcase-header {
           position: relative;
           z-index: 2;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
         }
 
-        .showcase-brand-header {
+        .showcase-brand-mark {
           display: flex;
           align-items: center;
           gap: 14px;
-          margin-bottom: 28px;
         }
 
-        .showcase-logo-box {
-          background: rgba(255, 255, 255, 0.12);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(10px);
+        .logo-glow-container {
+          background: rgba(255, 255, 255, 0.1);
+          border: 1.5px solid rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
           padding: 6px;
           border-radius: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .showcase-logo {
+        .brand-logo-img {
           border-radius: 8px;
           object-fit: contain;
         }
 
-        .showcase-brand-title {
-          font-size: 1.25rem;
+        .brand-name {
+          font-size: 1.35rem;
           font-weight: 800;
           color: #ffffff;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.025em;
+          margin: 0;
           line-height: 1.2;
         }
 
-        .showcase-brand-pill {
+        .brand-badge {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          font-size: 0.688rem;
+          gap: 6px;
+          font-size: 0.7rem;
           font-weight: 700;
           color: #93c5fd;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          margin-top: 2px;
+          margin-top: 3px;
         }
 
-        .showcase-hero-text {
-          margin-bottom: 30px;
+        .badge-live-pulse {
+          width: 6px;
+          height: 6px;
+          border-radius: 9999px;
+          background-color: #38bdf8;
+          box-shadow: 0 0 8px #38bdf8;
         }
 
-        .showcase-headline {
-          font-size: 1.85rem;
+        /* Hero Typography */
+        .showcase-hero-body {
+          position: relative;
+          z-index: 2;
+          margin-top: 24px;
+          margin-bottom: 24px;
+        }
+
+        .hero-pill-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 11px;
+          background: rgba(37, 99, 235, 0.25);
+          border: 1px solid rgba(96, 165, 250, 0.35);
+          border-radius: 9999px;
+          font-size: 0.719rem;
+          font-weight: 700;
+          color: #bfdbfe;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 14px;
+        }
+
+        .sparkle-svg {
+          color: #60a5fa;
+        }
+
+        .hero-title {
+          font-size: 1.95rem;
           font-weight: 800;
           color: #ffffff;
           line-height: 1.22;
           letter-spacing: -0.03em;
-          margin-bottom: 12px;
+          margin: 0 0 12px 0;
         }
 
-        .text-highlight {
+        .hero-highlight {
           background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%);
           -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          -webkit-fill-color: transparent;
         }
 
-        .showcase-subtext {
-          font-size: 0.906rem;
+        .hero-description {
+          font-size: 0.922rem;
           color: #cbd5e1;
-          line-height: 1.5;
+          line-height: 1.55;
+          margin: 0;
         }
 
-        /* Feature Pillars */
-        .showcase-features {
+        /* Live Activity HUD Card */
+        .showcase-live-hud {
+          position: relative;
+          z-index: 2;
+          background: rgba(255, 255, 255, 0.07);
+          border: 1.5px solid rgba(255, 255, 255, 0.14);
+          backdrop-filter: blur(14px);
+          border-radius: 18px;
+          padding: 16px 18px;
+          margin-bottom: 24px;
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .hud-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
+
+        .hud-title-wrap {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.719rem;
+          font-weight: 800;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .hud-pulse-icon {
+          color: #38bdf8;
+        }
+
+        .hud-status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.719rem;
+          font-weight: 800;
+          color: #34d399;
+          background: rgba(16, 185, 129, 0.2);
+          border: 1px solid rgba(52, 211, 153, 0.35);
+          padding: 2px 8px;
+          border-radius: 9999px;
+        }
+
+        .hud-ticket-title {
+          font-size: 0.938rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 4px;
+        }
+
+        .hud-ticket-details {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 0.781rem;
+          color: #cbd5e1;
+        }
+
+        .hud-agency, .hud-time {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .hud-footer {
+          margin-top: 10px;
+          padding-top: 8px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .citizen-verified-tag {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.719rem;
+          color: #6ee7b7;
+          font-weight: 600;
+        }
+
+        .check-verified {
+          color: #34d399;
+        }
+
+        /* Pillars List */
+        .showcase-pillars {
+          position: relative;
+          z-index: 2;
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          margin-bottom: 28px;
+          gap: 14px;
+          margin-bottom: 24px;
         }
 
-        .feature-item {
+        .pillar-item {
           display: flex;
           align-items: flex-start;
-          gap: 14px;
+          gap: 13px;
         }
 
-        .feature-icon-box {
+        .pillar-icon-box {
           width: 38px;
           height: 38px;
           border-radius: 10px;
@@ -806,203 +900,130 @@ export default function LoginPage() {
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.16);
         }
 
-        .blue-box {
-          background: rgba(37, 99, 235, 0.25);
-          color: #60a5fa;
-        }
+        .icon-blue { background: rgba(37, 99, 235, 0.28); color: #60a5fa; }
+        .icon-teal { background: rgba(13, 148, 136, 0.28); color: #2dd4bf; }
+        .icon-amber { background: rgba(245, 158, 11, 0.28); color: #fbbf24; }
 
-        .emerald-box {
-          background: rgba(16, 185, 129, 0.25);
-          color: #34d399;
-        }
-
-        .amber-box {
-          background: rgba(245, 158, 11, 0.25);
-          color: #fbbf24;
-        }
-
-        .feature-text {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-
-        .feature-text strong {
+        .pillar-text h4 {
           font-size: 0.844rem;
-          color: #ffffff;
           font-weight: 700;
+          color: #ffffff;
+          margin: 0 0 2px 0;
         }
 
-        .feature-text span {
+        .pillar-text p {
           font-size: 0.781rem;
           color: #94a3b8;
+          margin: 0;
           line-height: 1.35;
         }
 
-        /* Live Preview Card */
-        .showcase-live-card {
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(12px);
-          border-radius: 16px;
-          padding: 14px 16px;
-          margin-bottom: 20px;
-        }
-
-        .live-card-top {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 6px;
-        }
-
-        .live-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.688rem;
-          font-weight: 700;
-          color: #cbd5e1;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-        }
-
-        .pulse-dot {
-          width: 7px;
-          height: 7px;
-          background-color: #10b981;
-          border-radius: 9999px;
-          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-          animation: pulse 1.8s infinite;
-        }
-
-        @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-          70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        .resolved-status-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 0.688rem;
-          font-weight: 800;
-          color: #10b981;
-          background: rgba(16, 185, 129, 0.18);
-          border: 1px solid rgba(16, 185, 129, 0.3);
-          padding: 2px 8px;
-          border-radius: 9999px;
-        }
-
-        .live-card-title {
-          font-size: 0.875rem;
-          font-weight: 700;
-          color: #ffffff;
-        }
-
-        .live-card-meta {
-          font-size: 0.75rem;
-          color: #94a3b8;
-          margin-top: 3px;
-        }
-
-        .showcase-footer {
+        .showcase-bottom-seal {
+          position: relative;
+          z-index: 2;
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 0.75rem;
+          font-size: 0.719rem;
           color: #94a3b8;
-          padding-top: 14px;
+          padding-top: 16px;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .footer-shield-icon {
+        .seal-icon {
           color: #38bdf8;
           flex-shrink: 0;
         }
 
-        /* ----------------------------------------------------
+        /* -----------------------------------------------------------
            RIGHT FORM PANEL
-           ---------------------------------------------------- */
-        .form-panel {
-          padding: 44px 38px;
+           ----------------------------------------------------------- */
+        .civic-auth-panel {
+          padding: 48px 44px;
           background: #ffffff;
           display: flex;
           flex-direction: column;
           justify-content: center;
         }
 
-        .mobile-header {
+        .auth-inner-content {
+          max-width: 420px;
+          width: 100%;
+          margin: 0 auto;
+        }
+
+        /* Mobile Header */
+        .mobile-brand-banner {
           display: none;
           flex-direction: column;
           align-items: center;
-          margin-bottom: 20px;
+          margin-bottom: 22px;
         }
 
-        .mobile-logo {
-          border-radius: 14px;
+        .mobile-logo-img {
+          border-radius: 12px;
           object-fit: contain;
-          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
           margin-bottom: 8px;
         }
 
-        .civic-portal-pill {
+        .mobile-portal-badge {
           display: inline-flex;
           align-items: center;
           gap: 5px;
           padding: 3px 10px;
           background: rgba(37, 99, 235, 0.08);
-          border: 1px solid rgba(37, 99, 235, 0.2);
+          border: 1px solid rgba(37, 99, 235, 0.22);
           color: #2563eb;
           border-radius: 9999px;
           font-size: 0.688rem;
-          font-weight: 700;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.04em;
         }
 
-        .form-heading-group {
+        /* Form Heading Group */
+        .auth-header {
           margin-bottom: 24px;
         }
 
-        .desktop-badge {
+        .portal-badge-desktop {
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          padding: 3px 10px;
+          padding: 4px 11px;
           background: rgba(37, 99, 235, 0.08);
           border: 1px solid rgba(37, 99, 235, 0.2);
           color: #2563eb;
           border-radius: 9999px;
           font-size: 0.688rem;
-          font-weight: 700;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.04em;
           margin-bottom: 12px;
         }
 
-        .form-title {
-          font-size: 1.75rem;
+        .auth-title {
+          font-size: 1.85rem;
           font-weight: 800;
           color: #0f172a;
-          letter-spacing: -0.025em;
-          line-height: 1.2;
+          letter-spacing: -0.03em;
           margin: 0;
+          line-height: 1.2;
         }
 
-        .form-subtitle {
+        .auth-subtitle {
           font-size: 0.875rem;
           color: #64748b;
           margin-top: 6px;
           line-height: 1.45;
         }
 
-        /* Alert Boxes */
-        .alert-box {
+        /* Status Banners */
+        .status-banner {
           display: flex;
           align-items: flex-start;
           gap: 12px;
@@ -1019,53 +1040,48 @@ export default function LoginPage() {
           to { opacity: 1; transform: translateY(0); }
         }
 
-        .alert-danger {
+        .banner-error {
           background-color: #fef2f2;
           color: #991b1b;
-          border: 1px solid #fecaca;
+          border: 1.5px solid #fecaca;
         }
 
-        .alert-warning {
+        .banner-warning {
           background-color: #fffbeb;
           color: #92400e;
-          border: 1px solid #fde68a;
+          border: 1.5px solid #fde68a;
         }
 
-        .alert-icon {
+        .banner-icon {
           flex-shrink: 0;
           margin-top: 2px;
         }
 
-        .alert-text-wrapper {
+        .banner-text {
           display: flex;
           flex-direction: column;
           gap: 2px;
         }
 
-        .alert-title {
-          font-weight: 700;
+        .banner-text strong {
           font-size: 0.781rem;
           text-transform: uppercase;
           letter-spacing: 0.02em;
         }
 
-        .alert-description {
-          font-size: 0.813rem;
-        }
-
         /* Form Components */
-        .login-form {
+        .auth-form {
           display: flex;
           flex-direction: column;
           gap: 18px;
         }
 
-        .form-group {
+        .form-field-group {
           display: flex;
           flex-direction: column;
         }
 
-        .label-row {
+        .field-label-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -1079,7 +1095,7 @@ export default function LoginPage() {
           user-select: none;
         }
 
-        .format-preview {
+        .phone-format-pill {
           font-size: 0.719rem;
           font-weight: 700;
           color: #065f46;
@@ -1088,7 +1104,7 @@ export default function LoginPage() {
           border-radius: 9999px;
         }
 
-        .forgot-link {
+        .forgot-password-link {
           font-size: 0.813rem;
           font-weight: 700;
           color: #2563eb;
@@ -1096,14 +1112,13 @@ export default function LoginPage() {
           transition: color 0.15s ease;
         }
 
-        .forgot-link:hover, .forgot-link:focus-visible {
+        .forgot-password-link:hover {
           color: #1d4ed8;
           text-decoration: underline;
-          outline: none;
         }
 
-        /* Input Container System */
-        .input-container {
+        /* Input Box System */
+        .field-input-box {
           display: flex;
           align-items: center;
           background: #f8fafc;
@@ -1112,27 +1127,26 @@ export default function LoginPage() {
           min-height: 48px;
           padding: 0 14px;
           transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
-          position: relative;
         }
 
-        .input-container:hover {
+        .field-input-box:hover {
           background: #ffffff;
           border-color: #94a3b8;
         }
 
-        .input-container.is-focused {
+        .field-input-box.focused {
           background: #ffffff;
           border-color: #2563eb;
-          box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.16);
+          box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.18);
         }
 
-        .input-container.is-error {
+        .field-input-box.has-error {
           border-color: #ef4444;
           box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.15);
           background: #fff5f5;
         }
 
-        .input-prefix-flag {
+        .flag-prefix-pill {
           display: flex;
           align-items: center;
           gap: 6px;
@@ -1146,15 +1160,10 @@ export default function LoginPage() {
         }
 
         .flag-emoji {
-          font-size: 1rem;
-          line-height: 1;
+          font-size: 1.05rem;
         }
 
-        .country-code {
-          font-family: inherit;
-        }
-
-        .input-prefix-icon {
+        .email-prefix-icon, .password-prefix-icon {
           color: #64748b;
           display: flex;
           align-items: center;
@@ -1162,7 +1171,7 @@ export default function LoginPage() {
           flex-shrink: 0;
         }
 
-        .native-input {
+        .core-input {
           flex: 1;
           width: 100%;
           min-width: 0;
@@ -1176,24 +1185,19 @@ export default function LoginPage() {
           height: 100%;
         }
 
-        .native-input::placeholder {
+        .core-input::placeholder {
           color: #94a3b8;
           font-weight: 400;
         }
 
-        .native-input:disabled {
-          cursor: not-allowed;
-          opacity: 0.6;
-        }
-
-        .input-suffix-icon {
+        .field-suffix-icon {
           color: #94a3b8;
           display: flex;
           align-items: center;
           flex-shrink: 0;
         }
 
-        .password-toggle-btn {
+        .eye-toggle-button {
           background: transparent;
           border: none;
           color: #64748b;
@@ -1204,15 +1208,15 @@ export default function LoginPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: color 0.15s ease, background-color 0.15s ease;
+          transition: color 0.15s ease, background 0.15s ease;
         }
 
-        .password-toggle-btn:hover {
+        .eye-toggle-button:hover {
           color: #2563eb;
-          background-color: #f1f5f9;
+          background: #f1f5f9;
         }
 
-        .field-helper {
+        .field-hint-text {
           font-size: 0.719rem;
           color: #64748b;
           margin-top: 5px;
@@ -1221,7 +1225,7 @@ export default function LoginPage() {
         }
 
         /* Primary Submit Button */
-        .primary-submit-btn {
+        .auth-submit-btn {
           width: 100%;
           min-height: 50px;
           margin-top: 4px;
@@ -1234,35 +1238,35 @@ export default function LoginPage() {
           font-weight: 700;
           color: #ffffff;
           background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 4px 18px rgba(37, 99, 235, 0.38);
           cursor: pointer;
           user-select: none;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .primary-submit-btn:hover:not(:disabled) {
+        .auth-submit-btn:hover:not(:disabled) {
           background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+          box-shadow: 0 6px 22px rgba(37, 99, 235, 0.48);
           transform: translateY(-1px);
         }
 
-        .primary-submit-btn:active:not(:disabled) {
+        .auth-submit-btn:active:not(:disabled) {
           transform: scale(0.99);
         }
 
-        .primary-submit-btn:disabled {
+        .auth-submit-btn:disabled {
           opacity: 0.7;
           cursor: not-allowed;
           transform: none;
         }
 
-        .btn-state-success {
+        .btn-success {
           background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-          box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
+          box-shadow: 0 4px 18px rgba(16, 185, 129, 0.38) !important;
         }
 
-        .spin-animation {
+        .animate-spin {
           animation: spin 0.9s linear infinite;
         }
 
@@ -1271,17 +1275,17 @@ export default function LoginPage() {
           to { transform: rotate(360deg); }
         }
 
-        .success-bounce {
-          animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        .animate-bounce-in {
+          animation: bounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
 
-        @keyframes scaleUp {
-          from { transform: scale(0.5); opacity: 0; }
+        @keyframes bounceIn {
+          from { transform: scale(0.6); opacity: 0; }
           to { transform: scale(1); opacity: 1; }
         }
 
-        /* Register Callout */
-        .register-callout {
+        /* Register Link Callout */
+        .auth-footer-callout {
           text-align: center;
           margin-top: 18px;
           padding-top: 16px;
@@ -1290,142 +1294,111 @@ export default function LoginPage() {
           color: #475569;
         }
 
-        .register-link {
+        .callout-link {
           display: inline-flex;
           align-items: center;
           gap: 4px;
           color: #2563eb;
           font-weight: 700;
           text-decoration: none;
-          transition: gap 0.15s ease, color 0.15s ease;
+          transition: color 0.15s ease, gap 0.15s ease;
         }
 
-        .register-link:hover {
+        .callout-link:hover {
           color: #1d4ed8;
           text-decoration: underline;
         }
 
-        .register-link:hover .link-arrow {
+        .callout-link:hover .arrow-slide {
           transform: translateX(3px);
         }
 
-        .link-arrow {
+        .arrow-slide {
           transition: transform 0.15s ease;
         }
 
-        /* Demo Accordion Card */
-        .demo-accordion-card {
+        /* Quick Demo Accounts Bar */
+        .quick-demo-container {
           margin-top: 16px;
-          background-color: #f8fafc;
+          padding: 12px;
+          background: #f8fafc;
           border: 1px dashed #cbd5e1;
-          border-radius: 12px;
-          overflow: hidden;
-          transition: all 0.2s ease;
+          border-radius: 14px;
         }
 
-        .demo-accordion-toggle {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 9px 12px;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          color: #475569;
-          font-size: 0.75rem;
-          font-weight: 700;
-          transition: background-color 0.15s ease;
-        }
-
-        .demo-accordion-toggle:hover {
-          background-color: rgba(37, 99, 235, 0.05);
-        }
-
-        .demo-toggle-left {
+        .demo-bar-header {
           display: flex;
           align-items: center;
           gap: 6px;
+          font-size: 0.719rem;
+          font-weight: 800;
+          color: #475569;
           text-transform: uppercase;
-          letter-spacing: 0.03em;
+          letter-spacing: 0.04em;
+          margin-bottom: 9px;
         }
 
-        .sparkle-icon {
+        .sparkle-colored {
           color: #2563eb;
         }
 
-        .demo-grid-body {
-          padding: 10px 12px 12px;
-          border-top: 1px solid #e2e8f0;
-          animation: fadeIn 0.2s ease;
-        }
-
-        .demo-hint-text {
-          font-size: 0.688rem;
-          color: #64748b;
-          margin-bottom: 8px;
-        }
-
-        .demo-buttons-grid {
+        .demo-chips-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(4, 1fr);
           gap: 6px;
         }
 
-        .demo-role-btn {
+        .role-chip {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 7px;
-          padding: 7px 9px;
+          justify-content: center;
+          padding: 7px 4px;
           background: #ffffff;
           border: 1px solid #e2e8f0;
-          border-radius: 8px;
+          border-radius: 9px;
           cursor: pointer;
-          text-align: left;
           transition: all 0.15s ease;
+          user-select: none;
         }
 
-        .demo-role-btn:hover {
+        .role-chip:hover {
           border-color: #2563eb;
-          background-color: #eff6ff;
+          background: #eff6ff;
           transform: translateY(-1px);
         }
 
-        .role-icon {
-          flex-shrink: 0;
+        .chip-active {
+          border-color: #2563eb !important;
+          background: #eff6ff !important;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
         }
 
-        .resident-icon { color: #2563eb; }
-        .staff-icon { color: #f59e0b; }
-        .admin-icon { color: #dc2626; }
-        .super-icon { color: #8b5cf6; }
-
-        .role-text {
-          display: flex;
-          flex-direction: column;
-          min-width: 0;
+        .chip-icon {
+          margin-bottom: 2px;
         }
 
-        .role-title {
-          font-size: 0.719rem;
+        .icon-resident { color: #2563eb; }
+        .icon-staff { color: #f59e0b; }
+        .icon-admin { color: #dc2626; }
+        .icon-super { color: #8b5cf6; }
+
+        .chip-name {
+          font-size: 0.688rem;
           font-weight: 700;
           color: #0f172a;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          line-height: 1.1;
         }
 
-        .role-meta {
-          font-size: 0.625rem;
+        .chip-sub {
+          font-size: 0.594rem;
           color: #64748b;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          line-height: 1.1;
         }
 
-        /* Trust Footer */
-        .form-trust-footer {
-          margin-top: 20px;
+        /* End-to-End Security Seal */
+        .security-seal-row {
+          margin-top: 18px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1435,76 +1408,73 @@ export default function LoginPage() {
           color: #64748b;
         }
 
-        .trust-icon {
+        .seal-shield {
           color: #0d9488;
         }
 
-        /* ----------------------------------------------------
-           RESPONSIVE BREAKPOINTS
-           ---------------------------------------------------- */
-        @media (max-width: 960px) {
-          .split-card-wrapper {
+        /* -----------------------------------------------------------
+           RESPONSIVE DESIGN BREAKPOINTS
+           ----------------------------------------------------------- */
+        @media (max-width: 1040px) {
+          .login-full-wrapper {
             grid-template-columns: 1fr;
             max-width: 480px;
-            margin: 0 auto;
-            border-radius: 24px;
+            min-height: auto;
           }
 
-          .showcase-panel {
+          .civic-showcase-panel {
             display: none;
           }
 
-          .mobile-header {
+          .mobile-brand-banner {
             display: flex;
           }
 
-          .desktop-badge {
+          .portal-badge-desktop {
             display: none;
           }
 
-          .form-panel {
-            padding: 36px 28px;
+          .civic-auth-panel {
+            padding: 38px 28px;
           }
 
-          .form-heading-group {
+          .auth-header {
             text-align: center;
           }
         }
 
         @media (max-width: 480px) {
-          .login-screen-wrapper {
+          .login-root-container {
             padding: 16px 12px;
           }
 
-          .form-panel {
-            padding: 26px 18px;
+          .civic-auth-panel {
+            padding: 28px 18px;
           }
 
-          .form-title {
-            font-size: 1.5rem;
+          .auth-title {
+            font-size: 1.6rem;
           }
 
-          .demo-buttons-grid {
-            grid-template-columns: 1fr;
+          .demo-chips-grid {
+            grid-template-columns: repeat(2, 1fr);
           }
 
-          .input-container {
+          .field-input-box {
             min-height: 46px;
           }
 
-          .primary-submit-btn {
+          .auth-submit-btn {
             min-height: 46px;
           }
         }
 
-        /* Reduced Motion Accessibility */
+        /* Accessibility: Reduced Motion */
         @media (prefers-reduced-motion: reduce) {
-          .split-card-wrapper,
-          .alert-box,
-          .demo-grid-body,
-          .primary-submit-btn,
-          .shake-card,
-          .pulse-dot {
+          .login-full-wrapper,
+          .status-banner,
+          .auth-submit-btn,
+          .shake-effect {
             animation: none !important;
             transition: none !important;
           }
