@@ -13,7 +13,6 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  ShieldCheck,
   Shield,
   WifiOff,
   User,
@@ -34,10 +33,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [identifierError, setIdentifierError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [shake, setShake] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
 
   // Focus states
   const [isIdentifierFocused, setIsIdentifierFocused] = useState(false);
@@ -97,6 +99,10 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setIdentifierError(null);
+    setPasswordError(null);
+    setError(null);
+
     if (typeof window !== "undefined" && !window.navigator.onLine) {
       setError("Unable to connect. Please check your internet connection.");
       triggerShake();
@@ -104,33 +110,37 @@ export default function LoginPage() {
     }
 
     const trimmedIdentifier = identifier.trim();
+    let hasFieldError = false;
 
     if (!trimmedIdentifier) {
-      setError("Please enter your mobile number.");
-      identifierInputRef.current?.focus();
-      triggerShake();
-      return;
-    }
-
-    if (!password) {
-      setError("Please enter your password.");
-      passwordInputRef.current?.focus();
-      triggerShake();
-      return;
-    }
-
-    const hasOnlyPhoneChars = /^[\d\s\+\-\(\)]+$/.test(trimmedIdentifier);
-    if (hasOnlyPhoneChars && !trimmedIdentifier.includes("@")) {
-      const normalized = normalizePhoneNumber(trimmedIdentifier);
-      if (!normalized) {
-        setError("Please enter a valid Philippine mobile number (e.g. 0917 123 4567).");
-        identifierInputRef.current?.focus();
-        triggerShake();
-        return;
+      setIdentifierError("Please enter your mobile number or email.");
+      hasFieldError = true;
+    } else {
+      const hasOnlyPhoneChars = /^[\d\s\+\-\(\)]+$/.test(trimmedIdentifier);
+      if (hasOnlyPhoneChars && !trimmedIdentifier.includes("@")) {
+        const normalized = normalizePhoneNumber(trimmedIdentifier);
+        if (!normalized) {
+          setIdentifierError("Please enter a valid 11-digit mobile number (e.g. 0917 123 4567).");
+          hasFieldError = true;
+        }
       }
     }
 
-    setError(null);
+    if (!password) {
+      setPasswordError("Please enter your password.");
+      hasFieldError = true;
+    }
+
+    if (hasFieldError) {
+      triggerShake();
+      if (!trimmedIdentifier) {
+        identifierInputRef.current?.focus();
+      } else if (!password) {
+        passwordInputRef.current?.focus();
+      }
+      return;
+    }
+
     setStatus("loading");
 
     try {
@@ -170,12 +180,19 @@ export default function LoginPage() {
     setTimeout(() => setShake(false), 500);
   };
 
-  const handleQuickLogin = (demoIdentifier: string, roleName: string) => {
+  const handleQuickLogin = (demoIdentifier: string, roleName: string, personName: string) => {
     setIdentifier(demoIdentifier);
     setPassword("Password123!");
     setSelectedRole(roleName);
+    setAutofillNotice(`${personName} (${roleName})`);
     setError(null);
+    setIdentifierError(null);
+    setPasswordError(null);
     setStatus("idle");
+
+    setTimeout(() => {
+      setAutofillNotice(null);
+    }, 4000);
   };
 
   return (
@@ -190,7 +207,7 @@ export default function LoginPage() {
           
           {/* Intro Heading */}
           <div className="auth-card-header">
-            <h2 className="auth-title">Welcome back</h2>
+            <h1 className="auth-title">Welcome back</h1>
             <p className="auth-subtitle">
               Sign in to report community hazards, track tickets, or access barangay operations.
             </p>
@@ -204,12 +221,12 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Error Alert */}
+          {/* General Error Alert */}
           {error && (
             <div className="status-banner banner-error" role="alert">
-              <AlertCircle size={16} />
+              <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "2px" }} />
               <div className="banner-text">
-                <strong>Authentication Failed</strong>
+                <strong>Sign In Failed</strong>
                 <span>{error}</span>
               </div>
             </div>
@@ -218,27 +235,31 @@ export default function LoginPage() {
           {/* Authentication Form */}
           <form onSubmit={handleSubmit} noValidate className="auth-form">
             
-            {/* Field 1: Mobile number */}
+            {/* Field 1: Mobile number / Email */}
             <div className="form-field-group">
               <div className="field-top-row">
                 <label htmlFor="identifier" className="field-label">
                   Mobile number or email
                 </label>
                 {phonePreview && (
-                  <span className="phone-validation-hint">
+                  <span className="phone-validation-hint" aria-live="polite">
                     ✓ {phonePreview}
                   </span>
                 )}
               </div>
 
-              <div className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${error && !identifier.trim() ? "composite-error" : ""}`}>
+              <div
+                className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${
+                  identifierError ? "composite-error" : ""
+                }`}
+              >
                 {!isEmailInput ? (
-                  <div className="country-prefix-badge">
+                  <div className="country-prefix-badge" title="Philippines country code">
                     <span className="flag-icon">🇵🇭</span>
                     <span className="prefix-num">+63</span>
                   </div>
                 ) : (
-                  <div className="country-prefix-badge prefix-email">
+                  <div className="country-prefix-badge prefix-email" title="Email address">
                     <Mail size={15} />
                   </div>
                 )}
@@ -251,10 +272,11 @@ export default function LoginPage() {
                   inputMode={isEmailInput ? "email" : "tel"}
                   autoComplete="username"
                   className="styled-text-input"
-                  placeholder="09XXXXXXXXX"
+                  placeholder={isEmailInput ? "name@barangay.gov.ph" : "09XXXXXXXXX"}
                   value={identifier}
                   onChange={(e) => {
                     setIdentifier(e.target.value);
+                    if (identifierError) setIdentifierError(null);
                     if (error) setError(null);
                     if (status === "error") setStatus("idle");
                   }}
@@ -262,12 +284,21 @@ export default function LoginPage() {
                   onBlur={() => setIsIdentifierFocused(false)}
                   disabled={status === "loading" || status === "success"}
                   aria-required="true"
-                  aria-invalid={!!error && !identifier.trim()}
+                  aria-invalid={!!identifierError}
+                  aria-describedby={identifierError ? "identifier-error-msg" : undefined}
                 />
               </div>
-              <span className="field-hint-text">
-                Enter your 11-digit mobile number or official barangay email.
-              </span>
+
+              {identifierError ? (
+                <div id="identifier-error-msg" className="inline-field-error" role="alert">
+                  <AlertCircle size={13} />
+                  <span>{identifierError}</span>
+                </div>
+              ) : (
+                <span className="field-hint-text">
+                  Enter your 11-digit mobile number or official barangay email.
+                </span>
+              )}
             </div>
 
             {/* Field 2: Password */}
@@ -281,7 +312,11 @@ export default function LoginPage() {
                 </NextLink>
               </div>
 
-              <div className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${error && !password ? "composite-error" : ""}`}>
+              <div
+                className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${
+                  passwordError ? "composite-error" : ""
+                }`}
+              >
                 <div className="country-prefix-badge prefix-lock">
                   <Lock size={15} />
                 </div>
@@ -297,6 +332,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
+                    if (passwordError) setPasswordError(null);
                     if (error) setError(null);
                     if (status === "error") setStatus("idle");
                   }}
@@ -304,7 +340,8 @@ export default function LoginPage() {
                   onBlur={() => setIsPassFocused(false)}
                   disabled={status === "loading" || status === "success"}
                   aria-required="true"
-                  aria-invalid={!!error && !password}
+                  aria-invalid={!!passwordError}
+                  aria-describedby={passwordError ? "password-error-msg" : undefined}
                 />
 
                 <button
@@ -318,6 +355,13 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+
+              {passwordError && (
+                <div id="password-error-msg" className="inline-field-error" role="alert">
+                  <AlertCircle size={13} />
+                  <span>{passwordError}</span>
+                </div>
+              )}
             </div>
 
             {/* Primary Submit Button */}
@@ -336,7 +380,7 @@ export default function LoginPage() {
               {status === "success" && (
                 <>
                   <CheckCircle2 size={18} />
-                  <span>Redirecting to Dashboard...</span>
+                  <span>Verified! Redirecting...</span>
                 </>
               )}
 
@@ -349,7 +393,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Registration Link */}
+          {/* Registration Secondary Section */}
           <div className="register-redirect-banner">
             <span className="register-prompt">Don't have an account yet?</span>{" "}
             <NextLink href="/register" className="register-bold-link">
@@ -357,117 +401,119 @@ export default function LoginPage() {
             </NextLink>
           </div>
 
-          {/* Quick Test Roles Segment (One-Click Autofill) */}
-          <div className="quick-roles-container">
+          {/* Quick Test Roles Segment (Streamlined Dev Autofill) */}
+          <section className="quick-roles-container" aria-label="Quick test accounts">
             <div className="quick-roles-header">
               <div className="quick-roles-title">
-                <Sparkles size={13} className="sparkle-gold" />
-                <span>Quick Test Accounts · One-Click Autofill</span>
+                <Sparkles size={13} className="sparkle-cyan" />
+                <span>Dev Test Accounts</span>
               </div>
-              <span className="quick-roles-sub">Click any role to test:</span>
+              {autofillNotice ? (
+                <span className="autofill-feedback-pill">
+                  <Check size={11} /> {autofillNotice}
+                </span>
+              ) : (
+                <span className="quick-roles-sub">1-Tap Autofill</span>
+              )}
             </div>
 
             <div className="quick-roles-grid">
               {/* Role 1: Resident */}
               <button
                 type="button"
-                onClick={() => handleQuickLogin("09204443333", "Resident")}
-                className={`role-select-card card-resident ${selectedRole === "Resident" ? "role-card-active" : ""}`}
+                onClick={() => handleQuickLogin("09204443333", "Resident", "Juan Dela Cruz")}
+                className={`role-chip ${selectedRole === "Resident" ? "role-chip-active chip-resident" : ""}`}
+                aria-pressed={selectedRole === "Resident"}
               >
-                <div className="role-card-top">
-                  <div className="role-avatar-circle avatar-blue">
-                    <User size={14} />
-                  </div>
-                  {selectedRole === "Resident" && <Check size={14} className="role-check-icon text-blue" />}
+                <div className="role-icon-circle icon-blue">
+                  <User size={13} />
                 </div>
-                <div className="role-card-meta">
-                  <span className="role-name">Resident</span>
-                  <span className="role-user-name">Juan Dela Cruz</span>
+                <div className="role-chip-text">
+                  <span className="role-chip-title">Resident</span>
+                  <span className="role-chip-sub">Juan Dela Cruz</span>
                 </div>
+                {selectedRole === "Resident" && <Check size={13} className="role-active-check text-blue" />}
               </button>
 
               {/* Role 2: Staff */}
               <button
                 type="button"
-                onClick={() => handleQuickLogin("09193332222", "Staff")}
-                className={`role-select-card card-staff ${selectedRole === "Staff" ? "role-card-active" : ""}`}
+                onClick={() => handleQuickLogin("09193332222", "Staff", "Alex Santos")}
+                className={`role-chip ${selectedRole === "Staff" ? "role-chip-active chip-staff" : ""}`}
+                aria-pressed={selectedRole === "Staff"}
               >
-                <div className="role-card-top">
-                  <div className="role-avatar-circle avatar-emerald">
-                    <Wrench size={14} />
-                  </div>
-                  {selectedRole === "Staff" && <Check size={14} className="role-check-icon text-emerald" />}
+                <div className="role-icon-circle icon-emerald">
+                  <Wrench size={13} />
                 </div>
-                <div className="role-card-meta">
-                  <span className="role-name">Barangay Staff</span>
-                  <span className="role-user-name">Alex Santos</span>
+                <div className="role-chip-text">
+                  <span className="role-chip-title">Staff</span>
+                  <span className="role-chip-sub">Alex Santos</span>
                 </div>
+                {selectedRole === "Staff" && <Check size={13} className="role-active-check text-emerald" />}
               </button>
 
               {/* Role 3: Admin */}
               <button
                 type="button"
-                onClick={() => handleQuickLogin("09182221111", "Admin")}
-                className={`role-select-card card-admin ${selectedRole === "Admin" ? "role-card-active" : ""}`}
+                onClick={() => handleQuickLogin("09182221111", "Admin", "Roberto Tan")}
+                className={`role-chip ${selectedRole === "Admin" ? "role-chip-active chip-admin" : ""}`}
+                aria-pressed={selectedRole === "Admin"}
               >
-                <div className="role-card-top">
-                  <div className="role-avatar-circle avatar-indigo">
-                    <Building2 size={14} />
-                  </div>
-                  {selectedRole === "Admin" && <Check size={14} className="role-check-icon text-indigo" />}
+                <div className="role-icon-circle icon-indigo">
+                  <Building2 size={13} />
                 </div>
-                <div className="role-card-meta">
-                  <span className="role-name">Barangay Admin</span>
-                  <span className="role-user-name">Roberto Tan</span>
+                <div className="role-chip-text">
+                  <span className="role-chip-title">Admin</span>
+                  <span className="role-chip-sub">Roberto Tan</span>
                 </div>
+                {selectedRole === "Admin" && <Check size={13} className="role-active-check text-indigo" />}
               </button>
 
               {/* Role 4: Super Admin */}
               <button
                 type="button"
-                onClick={() => handleQuickLogin("09171110000", "Super Admin")}
-                className={`role-select-card card-super ${selectedRole === "Super Admin" ? "role-card-active" : ""}`}
+                onClick={() => handleQuickLogin("09171110000", "Super Admin", "Sys Operator")}
+                className={`role-chip ${selectedRole === "Super Admin" ? "role-chip-active chip-super" : ""}`}
+                aria-pressed={selectedRole === "Super Admin"}
               >
-                <div className="role-card-top">
-                  <div className="role-avatar-circle avatar-amber">
-                    <Crown size={14} />
-                  </div>
-                  {selectedRole === "Super Admin" && <Check size={14} className="role-check-icon text-amber" />}
+                <div className="role-icon-circle icon-amber">
+                  <Crown size={13} />
                 </div>
-                <div className="role-card-meta">
-                  <span className="role-name">Super Admin</span>
-                  <span className="role-user-name">System Operator</span>
+                <div className="role-chip-text">
+                  <span className="role-chip-title">Super Admin</span>
+                  <span className="role-chip-sub">Sys Operator</span>
                 </div>
+                {selectedRole === "Super Admin" && <Check size={13} className="role-active-check text-amber" />}
               </button>
             </div>
-          </div>
+          </section>
 
           {/* Bottom Security Footer */}
-          <div className="auth-card-footer">
-            <Shield size={13} className="footer-shield" />
-            <span>Official Civic Platform · 256-bit SSL Encrypted · RA 10173</span>
-          </div>
+          <footer className="auth-card-footer">
+            <Shield size={12} className="footer-shield" />
+            <span>Official Civic Platform · 256-bit SSL · RA 10173</span>
+          </footer>
 
         </div>
       </main>
 
       {/* ===============================================================
-          STYLES: Centered Luminous Dark Theme Authentication Card
+          STYLES: Mobile-First Modern Dark Theme Civic Login
          =============================================================== */}
       <style jsx>{`
         /* Canvas Wrapper - Complete Dark Theme */
         .login-canvas-wrapper {
-          min-height: calc(100vh - var(--header-height, 60px));
+          min-height: calc(100dvh - var(--header-height, 54px));
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 36px 20px;
+          padding: 16px 12px 28px 12px;
           background-color: var(--bg-app, #080c15);
           background-image: 
-            radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-            radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.16) 0%, transparent 50%),
-            radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.14) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.09) 0%, transparent 55%);
+            radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+            radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.16) 0%, transparent 50%),
+            radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.14) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 55%);
           background-size: 28px 28px, 100% 100%, 100% 100%, 100% 100%;
           position: relative;
           overflow: hidden;
@@ -480,29 +526,29 @@ export default function LoginPage() {
           filter: blur(140px);
           pointer-events: none;
           z-index: 0;
-          opacity: 0.6;
+          opacity: 0.55;
         }
 
         .sphere-sapphire {
-          width: 520px;
-          height: 520px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, transparent 70%);
+          width: 480px;
+          height: 480px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.28) 0%, transparent 70%);
           top: -80px;
           left: -80px;
         }
 
         .sphere-cyan {
-          width: 480px;
-          height: 480px;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, transparent 70%);
+          width: 440px;
+          height: 440px;
+          background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, transparent 70%);
           bottom: -60px;
           right: -60px;
         }
 
         .sphere-emerald {
-          width: 420px;
-          height: 420px;
-          background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, transparent 70%);
+          width: 380px;
+          height: 380px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, transparent 70%);
           top: 35%;
           left: 42%;
         }
@@ -510,28 +556,27 @@ export default function LoginPage() {
         /* Centered Container */
         .login-center-container {
           width: 100%;
-          max-width: 480px;
+          max-width: 440px;
           position: relative;
           z-index: 1;
           margin: 0 auto;
         }
 
-        /* Pure Clean Auth Card */
+        /* Modern Glassmorphic Civic Card */
         .login-unified-card {
           width: 100%;
-          max-width: 440px;
           display: flex;
           flex-direction: column;
-          border-radius: 24px;
-          background: rgba(14, 21, 38, 0.92);
-          backdrop-filter: blur(28px);
-          -webkit-backdrop-filter: blur(28px);
+          border-radius: 20px;
+          background: rgba(13, 20, 36, 0.94);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
           border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow: 
-            0 25px 60px -15px rgba(0, 0, 0, 0.8),
-            0 0 40px -10px rgba(56, 189, 248, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          padding: 38px 34px;
+            0 20px 50px -10px rgba(0, 0, 0, 0.8),
+            0 0 35px -5px rgba(56, 189, 248, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.12);
+          padding: 24px 20px;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -548,23 +593,23 @@ export default function LoginPage() {
 
         /* Intro Header */
         .auth-card-header {
-          margin-bottom: 20px;
+          margin-bottom: 16px;
         }
 
         .auth-title {
           font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-          font-size: 1.75rem;
+          font-size: 1.45rem;
           font-weight: 800;
           color: #f8fafc;
-          letter-spacing: -0.03em;
+          letter-spacing: -0.025em;
           line-height: 1.2;
-          margin: 0 0 6px 0;
+          margin: 0 0 5px 0;
         }
 
         .auth-subtitle {
-          font-size: 0.85rem;
+          font-size: 0.813rem;
           color: #94a3b8;
-          line-height: 1.5;
+          line-height: 1.45;
           margin: 0;
         }
 
@@ -573,10 +618,10 @@ export default function LoginPage() {
           display: flex;
           align-items: flex-start;
           gap: 10px;
-          padding: 12px 14px;
-          border-radius: 12px;
+          padding: 10px 12px;
+          border-radius: 10px;
           font-size: 0.813rem;
-          margin-bottom: 18px;
+          margin-bottom: 14px;
         }
 
         .banner-warning {
@@ -601,14 +646,14 @@ export default function LoginPage() {
         .auth-form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          margin-bottom: 18px;
+          gap: 14px;
+          margin-bottom: 16px;
         }
 
         .form-field-group {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 5px;
         }
 
         .field-top-row {
@@ -638,10 +683,11 @@ export default function LoginPage() {
           font-weight: 600;
           color: #38bdf8;
           text-decoration: none;
+          padding: 2px 0;
           transition: color 0.15s ease;
         }
 
-        .forgot-link:hover {
+        .forgot-link:hover, .forgot-link:focus {
           color: #7dd3fc;
           text-decoration: underline;
         }
@@ -649,34 +695,45 @@ export default function LoginPage() {
         .composite-input {
           display: flex;
           align-items: center;
-          background: #080c15;
+          background: #080c16;
           border: 1.5px solid rgba(255, 255, 255, 0.12);
           border-radius: 12px;
           overflow: hidden;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          height: 46px;
+          transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
         }
 
         .composite-focus {
           border-color: #38bdf8;
-          background: #0b1120;
-          box-shadow: 0 0 0 3.5px rgba(56, 189, 248, 0.2);
+          background: #0a1122;
+          box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
         }
 
         .composite-error {
-          border-color: #f87171;
-          background: #0b1120;
-          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+          border-color: #f87171 !important;
+          background: #140d12;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22);
+        }
+
+        .inline-field-error {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          color: #fca5a5;
+          font-size: 0.735rem;
+          font-weight: 600;
+          margin-top: 2px;
         }
 
         .country-prefix-badge {
           display: flex;
           align-items: center;
           gap: 5px;
-          padding: 0 13px;
-          height: 44px;
-          background-color: #121c32;
+          padding: 0 11px;
+          height: 100%;
+          background-color: #0f182c;
           border-right: 1.5px solid rgba(255, 255, 255, 0.1);
-          color: #94a3b8;
+          color: #cbd5e1;
           font-size: 0.813rem;
           font-weight: 700;
           user-select: none;
@@ -690,27 +747,29 @@ export default function LoginPage() {
 
         .styled-text-input {
           flex: 1;
-          height: 44px;
-          padding: 0 14px;
+          height: 100%;
+          padding: 0 12px;
           background: transparent;
           border: none;
           outline: none;
           font-size: 0.875rem;
           color: #f8fafc;
           font-weight: 500;
+          min-width: 0;
         }
 
         .styled-text-input::placeholder {
           color: #64748b;
           font-weight: 400;
+          font-size: 0.813rem;
         }
 
         .styled-text-input:-webkit-autofill,
         .styled-text-input:-webkit-autofill:hover, 
         .styled-text-input:-webkit-autofill:focus {
           -webkit-text-fill-color: #f8fafc !important;
-          -webkit-box-shadow: 0 0 0px 1000px #080c15 inset !important;
-          box-shadow: 0 0 0px 1000px #080c15 inset !important;
+          -webkit-box-shadow: 0 0 0px 1000px #080c16 inset !important;
+          box-shadow: 0 0 0px 1000px #080c16 inset !important;
           transition: background-color 5000s ease-in-out 0s;
         }
 
@@ -724,6 +783,7 @@ export default function LoginPage() {
           border: none;
           color: #94a3b8;
           cursor: pointer;
+          flex-shrink: 0;
           transition: color 0.15s ease;
         }
 
@@ -732,8 +792,9 @@ export default function LoginPage() {
         }
 
         .field-hint-text {
-          font-size: 0.725rem;
+          font-size: 0.72rem;
           color: #94a3b8;
+          line-height: 1.35;
         }
 
         /* Primary Submit Button */
@@ -742,23 +803,24 @@ export default function LoginPage() {
           align-items: center;
           justify-content: center;
           gap: 8px;
-          height: 46px;
+          height: 48px;
           border-radius: 12px;
-          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          background: linear-gradient(135deg, #2563eb 0%, #0284c7 100%);
           color: #ffffff;
           font-size: 0.925rem;
           font-weight: 700;
           border: none;
           cursor: pointer;
-          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+          box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           margin-top: 4px;
+          touch-action: manipulation;
         }
 
         .primary-submit-btn:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
-          background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+          box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5);
+          background: linear-gradient(135deg, #1d4ed8 0%, #0369a1 100%);
         }
 
         .primary-submit-btn:active:not(:disabled) {
@@ -792,11 +854,18 @@ export default function LoginPage() {
           transform: translateX(3px);
         }
 
-        /* Register Redirect */
+        /* Register Redirect Secondary Section */
         .register-redirect-banner {
-          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          flex-wrap: wrap;
           font-size: 0.813rem;
-          margin-bottom: 18px;
+          padding: 12px 0;
+          margin-bottom: 14px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .register-prompt {
@@ -807,6 +876,7 @@ export default function LoginPage() {
           color: #38bdf8;
           font-weight: 700;
           text-decoration: none;
+          padding: 4px 0;
           transition: color 0.15s ease;
         }
 
@@ -815,13 +885,13 @@ export default function LoginPage() {
           text-decoration: underline;
         }
 
-        /* Quick Test Roles Box */
+        /* Streamlined Dev Test Accounts Box */
         .quick-roles-container {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
-          padding: 13px;
-          margin-bottom: 16px;
+          background: rgba(10, 16, 28, 0.6);
+          border: 1px dashed rgba(255, 255, 255, 0.12);
+          border-radius: 14px;
+          padding: 10px;
+          margin-bottom: 14px;
         }
 
         .quick-roles-header {
@@ -829,6 +899,7 @@ export default function LoginPage() {
           align-items: center;
           justify-content: space-between;
           margin-bottom: 8px;
+          padding: 0 2px;
         }
 
         .quick-roles-title {
@@ -840,98 +911,144 @@ export default function LoginPage() {
           color: #cbd5e1;
         }
 
-        .sparkle-gold {
-          color: #fbbf24;
+        .sparkle-cyan {
+          color: #38bdf8;
         }
 
         .quick-roles-sub {
           font-size: 0.688rem;
-          color: #94a3b8;
-          font-weight: 500;
+          color: #64748b;
+          font-weight: 600;
+        }
+
+        .autofill-feedback-pill {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.688rem;
+          font-weight: 700;
+          color: #34d399;
+          background: rgba(16, 185, 129, 0.15);
+          padding: 2px 7px;
+          border-radius: 9999px;
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-2px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .quick-roles-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 7px;
+          gap: 6px;
         }
 
-        .role-select-card {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-          padding: 8px 10px;
-          border-radius: 10px;
-          background: #0d1527;
-          border: 1.5px solid rgba(255, 255, 255, 0.08);
-          cursor: pointer;
-          text-align: left;
-          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .role-select-card:hover {
-          transform: translateY(-1px);
-          border-color: rgba(255, 255, 255, 0.2);
-          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .role-card-active {
-          border-color: #38bdf8 !important;
-          background: rgba(56, 189, 248, 0.15) !important;
-          box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3) !important;
-        }
-
-        .card-staff.role-card-active {
-          border-color: #10b981 !important;
-          background: rgba(16, 185, 129, 0.15) !important;
-          box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
-        }
-
-        .card-admin.role-card-active {
-          border-color: #818cf8 !important;
-          background: rgba(129, 140, 248, 0.15) !important;
-          box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.3) !important;
-        }
-
-        .card-super.role-card-active {
-          border-color: #fbbf24 !important;
-          background: rgba(251, 191, 36, 0.15) !important;
-          box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3) !important;
-        }
-
-        .role-card-top {
+        /* Compact Role Chip */
+        .role-chip {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          gap: 8px;
+          padding: 6px 9px;
+          border-radius: 9px;
+          background: #0c1424;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.16s ease;
+          touch-action: manipulation;
+          min-height: 38px;
         }
 
-        .role-avatar-circle {
+        .role-chip:hover {
+          background: #111a30;
+          border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .role-chip-active {
+          box-shadow: 0 0 0 1.5px rgba(56, 189, 248, 0.4);
+        }
+
+        .chip-resident.role-chip-active {
+          border-color: #38bdf8 !important;
+          background: rgba(56, 189, 248, 0.12) !important;
+        }
+
+        .chip-staff.role-chip-active {
+          border-color: #10b981 !important;
+          background: rgba(16, 185, 129, 0.12) !important;
+        }
+
+        .chip-admin.role-chip-active {
+          border-color: #818cf8 !important;
+          background: rgba(129, 140, 248, 0.12) !important;
+        }
+
+        .chip-super.role-chip-active {
+          border-color: #fbbf24 !important;
+          background: rgba(251, 191, 36, 0.12) !important;
+        }
+
+        .role-icon-circle {
           width: 22px;
           height: 22px;
           border-radius: 6px;
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
         }
 
-        .avatar-blue {
+        .icon-blue {
           background: rgba(56, 189, 248, 0.15);
           color: #38bdf8;
         }
 
-        .avatar-emerald {
+        .icon-emerald {
           background: rgba(16, 185, 129, 0.15);
           color: #34d399;
         }
 
-        .avatar-indigo {
+        .icon-indigo {
           background: rgba(129, 140, 248, 0.15);
           color: #818cf8;
         }
 
-        .avatar-amber {
+        .icon-amber {
           background: rgba(251, 191, 36, 0.15);
           color: #fbbf24;
+        }
+
+        .role-chip-text {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-width: 0;
+        }
+
+        .role-chip-title {
+          font-size: 0.725rem;
+          font-weight: 700;
+          color: #f8fafc;
+          line-height: 1.15;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .role-chip-sub {
+          font-size: 0.625rem;
+          color: #94a3b8;
+          font-weight: 500;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .role-active-check {
+          flex-shrink: 0;
         }
 
         .text-blue { color: #38bdf8; }
@@ -939,43 +1056,47 @@ export default function LoginPage() {
         .text-indigo { color: #818cf8; }
         .text-amber { color: #fbbf24; }
 
-        .role-card-meta {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .role-name {
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #f8fafc;
-          line-height: 1.2;
-        }
-
-        .role-user-name {
-          font-size: 0.65rem;
-          color: #94a3b8;
-          font-weight: 500;
-        }
-
-        /* Card Footer */
+        /* Security Card Footer */
         .auth-card-footer {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          font-size: 0.713rem;
+          gap: 5px;
+          font-size: 0.688rem;
           color: #64748b;
-          padding-top: 10px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          padding-top: 8px;
         }
 
         .footer-shield {
           color: #64748b;
+          flex-shrink: 0;
         }
 
-        @media (max-width: 480px) {
+        /* Desktop Adjustments */
+        @media (min-width: 481px) {
+          .login-canvas-wrapper {
+            padding: 36px 20px;
+          }
+
           .login-unified-card {
-            padding: 28px 20px;
+            border-radius: 24px;
+            padding: 34px 28px;
+          }
+
+          .auth-title {
+            font-size: 1.65rem;
+          }
+        }
+
+        /* Ultra-compact phones (<= 360px) */
+        @media (max-width: 360px) {
+          .login-unified-card {
+            padding: 20px 14px;
+            border-radius: 16px;
+          }
+
+          .auth-title {
+            font-size: 1.3rem;
           }
 
           .quick-roles-grid {

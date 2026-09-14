@@ -18,6 +18,7 @@ import {
   X,
   User,
   ExternalLink,
+  PhoneCall,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -51,6 +52,7 @@ export default function Navbar() {
 
   const isStaff = user && ["STAFF", "ADMIN", "SUPER_ADMIN"].includes(user.role);
   const isAdmin = user && ["ADMIN", "SUPER_ADMIN"].includes(user.role);
+  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname);
 
   if (pathname === "/") {
     return null;
@@ -190,7 +192,7 @@ export default function Navbar() {
                 <span>+ Report Issue</span>
               </NextLink>
             </>
-          ) : (
+          ) : !isAuthPage ? (
             <>
               <div className="nav-capsule">
                 <NextLink
@@ -208,7 +210,7 @@ export default function Navbar() {
                 </NextLink>
               </div>
             </>
-          )}
+          ) : null}
         </nav>
 
         {/* User Right Section */}
@@ -321,6 +323,31 @@ export default function Navbar() {
                 </button>
               </div>
             </>
+          ) : isAuthPage ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <a
+                href="tel:0286431111"
+                title="Call Emergency Hotline"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 12px",
+                  borderRadius: "9999px",
+                  backgroundColor: "rgba(239, 68, 68, 0.12)",
+                  border: "1px solid rgba(239, 68, 68, 0.4)",
+                  color: "#fca5a5",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                <PhoneCall size={12} style={{ color: "#ef4444" }} />
+                <span>Hotline</span>
+              </a>
+            </div>
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <NextLink
@@ -394,7 +421,7 @@ export default function Navbar() {
                 />
               </NextLink>
             </>
-          ) : (
+          ) : isAuthPage ? null : (
             <div style={{ display: "flex", gap: "6px" }}>
               {pathname === "/login" ? (
                 <NextLink

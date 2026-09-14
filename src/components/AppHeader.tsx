@@ -49,10 +49,14 @@ export default function AppHeader() {
     return "BantayBarangay";
   };
 
-  const isSubPage = ["/reports/new", "/notifications", "/profile"].includes(pathname) || pathname.startsWith("/reports/");
+  // Do not render on auth pages to avoid duplicate stacked headers with Navbar
+  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname);
+  if (isAuthPage) return null;
 
   // Only render in standalone app mode to provide the dedicated App Bar
   if (!isStandalone) return null;
+
+  const isSubPage = ["/reports/new", "/notifications", "/profile"].includes(pathname) || pathname.startsWith("/reports/");
 
   return (
     <header
