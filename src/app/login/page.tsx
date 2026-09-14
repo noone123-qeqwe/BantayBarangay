@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { normalizePhoneNumber, isValidPhilippinePhone, formatDisplayPhone } from "@/lib/phone";
 import {
-  Smartphone,
   Mail,
   Lock,
   Eye,
@@ -28,6 +27,7 @@ import {
   Sparkles,
   Radio,
   Layers,
+  ArrowRight,
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -184,173 +184,184 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page-bg">
-      <div className={`login-split-card ${shake ? "card-shake" : ""}`}>
-        
-        {/* ===============================================================
-            LEFT COLUMN: Civic Tech Showcase
-           =============================================================== */}
-        <section className="left-showcase-panel" aria-label="BantayBarangay Overview">
-          {/* Logo & Brand Name */}
-          <div className="brand-header">
-            <div className="brand-emblem-box">
-              <ShieldCheck size={22} className="brand-emblem-icon" />
-            </div>
-            <span className="brand-title-text">BantayBarangay</span>
-          </div>
+    <div className="login-canvas-wrapper">
+      {/* Radiant Background Ambiance */}
+      <div className="ambient-sphere sphere-sapphire" aria-hidden="true" />
+      <div className="ambient-sphere sphere-cyan" aria-hidden="true" />
+      <div className="ambient-sphere sphere-emerald" aria-hidden="true" />
 
-          {/* Smart Community Governance Pill */}
-          <div className="smart-gov-badge">
-            <Sparkles size={13} className="sparkle-badge-icon" />
-            <span>smart community governance</span>
-          </div>
-
-          {/* Main Headline */}
-          <h1 className="hero-heading">
-            Empowering<br />
-            communities<br />
-            through transparent<br />
-            action.
-          </h1>
-
-          {/* Supporting Text */}
-          <p className="hero-subtext">
-            Report infrastructure hazards, track emergency responses in real time, and verify completed municipal fixes together.
-          </p>
-
-          {/* Live Municipal Dispatch Card */}
-          <div className="dispatch-live-card">
-            <div className="dispatch-header-row">
-              <div className="dispatch-label-wrap">
-                <Radio size={13} className="radio-pulse-icon" />
-                <span>live municipal dispatch</span>
-              </div>
-              <div className="dispatch-status-resolved">
-                <Check size={13} strokeWidth={3} />
-                <span>resolved</span>
-              </div>
-            </div>
-
-            <div className="dispatch-issue-title">
-              Streetlight cable hazard repaired
-            </div>
-
-            <div className="dispatch-agency-meta">
-              Barangay engineering team · verified in 18 hrs
-            </div>
-
-            <div className="dispatch-card-divider" />
-
-            <div className="dispatch-resident-verified">
-              <Check size={13} strokeWidth={3} className="check-verified-icon" />
-              <span>confirmed and verified by resident</span>
-            </div>
-          </div>
-
-          {/* 3 Feature Pillars */}
-          <div className="feature-pillars-list">
-            <div className="pillar-item">
-              <div className="pillar-icon-box">
-                <MapPin size={16} />
-              </div>
-              <div className="pillar-text-content">
-                <div className="pillar-title">Precise GPS pinpointing</div>
-                <div className="pillar-desc">Instant coordinates with duplicate detection.</div>
-              </div>
-            </div>
-
-            <div className="pillar-item">
-              <div className="pillar-icon-box">
-                <Zap size={16} />
-              </div>
-              <div className="pillar-text-content">
-                <div className="pillar-title">Real-time status progression</div>
-                <div className="pillar-desc">Track issues from review to completion.</div>
-              </div>
-            </div>
-
-            <div className="pillar-item">
-              <div className="pillar-icon-box">
-                <Layers size={16} />
-              </div>
-              <div className="pillar-text-content">
-                <div className="pillar-title">Resident verification loop</div>
-                <div className="pillar-desc">Photo proof confirms reports before closing.</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Left Footer Security Compliance */}
-          <div className="left-security-notice">
-            <ShieldCheck size={14} className="sec-icon" />
-            <span>256-bit SSL encrypted · government and civic data privacy compliant</span>
-          </div>
-        </section>
-
-        {/* ===============================================================
-            RIGHT COLUMN: Sign In Form & Quick Roles
-           =============================================================== */}
-        <section className="right-auth-panel" aria-label="Sign In">
+      <main className="login-center-container">
+        <div className={`login-unified-card ${shake ? "card-shake" : ""}`}>
           
-          {/* Top Badge: Official Civic Portal */}
-          <div className="civic-portal-pill">
-            <Shield size={13} className="civic-pill-shield" />
-            <span>official civic portal</span>
-          </div>
-
-          {/* Form Title & Subtitle */}
-          <h2 className="auth-card-title">Welcome back</h2>
-          <p className="auth-card-subtitle">
-            Sign in to report issues, track tickets, or access barangay operations.
-          </p>
-
-          {/* Offline Alert */}
-          {isOffline && (
-            <div className="inline-alert alert-warning" role="alert">
-              <WifiOff size={16} />
-              <span>You are currently offline. Check your internet connection.</span>
-            </div>
-          )}
-
-          {/* Error Message Alert */}
-          {error && (
-            <div className="inline-alert alert-error" role="alert">
-              <AlertCircle size={16} />
-              <div className="alert-content">
-                <strong>Unable to sign in</strong>
-                <span>{error}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Sign In Form */}
-          <form onSubmit={handleSubmit} noValidate className="auth-form-elements">
+          {/* ===============================================================
+              LEFT COLUMN: Deep Civic Tech Showcase
+             =============================================================== */}
+          <section className="left-civic-showcase" aria-label="BantayBarangay Platform Overview">
             
-            {/* Field 1: Mobile number or email */}
-            <div className="field-group">
-              <div className="field-label-container">
-                <label htmlFor="identifier" className="field-label-text">
-                  Mobile number or email
-                </label>
-                {phonePreview && (
-                  <span className="phone-preview-tag">
-                    ✓ {phonePreview}
-                  </span>
-                )}
+            {/* Top Brand Header */}
+            <div>
+              <div className="brand-header-row">
+                <div className="brand-badge-box">
+                  <ShieldCheck size={22} className="brand-badge-icon" />
+                </div>
+                <div className="brand-text-block">
+                  <span className="brand-name">Bantay<span className="brand-highlight">Barangay</span></span>
+                  <span className="brand-subtext">Civic Reporting & Response</span>
+                </div>
               </div>
 
-              <div className="dual-input-wrapper">
-                {!isEmailInput ? (
-                  <div className="country-prefix-box">
-                    <span>PH +63</span>
-                  </div>
-                ) : (
-                  <div className="country-prefix-box">
-                    <Mail size={15} />
-                  </div>
-                )}
+              <div className="smart-gov-chip">
+                <span className="live-pulsing-dot" />
+                <span>Smart Civic Governance System</span>
+              </div>
 
-                <div className={`input-core-container ${isIdentifierFocused ? "focused-border" : ""} ${error && !identifier.trim() ? "error-border" : ""}`}>
+              {/* Bold Value Proposition */}
+              <h1 className="showcase-headline">
+                Empowering communities through <span className="headline-gradient">transparent action.</span>
+              </h1>
+
+              <p className="showcase-description">
+                Report road hazards, broken streetlights, and sanitation issues in real time. Track verified municipal resolutions transparently together.
+              </p>
+            </div>
+
+            {/* Live Municipal Dispatch Spotlight Card */}
+            <div className="dispatch-spotlight-card">
+              <div className="dispatch-top-meta">
+                <div className="dispatch-pulse-tag">
+                  <Radio size={13} className="radio-pulse" />
+                  <span>LIVE DISPATCH FEED</span>
+                </div>
+                <div className="dispatch-status-pill">
+                  <Check size={12} strokeWidth={3} />
+                  <span>RESOLVED</span>
+                </div>
+              </div>
+
+              <h3 className="dispatch-issue-text">
+                Streetlight Cable Hazard Repaired
+              </h3>
+
+              <div className="dispatch-location-meta">
+                <span>Barangay Engineering Unit</span>
+                <span className="bullet-sep">·</span>
+                <span className="dispatch-sla-time">Verified in 18 hrs</span>
+              </div>
+
+              <div className="dispatch-resident-proof">
+                <div className="proof-check-circle">
+                  <Check size={11} strokeWidth={3} />
+                </div>
+                <span>Confirmed & verified with photo proof by resident</span>
+              </div>
+            </div>
+
+            {/* 3 Core Civic Pillars */}
+            <div className="civic-pillars-grid">
+              <div className="pillar-row">
+                <div className="pillar-icon-gem gem-blue">
+                  <MapPin size={16} />
+                </div>
+                <div className="pillar-info">
+                  <strong className="pillar-headline">Precise GPS Pinpointing</strong>
+                  <span className="pillar-caption">Instant geo-coordinates with duplicate hazard detection.</span>
+                </div>
+              </div>
+
+              <div className="pillar-row">
+                <div className="pillar-icon-gem gem-cyan">
+                  <Zap size={16} />
+                </div>
+                <div className="pillar-info">
+                  <strong className="pillar-headline">Real-Time SLA Tracking</strong>
+                  <span className="pillar-caption">Live progression from triage to agency field dispatch.</span>
+                </div>
+              </div>
+
+              <div className="pillar-row">
+                <div className="pillar-icon-gem gem-emerald">
+                  <Layers size={16} />
+                </div>
+                <div className="pillar-info">
+                  <strong className="pillar-headline">Citizen Verification Loop</strong>
+                  <span className="pillar-caption">Community photo proof confirms reports before closure.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Showcase Footer Compliance */}
+            <footer className="showcase-compliance-row">
+              <Shield size={13} className="shield-compliance-icon" />
+              <span>Official Civic Platform · 256-Bit SSL Encrypted · RA 10173 Compliant</span>
+            </footer>
+
+          </section>
+
+          {/* ===============================================================
+              RIGHT COLUMN: Pristine Authentication Form
+             =============================================================== */}
+          <section className="right-auth-card" aria-label="Sign In to BantayBarangay">
+            
+            {/* Header / Intro */}
+            <div className="auth-card-header">
+              <div className="civic-badge-pill">
+                <Shield size={12} />
+                <span>OFFICIAL RESIDENT & STAFF PORTAL</span>
+              </div>
+
+              <h2 className="auth-title">Welcome back</h2>
+              <p className="auth-subtitle">
+                Sign in to report community hazards, monitor active tickets, or access barangay operations.
+              </p>
+            </div>
+
+            {/* Offline Alert */}
+            {isOffline && (
+              <div className="status-banner banner-warning" role="alert">
+                <WifiOff size={16} />
+                <span>You are currently offline. Please check your internet connection.</span>
+              </div>
+            )}
+
+            {/* Error Alert */}
+            {error && (
+              <div className="status-banner banner-error" role="alert">
+                <AlertCircle size={16} />
+                <div className="banner-text">
+                  <strong>Authentication Failed</strong>
+                  <span>{error}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Authentication Form */}
+            <form onSubmit={handleSubmit} noValidate className="auth-form">
+              
+              {/* Field 1: Mobile number or email */}
+              <div className="form-field-group">
+                <div className="field-top-row">
+                  <label htmlFor="identifier" className="field-label">
+                    Mobile number or email
+                  </label>
+                  {phonePreview && (
+                    <span className="phone-validation-hint">
+                      ✓ {phonePreview}
+                    </span>
+                  )}
+                </div>
+
+                <div className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${error && !identifier.trim() ? "composite-error" : ""}`}>
+                  {!isEmailInput ? (
+                    <div className="country-prefix-badge">
+                      <span className="flag-icon">🇵🇭</span>
+                      <span className="prefix-num">+63</span>
+                    </div>
+                  ) : (
+                    <div className="country-prefix-badge prefix-email">
+                      <Mail size={15} />
+                    </div>
+                  )}
+
                   <input
                     ref={identifierInputRef}
                     id="identifier"
@@ -358,7 +369,7 @@ export default function LoginPage() {
                     type={isEmailInput ? "email" : "tel"}
                     inputMode={isEmailInput ? "email" : "tel"}
                     autoComplete="username"
-                    className="inner-input-field"
+                    className="styled-text-input"
                     placeholder="09XXXXXXXXX or staff@bantay"
                     value={identifier}
                     onChange={(e) => {
@@ -373,186 +384,276 @@ export default function LoginPage() {
                     aria-invalid={!!error && !identifier.trim()}
                   />
                 </div>
+                <span className="field-hint-text">
+                  Enter your 11-digit mobile number or official barangay email.
+                </span>
               </div>
 
-              <p className="field-helper-caption">
-                Enter your 11-digit mobile number or official barangay email.
-              </p>
+              {/* Field 2: Password */}
+              <div className="form-field-group">
+                <div className="field-top-row">
+                  <label htmlFor="password" className="field-label">
+                    Password
+                  </label>
+                  <NextLink href="/forgot-password" className="forgot-link">
+                    Forgot password?
+                  </NextLink>
+                </div>
+
+                <div className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${error && !password ? "composite-error" : ""}`}>
+                  <div className="country-prefix-badge prefix-lock">
+                    <Lock size={15} />
+                  </div>
+
+                  <input
+                    ref={passwordInputRef}
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    className="styled-text-input"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (error) setError(null);
+                      if (status === "error") setStatus("idle");
+                    }}
+                    onFocus={() => setIsPassFocused(true)}
+                    onBlur={() => setIsPassFocused(false)}
+                    disabled={status === "loading" || status === "success"}
+                    aria-required="true"
+                    aria-invalid={!!error && !password}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="eye-toggle-btn"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    disabled={status === "loading" || status === "success"}
+                    tabIndex={0}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Primary Submit Button */}
+              <button
+                type="submit"
+                disabled={status === "loading" || status === "success"}
+                className={`primary-submit-btn ${status === "success" ? "btn-success-state" : ""}`}
+              >
+                {status === "loading" && (
+                  <>
+                    <Loader2 size={18} className="spin-loader" />
+                    <span>Signing in securely...</span>
+                  </>
+                )}
+
+                {status === "success" && (
+                  <>
+                    <CheckCircle2 size={18} />
+                    <span>Redirecting to Dashboard...</span>
+                  </>
+                )}
+
+                {status !== "loading" && status !== "success" && (
+                  <>
+                    <span>Sign In to Platform</span>
+                    <ArrowRight size={17} className="btn-arrow-icon" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Registration Link */}
+            <div className="register-redirect-banner">
+              <span className="register-prompt">Don't have an account yet?</span>{" "}
+              <NextLink href="/register" className="register-bold-link">
+                Register as Resident
+              </NextLink>
             </div>
 
-            {/* Field 2: Password */}
-            <div className="field-group">
-              <div className="field-label-container">
-                <label htmlFor="password" className="field-label-text">
-                  Password
-                </label>
-                <NextLink href="/forgot-password" className="forgot-password-anchor">
-                  Forgot password?
-                </NextLink>
+            {/* Quick Test Roles Segment (One-Click Autofill) */}
+            <div className="quick-roles-container">
+              <div className="quick-roles-header">
+                <div className="quick-roles-title">
+                  <Sparkles size={13} className="sparkle-gold" />
+                  <span>Quick Test Accounts · One-Click Autofill</span>
+                </div>
+                <span className="quick-roles-sub">Click any role to test:</span>
               </div>
 
-              <div className={`password-input-wrapper ${isPassFocused ? "focused-border" : ""} ${error && !password ? "error-border" : ""}`}>
-                <input
-                  ref={passwordInputRef}
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  className="inner-input-field"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (error) setError(null);
-                    if (status === "error") setStatus("idle");
-                  }}
-                  onFocus={() => setIsPassFocused(true)}
-                  onBlur={() => setIsPassFocused(false)}
-                  disabled={status === "loading" || status === "success"}
-                  aria-required="true"
-                  aria-invalid={!!error && !password}
-                />
-
+              <div className="quick-roles-grid">
+                {/* Role 1: Resident */}
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="password-eye-toggle"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  disabled={status === "loading" || status === "success"}
-                  tabIndex={0}
+                  onClick={() => handleQuickLogin("09204443333", "Resident")}
+                  className={`role-select-card card-resident ${selectedRole === "Resident" ? "role-card-active" : ""}`}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  <div className="role-card-top">
+                    <div className="role-avatar-circle avatar-blue">
+                      <User size={14} />
+                    </div>
+                    {selectedRole === "Resident" && <Check size={14} className="role-check-icon text-blue" />}
+                  </div>
+                  <div className="role-card-meta">
+                    <span className="role-name">Resident</span>
+                    <span className="role-user-name">Juan Dela Cruz</span>
+                  </div>
+                </button>
+
+                {/* Role 2: Staff */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin("09193332222", "Staff")}
+                  className={`role-select-card card-staff ${selectedRole === "Staff" ? "role-card-active" : ""}`}
+                >
+                  <div className="role-card-top">
+                    <div className="role-avatar-circle avatar-emerald">
+                      <Wrench size={14} />
+                    </div>
+                    {selectedRole === "Staff" && <Check size={14} className="role-check-icon text-emerald" />}
+                  </div>
+                  <div className="role-card-meta">
+                    <span className="role-name">Barangay Staff</span>
+                    <span className="role-user-name">Alex Santos</span>
+                  </div>
+                </button>
+
+                {/* Role 3: Admin */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin("09182221111", "Admin")}
+                  className={`role-select-card card-admin ${selectedRole === "Admin" ? "role-card-active" : ""}`}
+                >
+                  <div className="role-card-top">
+                    <div className="role-avatar-circle avatar-indigo">
+                      <Building2 size={14} />
+                    </div>
+                    {selectedRole === "Admin" && <Check size={14} className="role-check-icon text-indigo" />}
+                  </div>
+                  <div className="role-card-meta">
+                    <span className="role-name">Barangay Admin</span>
+                    <span className="role-user-name">Roberto Tan</span>
+                  </div>
+                </button>
+
+                {/* Role 4: Super Admin */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin("09171110000", "Super Admin")}
+                  className={`role-select-card card-super ${selectedRole === "Super Admin" ? "role-card-active" : ""}`}
+                >
+                  <div className="role-card-top">
+                    <div className="role-avatar-circle avatar-amber">
+                      <Crown size={14} />
+                    </div>
+                    {selectedRole === "Super Admin" && <Check size={14} className="role-check-icon text-amber" />}
+                  </div>
+                  <div className="role-card-meta">
+                    <span className="role-name">Super Admin</span>
+                    <span className="role-user-name">System Operator</span>
+                  </div>
                 </button>
               </div>
             </div>
 
-            {/* Submit Action Button (Emerald Green) */}
-            <button
-              type="submit"
-              disabled={status === "loading" || status === "success"}
-              className={`emerald-signin-button ${status === "success" ? "signin-success" : ""}`}
-            >
-              {status === "loading" && (
-                <>
-                  <Loader2 size={18} className="spin-animation" />
-                  <span>Signing in...</span>
-                </>
-              )}
-
-              {status === "success" && (
-                <>
-                  <CheckCircle2 size={18} />
-                  <span>Login Successful</span>
-                </>
-              )}
-
-              {status !== "loading" && status !== "success" && (
-                <>
-                  <LogIn size={17} />
-                  <span>Sign in</span>
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Registration Navigation Callout */}
-          <div className="auth-account-callout">
-            <span className="callout-label">Don't have an account yet?</span>{" "}
-            <NextLink href="/register" className="callout-link-blue">
-              Create one
-            </NextLink>
-          </div>
-
-          {/* Quick Test Roles - One-Click Autofill Box */}
-          <div className="quick-roles-card">
-            <div className="quick-roles-title-bar">
-              <Sparkles size={13} className="roles-icon-sparkle" />
-              <span>quick test roles - one-click autofill</span>
+            {/* Bottom Security Footer */}
+            <div className="auth-card-footer">
+              <ShieldCheck size={14} className="footer-shield" />
+              <span>Government of the Philippines · Republic Act No. 10173</span>
             </div>
 
-            <div className="quick-roles-grid">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09204443333", "Resident")}
-                className={`role-button-card ${selectedRole === "Resident" ? "role-card-active" : ""}`}
-              >
-                <User size={15} className="role-btn-icon" />
-                <span className="role-btn-label">Resident</span>
-              </button>
+          </section>
 
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09193332222", "Staff")}
-                className={`role-button-card ${selectedRole === "Staff" ? "role-card-active" : ""}`}
-              >
-                <Wrench size={15} className="role-btn-icon" />
-                <span className="role-btn-label">Staff</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09182221111", "Admin")}
-                className={`role-button-card ${selectedRole === "Admin" ? "role-card-active" : ""}`}
-              >
-                <Building2 size={15} className="role-btn-icon" />
-                <span className="role-btn-label">Admin</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09171110000", "Super Admin")}
-                className={`role-button-card ${selectedRole === "Super Admin" ? "role-card-active" : ""}`}
-              >
-                <Crown size={15} className="role-btn-icon" />
-                <span className="role-btn-label">Super</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Bottom Security Footer */}
-          <div className="right-bottom-security">
-            <ShieldCheck size={14} className="bottom-shield-icon" />
-            <span>official civic platform · 256-bit SSL encrypted</span>
-          </div>
-
-        </section>
-
-      </div>
+        </div>
+      </main>
 
       {/* ===============================================================
-          STYLES: Precise Replica of Reference Design
+          STYLES: High-End Luminous Civic-Tech Theme
          =============================================================== */}
       <style jsx>{`
-        /* Page Canvas */
-        .login-page-bg {
+        /* Canvas Wrapper - Seamless full-height viewport */
+        .login-canvas-wrapper {
           min-height: calc(100vh - var(--header-height, 60px));
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 40px 20px;
-          background-color: #060a12;
+          padding: 36px 20px;
+          background-color: #f8fafc;
           background-image: 
-            radial-gradient(circle at 15% 20%, rgba(13, 148, 136, 0.08) 0%, transparent 40%),
-            radial-gradient(circle at 85% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
+            radial-gradient(circle at 12% 18%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
+            radial-gradient(circle at 88% 82%, rgba(16, 185, 129, 0.07) 0%, transparent 45%),
+            radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 55%);
+          position: relative;
+          overflow: hidden;
         }
 
-        /* Outer Split Card */
-        .login-split-card {
+        /* Ambient Glow Spheres */
+        .ambient-sphere {
+          position: absolute;
+          border-radius: 9999px;
+          filter: blur(120px);
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0.65;
+        }
+
+        .sphere-sapphire {
+          width: 520px;
+          height: 520px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+          top: -80px;
+          left: -80px;
+        }
+
+        .sphere-cyan {
+          width: 480px;
+          height: 480px;
+          background: radial-gradient(circle, rgba(6, 182, 212, 0.14) 0%, transparent 70%);
+          bottom: -60px;
+          right: -60px;
+        }
+
+        .sphere-emerald {
+          width: 420px;
+          height: 420px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+          top: 40%;
+          left: 45%;
+        }
+
+        /* Main Container */
+        .login-center-container {
           width: 100%;
-          max-width: 980px;
+          max-width: 1080px;
+          position: relative;
+          z-index: 1;
+        }
+
+        /* Unified Split Card */
+        .login-unified-card {
+          width: 100%;
           display: grid;
-          grid-template-columns: 1.05fr 1fr;
-          border-radius: 20px;
-          border: 1px solid #1e293b;
+          grid-template-columns: 1.08fr 1fr;
+          border-radius: 24px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 
+            0 25px 50px -12px rgba(15, 23, 42, 0.08),
+            0 0 0 1px rgba(255, 255, 255, 0.8);
           overflow: hidden;
-          box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .card-shake {
-          animation: shakeEffect 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+          animation: shakeCardEffect 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
 
-        @keyframes shakeEffect {
+        @keyframes shakeCardEffect {
           10%, 90% { transform: translate3d(-2px, 0, 0); }
           20%, 80% { transform: translate3d(3px, 0, 0); }
           30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
@@ -560,477 +661,567 @@ export default function LoginPage() {
         }
 
         /* =============================================================
-           LEFT PANEL: Deep Navy Civic Showcase
+           LEFT PANEL: Deep Navy Sapphire Showcase
            ============================================================= */
-        .left-showcase-panel {
-          background-color: #07101f;
-          padding: 42px 40px;
+        .left-civic-showcase {
+          background: linear-gradient(155deg, #090f1d 0%, #0f1c34 50%, #091222 100%);
+          padding: 44px 40px;
+          color: #ffffff;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          border-right: 1px solid rgba(255, 255, 255, 0.07);
+          position: relative;
+          overflow: hidden;
+          border-right: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .brand-header {
+        .left-civic-showcase::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          background-image: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.22) 0%, transparent 50%),
+                            radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.18) 0%, transparent 50%);
+          pointer-events: none;
+        }
+
+        .brand-header-row {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin-bottom: 24px;
+          margin-bottom: 16px;
+          position: relative;
+          z-index: 1;
         }
 
-        .brand-emblem-box {
-          width: 42px;
-          height: 42px;
-          border-radius: 10px;
-          background-color: #059669;
+        .brand-badge-box {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           color: #ffffff;
-          box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+          box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
           flex-shrink: 0;
         }
 
-        .brand-emblem-icon {
+        .brand-badge-icon {
           color: #ffffff;
         }
 
-        .brand-title-text {
-          font-family: var(--font-heading);
-          font-size: 1.35rem;
-          font-weight: 700;
-          color: #ffffff;
-          letter-spacing: -0.02em;
+        .brand-text-block {
+          display: flex;
+          flex-direction: column;
         }
 
-        /* Smart Community Governance Pill */
-        .smart-gov-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 5px 12px;
-          border-radius: 9999px;
-          background-color: rgba(20, 184, 166, 0.12);
-          border: 1px solid rgba(20, 184, 166, 0.3);
-          color: #34d399;
-          font-size: 0.75rem;
-          font-weight: 600;
-          margin-bottom: 24px;
-          align-self: flex-start;
-        }
-
-        .sparkle-badge-icon {
-          color: #34d399;
-        }
-
-        /* Hero Typography */
-        .hero-heading {
-          font-family: var(--font-heading);
-          font-size: 2.15rem;
+        .brand-name {
+          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+          font-size: 1.45rem;
           font-weight: 800;
-          line-height: 1.18;
           letter-spacing: -0.03em;
           color: #ffffff;
-          margin: 0 0 16px 0;
+          line-height: 1.1;
         }
 
-        .hero-subtext {
-          font-size: 0.906rem;
-          color: #8da0b6;
-          line-height: 1.55;
-          margin: 0 0 28px 0;
-          max-width: 420px;
+        .brand-highlight {
+          color: #38bdf8;
         }
 
-        /* Live Municipal Dispatch Card */
-        .dispatch-live-card {
-          background-color: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 12px;
-          padding: 16px 18px;
+        .brand-subtext {
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #94a3b8;
+          letter-spacing: 0.02em;
+        }
+
+        .smart-gov-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 5px 12px;
+          border-radius: 9999px;
+          background: rgba(16, 185, 129, 0.12);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          color: #34d399;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          margin-bottom: 22px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .live-pulsing-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background-color: #10b981;
+          box-shadow: 0 0 10px #10b981;
+          animation: pulseGreen 1.8s infinite;
+        }
+
+        @keyframes pulseGreen {
+          0% { transform: scale(0.95); opacity: 0.8; }
+          50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px #34d399; }
+          100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .showcase-headline {
+          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+          font-size: 2.1rem;
+          font-weight: 800;
+          line-height: 1.2;
+          letter-spacing: -0.03em;
+          color: #f8fafc;
+          margin-bottom: 14px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .headline-gradient {
+          background: linear-gradient(135deg, #38bdf8 0%, #34d399 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .showcase-description {
+          font-size: 0.925rem;
+          line-height: 1.6;
+          color: #cbd5e1;
           margin-bottom: 28px;
+          position: relative;
+          z-index: 1;
         }
 
-        .dispatch-header-row {
+        /* Dispatch Spotlight Card */
+        .dispatch-spotlight-card {
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(14px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 16px;
+          padding: 16px 18px;
+          margin-bottom: 26px;
+          position: relative;
+          z-index: 1;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .dispatch-top-meta {
           display: flex;
           align-items: center;
           justify-content: space-between;
           margin-bottom: 8px;
         }
 
-        .dispatch-label-wrap {
+        .dispatch-pulse-tag {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 0.75rem;
-          color: #8b949e;
-          font-weight: 500;
+          font-size: 0.688rem;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          color: #38bdf8;
         }
 
-        .radio-pulse-icon {
-          color: #58a6ff;
+        .radio-pulse {
+          color: #38bdf8;
         }
 
-        .dispatch-status-resolved {
+        .dispatch-status-pill {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          font-size: 0.75rem;
-          font-weight: 700;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          background: rgba(16, 185, 129, 0.2);
+          border: 1px solid rgba(16, 185, 129, 0.4);
           color: #34d399;
+          font-size: 0.688rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
         }
 
-        .dispatch-issue-title {
-          font-size: 0.938rem;
+        .dispatch-issue-text {
+          font-size: 0.95rem;
           font-weight: 700;
           color: #ffffff;
-          margin-bottom: 4px;
+          margin: 0 0 4px 0;
+          line-height: 1.3;
         }
 
-        .dispatch-agency-meta {
-          font-size: 0.781rem;
-          color: #8b949e;
-          margin-bottom: 12px;
-        }
-
-        .dispatch-card-divider {
-          height: 1px;
-          background-color: rgba(255, 255, 255, 0.07);
-          margin-bottom: 10px;
-        }
-
-        .dispatch-resident-verified {
+        .dispatch-location-meta {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 0.781rem;
+          font-size: 0.775rem;
+          color: #94a3b8;
+          margin-bottom: 12px;
+        }
+
+        .bullet-sep {
+          color: #64748b;
+        }
+
+        .dispatch-sla-time {
+          color: #38bdf8;
           font-weight: 600;
-          color: #34d399;
         }
 
-        .check-verified-icon {
-          color: #34d399;
+        .dispatch-resident-proof {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding-top: 10px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #a7f3d0;
         }
 
-        /* 3 Feature Pillars */
-        .feature-pillars-list {
+        .proof-check-circle {
+          width: 17px;
+          height: 17px;
+          border-radius: 50%;
+          background: #059669;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          flex-shrink: 0;
+        }
+
+        /* 3 Pillars List */
+        .civic-pillars-grid {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          margin-bottom: 28px;
+          gap: 14px;
+          margin-bottom: 24px;
+          position: relative;
+          z-index: 1;
         }
 
-        .pillar-item {
+        .pillar-row {
           display: flex;
           align-items: flex-start;
           gap: 12px;
         }
 
-        .pillar-icon-box {
+        .pillar-icon-gem {
           width: 32px;
           height: 32px;
           border-radius: 8px;
-          border: 1px solid rgba(52, 211, 153, 0.3);
-          background-color: rgba(52, 211, 153, 0.06);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .gem-blue {
+          background: rgba(37, 99, 235, 0.2);
+          color: #60a5fa;
+          border: 1px solid rgba(37, 99, 235, 0.35);
+        }
+
+        .gem-cyan {
+          background: rgba(6, 182, 212, 0.2);
+          color: #38bdf8;
+          border: 1px solid rgba(6, 182, 212, 0.35);
+        }
+
+        .gem-emerald {
+          background: rgba(16, 185, 129, 0.2);
           color: #34d399;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
+          border: 1px solid rgba(16, 185, 129, 0.35);
         }
 
-        .pillar-title {
-          font-size: 0.875rem;
-          font-weight: 700;
-          color: #ffffff;
-          line-height: 1.25;
-        }
-
-        .pillar-desc {
-          font-size: 0.781rem;
-          color: #8b949e;
-          line-height: 1.35;
-          margin-top: 2px;
-        }
-
-        /* Left Footer Security Notice */
-        .left-security-notice {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 0.719rem;
-          color: #64748b;
-          padding-top: 16px;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .sec-icon {
-          color: #64748b;
-          flex-shrink: 0;
-        }
-
-        /* =============================================================
-           RIGHT PANEL: Dark Slate Form & Quick Roles
-           ============================================================= */
-        .right-auth-panel {
-          background-color: #10151c;
-          padding: 42px 40px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-
-        /* Official Civic Portal Badge */
-        .civic-portal-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 12px;
-          border-radius: 9999px;
-          background-color: rgba(30, 58, 138, 0.35);
-          border: 1px solid rgba(59, 130, 246, 0.3);
-          color: #60a5fa;
-          font-size: 0.75rem;
-          font-weight: 600;
-          margin-bottom: 20px;
-          align-self: flex-start;
-        }
-
-        .civic-pill-shield {
-          color: #60a5fa;
-        }
-
-        .auth-card-title {
-          font-family: var(--font-heading);
-          font-size: 1.95rem;
-          font-weight: 800;
-          letter-spacing: -0.03em;
-          color: #ffffff;
-          margin: 0 0 8px 0;
-          line-height: 1.2;
-        }
-
-        .auth-card-subtitle {
-          font-size: 0.875rem;
-          color: #8da0b6;
-          line-height: 1.45;
-          margin: 0 0 24px 0;
-        }
-
-        /* Alert Box */
-        .inline-alert {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          padding: 10px 14px;
-          border-radius: 10px;
-          font-size: 0.813rem;
-          line-height: 1.4;
-          margin-bottom: 18px;
-        }
-
-        .alert-error {
-          background-color: rgba(220, 38, 38, 0.15);
-          border: 1px solid rgba(239, 68, 68, 0.35);
-          color: #fca5a5;
-        }
-
-        .alert-warning {
-          background-color: rgba(245, 158, 11, 0.15);
-          border: 1px solid rgba(245, 158, 11, 0.35);
-          color: #fde68a;
-        }
-
-        .alert-content {
+        .pillar-info {
           display: flex;
           flex-direction: column;
           gap: 2px;
         }
 
-        /* Form Structure */
-        .auth-form-elements {
+        .pillar-headline {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .pillar-caption {
+          font-size: 0.775rem;
+          color: #94a3b8;
+          line-height: 1.35;
+        }
+
+        /* Left Showcase Compliance Footer */
+        .showcase-compliance-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.713rem;
+          color: #64748b;
+          letter-spacing: 0.01em;
+          padding-top: 18px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          position: relative;
+          z-index: 1;
+        }
+
+        .shield-compliance-icon {
+          color: #38bdf8;
+          flex-shrink: 0;
+        }
+
+        /* =============================================================
+           RIGHT PANEL: Pure Clean Auth Card
+           ============================================================= */
+        .right-auth-card {
+          background-color: #ffffff;
+          padding: 44px 40px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .auth-card-header {
+          margin-bottom: 22px;
+        }
+
+        .civic-badge-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          border-radius: 9999px;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          color: #1d4ed8;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.03em;
+          margin-bottom: 12px;
+        }
+
+        .auth-title {
+          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+          font-size: 1.85rem;
+          font-weight: 800;
+          color: #0f172a;
+          letter-spacing: -0.03em;
+          line-height: 1.15;
+          margin: 0 0 6px 0;
+        }
+
+        .auth-subtitle {
+          font-size: 0.875rem;
+          color: #64748b;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        /* Status Banners */
+        .status-banner {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          font-size: 0.813rem;
+          margin-bottom: 18px;
+        }
+
+        .banner-warning {
+          background-color: #fffbeb;
+          border: 1px solid #fde68a;
+          color: #b45309;
+        }
+
+        .banner-error {
+          background-color: #fef2f2;
+          border: 1px solid #fecaca;
+          color: #b91c1c;
+        }
+
+        .banner-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        /* Form Controls */
+        .auth-form {
           display: flex;
           flex-direction: column;
           gap: 18px;
+          margin-bottom: 18px;
         }
 
-        .field-group {
+        .form-field-group {
           display: flex;
           flex-direction: column;
+          gap: 6px;
         }
 
-        .field-label-container {
+        .field-top-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 7px;
         }
 
-        .field-label-text {
+        .field-label {
           font-size: 0.813rem;
-          font-weight: 500;
-          color: #cbd5e1;
-        }
-
-        .phone-preview-tag {
-          font-size: 0.688rem;
           font-weight: 700;
-          color: #34d399;
-          background-color: rgba(16, 185, 129, 0.15);
-          padding: 1px 7px;
-          border-radius: 9999px;
+          color: #1e293b;
         }
 
-        .forgot-password-anchor {
-          font-size: 0.781rem;
-          font-weight: 500;
-          color: #60a5fa;
+        .phone-validation-hint {
+          font-size: 0.725rem;
+          font-weight: 700;
+          color: #059669;
+          background: #ecfdf5;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          border: 1px solid #a7f3d0;
+        }
+
+        .forgot-link {
+          font-size: 0.785rem;
+          font-weight: 600;
+          color: #2563eb;
           text-decoration: none;
           transition: color 0.15s ease;
         }
 
-        .forgot-password-anchor:hover {
-          color: #93c5fd;
+        .forgot-link:hover {
+          color: #1d4ed8;
           text-decoration: underline;
         }
 
-        /* Split Dual Input for Identifier */
-        .dual-input-wrapper {
-          display: flex;
-          align-items: stretch;
-          gap: 6px;
-        }
-
-        .country-prefix-box {
+        .composite-input {
           display: flex;
           align-items: center;
-          justify-content: center;
-          padding: 0 12px;
-          background-color: #1a222d;
-          border: 1px solid #30363d;
-          border-radius: 8px;
-          color: #e6edf3;
+          background: #f8fafc;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 12px;
+          overflow: hidden;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .composite-focus {
+          border-color: #2563eb;
+          background: #ffffff;
+          box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.12);
+        }
+
+        .composite-error {
+          border-color: #ef4444;
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .country-prefix-badge {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 0 14px;
+          height: 44px;
+          background-color: #f1f5f9;
+          border-right: 1.5px solid #e2e8f0;
+          color: #334155;
           font-size: 0.813rem;
-          font-weight: 600;
+          font-weight: 700;
           user-select: none;
           flex-shrink: 0;
         }
 
-        .input-core-container {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          background-color: #161b22;
-          border: 1px solid #30363d;
-          border-radius: 8px;
+        .prefix-email, .prefix-lock {
+          color: #64748b;
           padding: 0 12px;
-          height: 46px;
-          transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .password-input-wrapper {
-          display: flex;
-          align-items: center;
-          background-color: #161b22;
-          border: 1px solid #30363d;
-          border-radius: 8px;
-          padding: 0 12px;
-          height: 46px;
-          transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .focused-border {
-          border-color: #38bdf8 !important;
-          box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
-        }
-
-        .error-border {
-          border-color: #ef4444 !important;
-          box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
-        }
-
-        .inner-input-field {
+        .styled-text-input {
           flex: 1;
-          width: 100%;
+          height: 44px;
+          padding: 0 14px;
+          background: transparent;
           border: none;
           outline: none;
-          background: transparent;
-          color: #ffffff;
           font-size: 0.875rem;
+          color: #0f172a;
           font-weight: 500;
-          height: 100%;
         }
 
-        .inner-input-field::placeholder {
-          color: #6e7681;
+        .styled-text-input::placeholder {
+          color: #94a3b8;
           font-weight: 400;
         }
 
-        .password-eye-toggle {
-          background: transparent;
-          border: none;
-          color: #8b949e;
-          cursor: pointer;
-          padding: 4px;
+        .eye-toggle-btn {
+          height: 44px;
+          width: 44px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 6px;
+          background: transparent;
+          border: none;
+          color: #64748b;
+          cursor: pointer;
           transition: color 0.15s ease;
         }
 
-        .password-eye-toggle:hover {
-          color: #ffffff;
+        .eye-toggle-btn:hover {
+          color: #0f172a;
         }
 
-        .field-helper-caption {
-          font-size: 0.719rem;
+        .field-hint-text {
+          font-size: 0.725rem;
           color: #64748b;
-          margin-top: 5px;
-          margin-bottom: 0;
         }
 
-        /* Submit Button: Emerald Green */
-        .emerald-signin-button {
-          width: 100%;
-          height: 48px;
-          margin-top: 6px;
-          display: inline-flex;
+        /* Primary Submit Button */
+        .primary-submit-btn {
+          display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          border-radius: 10px;
-          font-size: 0.938rem;
-          font-weight: 700;
+          height: 46px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
           color: #ffffff;
-          background-color: #0d7658;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 4px 14px rgba(13, 118, 88, 0.4);
+          font-size: 0.925rem;
+          font-weight: 700;
+          border: none;
           cursor: pointer;
-          user-select: none;
-          transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          margin-top: 4px;
         }
 
-        .emerald-signin-button:hover:not(:disabled) {
-          background-color: #0b684d;
-          box-shadow: 0 6px 18px rgba(13, 118, 88, 0.55);
+        .primary-submit-btn:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 8px 20px rgba(37, 99, 235, 0.45);
+          background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
         }
 
-        .emerald-signin-button:active:not(:disabled) {
-          transform: scale(0.99);
+        .primary-submit-btn:active:not(:disabled) {
+          transform: scale(0.98);
         }
 
-        .emerald-signin-button:disabled {
+        .primary-submit-btn:disabled {
           opacity: 0.75;
           cursor: not-allowed;
         }
 
-        .signin-success {
-          background-color: #059669 !important;
+        .btn-success-state {
+          background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+          box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important;
         }
 
-        .spin-animation {
-          animation: spin 0.9s linear infinite;
+        .spin-loader {
+          animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
@@ -1038,49 +1229,70 @@ export default function LoginPage() {
           to { transform: rotate(360deg); }
         }
 
-        /* Account Callout */
-        .auth-account-callout {
+        .btn-arrow-icon {
+          transition: transform 0.2s ease;
+        }
+
+        .primary-submit-btn:hover .btn-arrow-icon {
+          transform: translateX(3px);
+        }
+
+        /* Register Redirect */
+        .register-redirect-banner {
           text-align: center;
-          margin-top: 18px;
           font-size: 0.813rem;
+          margin-bottom: 20px;
         }
 
-        .callout-label {
-          color: #8b949e;
+        .register-prompt {
+          color: #64748b;
         }
 
-        .callout-link-blue {
-          color: #60a5fa;
-          font-weight: 600;
+        .register-bold-link {
+          color: #2563eb;
+          font-weight: 700;
           text-decoration: none;
-          margin-left: 4px;
+          transition: color 0.15s ease;
         }
 
-        .callout-link-blue:hover {
+        .register-bold-link:hover {
+          color: #1d4ed8;
           text-decoration: underline;
         }
 
         /* Quick Test Roles Box */
-        .quick-roles-card {
-          margin-top: 22px;
+        .quick-roles-container {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
           padding: 14px;
-          background-color: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 12px;
+          margin-bottom: 18px;
         }
 
-        .quick-roles-title-bar {
+        .quick-roles-header {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 0.719rem;
-          font-weight: 600;
-          color: #8b949e;
+          justify-content: space-between;
           margin-bottom: 10px;
         }
 
-        .roles-icon-sparkle {
-          color: #8b949e;
+        .quick-roles-title {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #334155;
+        }
+
+        .sparkle-gold {
+          color: #d97706;
+        }
+
+        .quick-roles-sub {
+          font-size: 0.7rem;
+          color: #64748b;
+          font-weight: 500;
         }
 
         .quick-roles-grid {
@@ -1089,119 +1301,152 @@ export default function LoginPage() {
           gap: 8px;
         }
 
-        .role-button-card {
+        .role-select-card {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          justify-content: center;
           gap: 6px;
-          padding: 12px 8px;
-          background-color: #161b22;
-          border: 1px solid #30363d;
-          border-radius: 8px;
-          color: #c9d1d9;
+          padding: 9px 12px;
+          border-radius: 10px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
           cursor: pointer;
-          transition: all 0.15s ease;
+          text-align: left;
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .role-button-card:hover {
-          border-color: #38bdf8;
-          color: #ffffff;
-          background-color: #1c232d;
+        .role-select-card:hover {
+          transform: translateY(-1px);
+          border-color: #cbd5e1;
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
         }
 
         .role-card-active {
-          border-color: #38bdf8 !important;
-          color: #38bdf8 !important;
-          background-color: #1c232d !important;
-          box-shadow: 0 0 0 1px #38bdf8;
+          border-color: #2563eb !important;
+          background: #eff6ff !important;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
         }
 
-        .role-btn-icon {
-          color: inherit;
+        .card-staff.role-card-active {
+          border-color: #059669 !important;
+          background: #ecfdf5 !important;
+          box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
         }
 
-        .role-btn-label {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: inherit;
+        .card-admin.role-card-active {
+          border-color: #6366f1 !important;
+          background: #eef2ff !important;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
         }
 
-        /* Right Bottom Security Footer */
-        .right-bottom-security {
-          margin-top: 20px;
+        .card-super.role-card-active {
+          border-color: #d97706 !important;
+          background: #fffbeb !important;
+          box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2) !important;
+        }
+
+        .role-card-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .role-avatar-circle {
+          width: 24px;
+          height: 24px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .avatar-blue {
+          background: #eff6ff;
+          color: #2563eb;
+        }
+
+        .avatar-emerald {
+          background: #ecfdf5;
+          color: #059669;
+        }
+
+        .avatar-indigo {
+          background: #eef2ff;
+          color: #6366f1;
+        }
+
+        .avatar-amber {
+          background: #fffbeb;
+          color: #d97706;
+        }
+
+        .text-blue { color: #2563eb; }
+        .text-emerald { color: #059669; }
+        .text-indigo { color: #6366f1; }
+        .text-amber { color: #d97706; }
+
+        .role-card-meta {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .role-name {
+          font-size: 0.775rem;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1.2;
+        }
+
+        .role-user-name {
+          font-size: 0.688rem;
+          color: #64748b;
+          font-weight: 500;
+        }
+
+        /* Card Footer */
+        .auth-card-footer {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 6px;
-          font-size: 0.719rem;
-          color: #64748b;
+          font-size: 0.713rem;
+          color: #94a3b8;
+          padding-top: 10px;
+          border-top: 1px solid #f1f5f9;
         }
 
-        .bottom-shield-icon {
+        .footer-shield {
           color: #64748b;
         }
 
         /* =============================================================
-           RESPONSIVE BREAKPOINTS
+           RESPONSIVE MOBILE BREAKPOINTS
            ============================================================= */
-        @media (max-width: 960px) {
-          .login-page-bg {
-            padding: 24px 12px;
-          }
-
-          .login-split-card {
+        @media (max-width: 980px) {
+          .login-unified-card {
             grid-template-columns: 1fr;
-            max-width: 480px;
+            max-width: 520px;
           }
 
-          .left-showcase-panel {
-            padding: 32px 24px;
+          .left-civic-showcase {
+            display: none;
           }
 
-          .right-auth-panel {
-            padding: 32px 24px;
+          .right-auth-card {
+            padding: 36px 24px;
           }
 
-          .hero-heading {
-            font-size: 1.85rem;
+          .login-canvas-wrapper {
+            padding: 24px 16px;
           }
         }
 
         @media (max-width: 480px) {
-          .left-showcase-panel {
-            padding: 24px 18px;
+          .quick-roles-grid {
+            grid-template-columns: 1fr;
           }
 
-          .right-auth-panel {
-            padding: 24px 18px;
-          }
-
-          .hero-heading {
-            font-size: 1.65rem;
-          }
-
-          .auth-card-title {
-            font-size: 1.65rem;
-          }
-
-          .dual-input-wrapper {
-            flex-direction: column;
-            gap: 6px;
-          }
-
-          .country-prefix-box {
-            height: 38px;
-          }
-        }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-          .card-shake,
-          .emerald-signin-button,
-          .spin-animation {
-            animation: none !important;
-            transition: none !important;
+          .auth-title {
+            font-size: 1.6rem;
           }
         }
       `}</style>

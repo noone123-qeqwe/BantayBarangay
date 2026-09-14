@@ -60,14 +60,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/login");
+      router.replace("/login");
       return;
     }
 
     if (user) {
       loadDashboardData();
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   const loadDashboardData = async () => {
     try {
@@ -98,20 +98,42 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading || (!user && fetching)) {
+  if (loading || !user) {
     return (
-      <div className="dashboard-root">
-        <div className="loading-container">
-          <div className="brand-logo-emblem">
-            <ShieldCheck size={28} className="emblem-icon" />
-          </div>
-          <div className="loading-text">Loading your civic dashboard...</div>
+      <div
+        style={{
+          minHeight: "calc(100vh - var(--header-height, 60px))",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "100px 20px",
+          textAlign: "center",
+          backgroundColor: "#f8fafc",
+        }}
+      >
+        <div
+          style={{
+            width: "56px",
+            height: "56px",
+            borderRadius: "14px",
+            background: "linear-gradient(135deg, #2563eb 0%, #06b6d4 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#ffffff",
+            boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)",
+            marginBottom: "16px",
+          }}
+        >
+          <ShieldCheck size={28} />
+        </div>
+        <div style={{ fontSize: "1.05rem", fontWeight: 600, color: "#64748b" }}>
+          Loading your civic dashboard...
         </div>
       </div>
     );
   }
-
-  if (!user) return null;
 
   // Counts & Filter Bins
   const totalCount = reports.length;
@@ -151,7 +173,7 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-root">
-      {/* Dynamic Background Auras matching login screen */}
+      {/* Ambient Lighting Spheres */}
       <div className="ambient-glow glow-emerald" aria-hidden="true" />
       <div className="ambient-glow glow-blue" aria-hidden="true" />
 
@@ -372,7 +394,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* LIVE MUNICIPAL DISPATCH CARD (Direct match with login screen) */}
+            {/* LIVE MUNICIPAL DISPATCH CARD */}
             <div className="dispatch-live-widget">
               <div className="dispatch-top-row">
                 <div className="dispatch-tag">
@@ -803,46 +825,46 @@ export default function DashboardPage() {
       </div>
 
       {/* ===============================================================
-          STYLES: Dark Civic-Tech Visual Identity Matching Login
+          STYLES: Unified Luminous Civic-Tech Theme
          =============================================================== */}
       <style jsx>{`
         /* Root Canvas */
         .dashboard-root {
           min-height: calc(100vh - var(--header-height, 60px));
-          background-color: #060a12;
+          background-color: #f8fafc;
           background-image: 
-            radial-gradient(circle at 12% 15%, rgba(13, 148, 136, 0.08) 0%, transparent 45%),
-            radial-gradient(circle at 88% 85%, rgba(37, 99, 235, 0.08) 0%, transparent 45%);
-          color: #ffffff;
-          padding: 36px 20px 60px 20px;
+            radial-gradient(circle at 10% 12%, rgba(37, 99, 235, 0.07) 0%, transparent 45%),
+            radial-gradient(circle at 90% 88%, rgba(16, 185, 129, 0.06) 0%, transparent 45%);
+          color: #0f172a;
+          padding: 32px 20px 60px 20px;
           position: relative;
           overflow: hidden;
         }
 
-        /* Ambient Background Glows */
+        /* Ambient Glow Spheres */
         .ambient-glow {
           position: absolute;
           border-radius: 9999px;
           filter: blur(140px);
           pointer-events: none;
           z-index: 0;
-          opacity: 0.45;
+          opacity: 0.6;
         }
 
         .glow-emerald {
-          width: 540px;
-          height: 540px;
-          background: radial-gradient(circle, rgba(5, 150, 105, 0.15) 0%, transparent 70%);
-          top: -100px;
-          left: -100px;
+          width: 520px;
+          height: 520px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+          top: -80px;
+          left: -80px;
         }
 
         .glow-blue {
-          width: 520px;
-          height: 520px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.14) 0%, transparent 70%);
-          bottom: -80px;
-          right: -80px;
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+          bottom: -60px;
+          right: -60px;
         }
 
         /* Main Container */
@@ -864,29 +886,27 @@ export default function DashboardPage() {
         }
 
         .brand-logo-emblem {
-          width: 54px;
-          height: 54px;
+          width: 56px;
+          height: 56px;
           border-radius: 14px;
-          background-color: #059669;
+          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           color: #ffffff;
-          box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+          box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
           margin-bottom: 16px;
         }
 
         .loading-text {
           font-size: 1.05rem;
-          color: #8da0b6;
           font-weight: 600;
+          color: #64748b;
         }
 
-        /* -------------------------------------------------------------
-           HEADER BLOCK
-           ------------------------------------------------------------- */
+        /* Dashboard Header */
         .dashboard-header-block {
-          margin-bottom: 32px;
+          margin-bottom: 28px;
         }
 
         .header-meta-row {
@@ -895,7 +915,7 @@ export default function DashboardPage() {
           justify-content: space-between;
           flex-wrap: wrap;
           gap: 12px;
-          margin-bottom: 14px;
+          margin-bottom: 12px;
         }
 
         .role-pill {
@@ -904,34 +924,34 @@ export default function DashboardPage() {
           gap: 6px;
           padding: 4px 12px;
           border-radius: 9999px;
-          font-size: 0.75rem;
-          font-weight: 700;
-          text-transform: uppercase;
+          font-size: 0.725rem;
+          font-weight: 800;
           letter-spacing: 0.04em;
+          text-transform: uppercase;
         }
 
         .pill-resident {
-          background-color: rgba(30, 58, 138, 0.35);
-          border: 1px solid rgba(59, 130, 246, 0.35);
-          color: #60a5fa;
+          background: #eff6ff;
+          color: #1d4ed8;
+          border: 1px solid #bfdbfe;
         }
 
         .pill-staff {
-          background-color: rgba(245, 158, 11, 0.15);
-          border: 1px solid rgba(245, 158, 11, 0.35);
-          color: #fbbf24;
+          background: #ecfdf5;
+          color: #047857;
+          border: 1px solid #a7f3d0;
         }
 
         .pill-admin {
-          background-color: rgba(99, 102, 241, 0.18);
-          border: 1px solid rgba(99, 102, 241, 0.35);
-          color: #a5b4fc;
+          background: #eef2ff;
+          color: #4338ca;
+          border: 1px solid #c7d2fe;
         }
 
         .pill-super {
-          background-color: rgba(168, 85, 247, 0.18);
-          border: 1px solid rgba(168, 85, 247, 0.35);
-          color: #d8b4fe;
+          background: #fffbeb;
+          color: #b45309;
+          border: 1px solid #fde68a;
         }
 
         .status-live-indicator {
@@ -939,92 +959,66 @@ export default function DashboardPage() {
           align-items: center;
           gap: 6px;
           font-size: 0.75rem;
-          color: #34d399;
-          font-weight: 600;
+          font-weight: 700;
+          color: #059669;
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
+          padding: 4px 12px;
+          border-radius: 9999px;
         }
 
         .pulse-dot {
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background-color: #34d399;
-          box-shadow: 0 0 8px #34d399;
+          background: #10b981;
+          box-shadow: 0 0 8px #10b981;
+          animation: pulseGreen 1.8s infinite;
+        }
+
+        @keyframes pulseGreen {
+          0% { transform: scale(0.95); opacity: 0.8; }
+          50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 10px #34d399; }
+          100% { transform: scale(0.95); opacity: 0.8; }
         }
 
         .header-greeting-row {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          gap: 20px;
           flex-wrap: wrap;
+          gap: 16px;
         }
 
         .greeting-heading {
-          font-family: var(--font-heading);
-          font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+          font-size: clamp(1.65rem, 3.5vw, 2.25rem);
           font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 6px 0;
           letter-spacing: -0.03em;
-          color: #ffffff;
-          line-height: 1.18;
-          margin: 0;
+          line-height: 1.2;
         }
 
         .greeting-name-highlight {
-          color: #38bdf8;
+          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .greeting-subtext {
-          font-size: 0.969rem;
-          color: #8da0b6;
-          margin: 6px 0 0 0;
+          font-size: 0.95rem;
+          color: #64748b;
+          margin: 0;
           line-height: 1.5;
-          max-width: 620px;
+          max-width: 680px;
         }
 
-        /* Buttons */
-        .emerald-action-btn {
-          display: inline-flex;
+        .header-actions-group {
+          display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 11px 20px;
-          border-radius: 12px;
-          background-color: #0d7658;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: #ffffff;
-          font-size: 0.906rem;
-          font-weight: 700;
-          text-decoration: none;
-          box-shadow: 0 4px 14px rgba(13, 118, 88, 0.45);
-          cursor: pointer;
-          transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-          user-select: none;
-        }
-
-        .emerald-action-btn:hover {
-          background-color: #0b684d;
-          box-shadow: 0 6px 20px rgba(13, 118, 88, 0.6);
-          transform: translateY(-1px);
-        }
-
-        .outline-action-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 10px 18px;
-          border-radius: 12px;
-          background-color: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: #e2e8f0;
-          font-size: 0.875rem;
-          font-weight: 600;
-          text-decoration: none;
-          transition: all 0.2s ease;
-        }
-
-        .outline-action-btn:hover {
-          background-color: rgba(255, 255, 255, 0.08);
-          border-color: #38bdf8;
-          color: #ffffff;
+          gap: 10px;
+          flex-wrap: wrap;
         }
 
         .staff-header-actions {
@@ -1033,34 +1027,74 @@ export default function DashboardPage() {
           gap: 10px;
         }
 
-        /* -------------------------------------------------------------
-           ANNOUNCEMENT BANNER
-           ------------------------------------------------------------- */
+        .emerald-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 20px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: #ffffff;
+          font-size: 0.875rem;
+          font-weight: 700;
+          text-decoration: none;
+          box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .emerald-action-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45);
+        }
+
+        .outline-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 18px;
+          border-radius: 12px;
+          background: #ffffff;
+          border: 1.5px solid #cbd5e1;
+          color: #334155;
+          font-size: 0.875rem;
+          font-weight: 700;
+          text-decoration: none;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          transition: all 0.2s ease;
+        }
+
+        .outline-action-btn:hover {
+          background: #f8fafc;
+          border-color: #94a3b8;
+        }
+
+        /* Announcements */
         .announcements-section {
-          margin-bottom: 28px;
+          margin-bottom: 24px;
         }
 
         .announcement-banner {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 14px;
           padding: 14px 18px;
           border-radius: 14px;
         }
 
-        .ann-standard {
-          background-color: rgba(30, 58, 138, 0.25);
-          border: 1px solid rgba(59, 130, 246, 0.35);
-          color: #93c5fd;
+        .ann-urgent {
+          background: #fef2f2;
+          border: 1.5px solid #fecaca;
+          color: #991b1b;
         }
 
-        .ann-urgent {
-          background-color: rgba(220, 38, 38, 0.2);
-          border: 1px solid rgba(239, 68, 68, 0.4);
-          color: #fca5a5;
+        .ann-standard {
+          background: #eff6ff;
+          border: 1.5px solid #bfdbfe;
+          color: #1e40af;
         }
 
         .ann-icon-wrap {
+          margin-top: 2px;
           flex-shrink: 0;
         }
 
@@ -1071,36 +1105,66 @@ export default function DashboardPage() {
         }
 
         .ann-title {
-          font-size: 0.906rem;
-          color: #ffffff;
+          font-size: 0.9rem;
+          font-weight: 700;
         }
 
         .ann-body {
-          font-size: 0.813rem;
+          font-size: 0.825rem;
+          line-height: 1.4;
           opacity: 0.9;
         }
 
-        /* -------------------------------------------------------------
-           RESIDENT HERO CTA CARD
-           ------------------------------------------------------------- */
+        /* Section Header */
+        .section-header-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        }
+
+        .section-title {
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: #0f172a;
+          letter-spacing: -0.02em;
+          margin: 0;
+        }
+
+        .section-subtitle {
+          font-size: 0.85rem;
+          color: #64748b;
+          margin: 4px 0 0 0;
+        }
+
+        .section-badge-pill {
+          font-size: 0.725rem;
+          font-weight: 700;
+          color: #2563eb;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          padding: 3px 10px;
+          border-radius: 9999px;
+        }
+
+        /* Resident Hero Card */
         .resident-report-hero-card {
           display: flex;
           align-items: center;
           justify-content: space-between;
           padding: 24px 28px;
-          border-radius: 18px;
-          background: linear-gradient(135deg, #0d7658 0%, #065f46 60%, #064e3b 100%);
-          border: 1px solid rgba(52, 211, 153, 0.3);
-          box-shadow: 0 10px 30px -5px rgba(5, 150, 105, 0.35);
-          text-decoration: none;
+          border-radius: 20px;
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
           color: #ffffff;
-          margin-bottom: 30px;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          text-decoration: none;
+          margin-bottom: 28px;
+          box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.35);
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .resident-report-hero-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 14px 35px -5px rgba(5, 150, 105, 0.48);
+          box-shadow: 0 14px 38px -5px rgba(37, 99, 235, 0.45);
         }
 
         .hero-left-content {
@@ -1112,230 +1176,200 @@ export default function DashboardPage() {
         .hero-icon-container {
           width: 56px;
           height: 56px;
-          border-radius: 14px;
-          background-color: rgba(255, 255, 255, 0.18);
-          backdrop-filter: blur(10px);
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.2);
           display: flex;
           align-items: center;
           justify-content: center;
+          color: #ffffff;
           flex-shrink: 0;
         }
 
         .hero-badge {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
+          gap: 6px;
           padding: 3px 10px;
           border-radius: 9999px;
-          background-color: rgba(255, 255, 255, 0.16);
-          font-size: 0.688rem;
+          background: rgba(255, 255, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          font-size: 0.725rem;
           font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          color: #d1fae5;
           margin-bottom: 6px;
         }
 
         .hero-title {
-          font-family: var(--font-heading);
           font-size: 1.35rem;
           font-weight: 800;
-          margin: 0;
           color: #ffffff;
+          margin: 0 0 4px 0;
           letter-spacing: -0.02em;
         }
 
         .hero-desc {
           font-size: 0.875rem;
-          color: #d1fae5;
-          margin: 4px 0 0 0;
-          opacity: 0.92;
+          color: rgba(255, 255, 255, 0.9);
+          margin: 0;
+          line-height: 1.4;
         }
 
         .hero-arrow-btn {
-          width: 42px;
-          height: 42px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
-          background-color: rgba(255, 255, 255, 0.18);
+          background: rgba(255, 255, 255, 0.2);
           display: flex;
           align-items: center;
           justify-content: center;
-          flex-shrink: 0;
-        }
-
-        /* -------------------------------------------------------------
-           SECTIONS & GENERAL HEADINGS
-           ------------------------------------------------------------- */
-        .section-title {
-          font-family: var(--font-heading);
-          font-size: 1.15rem;
-          font-weight: 800;
-          letter-spacing: -0.02em;
           color: #ffffff;
-          margin: 0 0 14px 0;
+          flex-shrink: 0;
+          transition: transform 0.2s ease;
         }
 
-        .section-subtitle {
-          font-size: 0.844rem;
-          color: #8da0b6;
-          margin: 3px 0 0 0;
+        .resident-report-hero-card:hover .hero-arrow-btn {
+          transform: translateX(4px);
         }
 
-        .section-header-bar {
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          margin-bottom: 16px;
-        }
-
-        .section-badge-pill {
-          font-size: 0.719rem;
-          font-weight: 700;
-          color: #38bdf8;
-          background-color: rgba(56, 189, 248, 0.12);
-          border: 1px solid rgba(56, 189, 248, 0.25);
-          padding: 3px 9px;
-          border-radius: 9999px;
-        }
-
-        /* -------------------------------------------------------------
-           QUICK ACCESS GRID
-           ------------------------------------------------------------- */
+        /* Quick Access Section */
         .quick-access-section {
-          margin-bottom: 32px;
+          margin-bottom: 28px;
         }
 
         .quick-access-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 14px;
+          margin-top: 14px;
         }
 
         .dark-nav-card {
-          background-color: #10151c;
-          border: 1px solid #1e293b;
-          border-radius: 16px;
-          padding: 18px 14px;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          text-align: center;
+          gap: 6px;
+          padding: 18px;
+          border-radius: 16px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
           text-decoration: none;
-          transition: all 0.2s ease;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .dark-nav-card:hover {
-          border-color: #38bdf8;
-          background-color: #151b24;
           transform: translateY(-2px);
-          box-shadow: 0 10px 24px -5px rgba(0, 0, 0, 0.5);
+          border-color: #2563eb;
+          box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.12);
         }
 
         .nav-card-icon {
-          width: 44px;
-          height: 44px;
+          width: 42px;
+          height: 42px;
           border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 10px;
+          margin-bottom: 4px;
+        }
+
+        .icon-blue {
+          background: #eff6ff;
+          color: #2563eb;
+        }
+
+        .icon-emerald {
+          background: #ecfdf5;
+          color: #059669;
+        }
+
+        .icon-amber {
+          background: #fffbeb;
+          color: #d97706;
+        }
+
+        .icon-purple {
+          background: #f5f3ff;
+          color: #7c3aed;
         }
 
         .nav-card-title {
-          font-size: 0.875rem;
+          font-size: 0.95rem;
           font-weight: 700;
-          color: #ffffff;
+          color: #0f172a;
         }
 
         .nav-card-subtitle {
-          font-size: 0.719rem;
-          color: #8da0b6;
-          margin-top: 3px;
+          font-size: 0.775rem;
+          color: #64748b;
         }
 
-        /* -------------------------------------------------------------
-           KPI METRICS SYSTEM
-           ------------------------------------------------------------- */
+        /* KPI Section */
         .kpi-metrics-section {
-          margin-bottom: 32px;
+          margin-bottom: 28px;
         }
 
         .kpi-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          grid-template-columns: repeat(4, 1fr);
           gap: 14px;
+          margin-top: 14px;
         }
 
         .kpi-card {
-          background-color: #10151c;
-          border: 1px solid #1e293b;
-          border-radius: 16px;
           padding: 20px;
-          transition: border-color 0.2s ease, transform 0.2s ease;
+          border-radius: 16px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          transition: all 0.2s ease;
         }
 
         .kpi-card:hover {
-          transform: translateY(-2px);
+          box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.08);
+          transform: translateY(-1px);
         }
-
-        .border-blue { border-left: 4px solid #2563eb !important; }
-        .border-amber { border-left: 4px solid #f59e0b !important; }
-        .border-purple { border-left: 4px solid #8b5cf6 !important; }
-        .border-emerald { border-left: 4px solid #059669 !important; }
-        .border-crimson { border-left: 4px solid #ef4444 !important; }
-        .border-rose { border-left: 4px solid #f43f5e !important; }
 
         .kpi-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 6px;
+          margin-bottom: 10px;
         }
 
         .kpi-label {
-          font-size: 0.75rem;
+          font-size: 0.813rem;
           font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          color: #8da0b6;
+          color: #64748b;
         }
 
         .kpi-number {
-          font-family: var(--font-heading);
-          font-size: 2.25rem;
+          font-size: 2.1rem;
           font-weight: 800;
-          color: #ffffff;
+          color: #0f172a;
           line-height: 1.1;
+          margin-bottom: 4px;
+          letter-spacing: -0.03em;
         }
 
         .kpi-caption {
           font-size: 0.75rem;
-          color: #64748b;
-          margin-top: 4px;
+          color: #94a3b8;
         }
 
-        /* Colors */
-        .text-blue { color: #38bdf8; }
-        .text-amber { color: #fbbf24; }
-        .text-purple { color: #c084fc; }
-        .text-emerald { color: #34d399; }
-        .text-crimson { color: #f87171; }
-        .text-rose { color: #fb7185; }
+        .text-blue { color: #2563eb !important; }
+        .text-amber { color: #d97706 !important; }
+        .text-purple { color: #7c3aed !important; }
+        .text-emerald { color: #059669 !important; }
+        .text-crimson { color: #dc2626 !important; }
+        .text-rose { color: #e11d48 !important; }
 
-        .icon-blue { background: rgba(37, 99, 235, 0.15); color: #38bdf8; }
-        .icon-emerald { background: rgba(5, 150, 105, 0.15); color: #34d399; }
-        .icon-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-        .icon-purple { background: rgba(139, 92, 246, 0.15); color: #c084fc; }
-
-        /* -------------------------------------------------------------
-           LIVE DISPATCH WIDGET (RESIDENT VIEW)
-           ------------------------------------------------------------- */
+        /* Live Municipal Dispatch Widget */
         .dispatch-live-widget {
-          background-color: #0d141e;
-          border: 1px solid rgba(255, 255, 255, 0.09);
-          border-radius: 16px;
-          padding: 18px 20px;
-          margin-bottom: 36px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 18px;
+          padding: 20px 22px;
+          margin-bottom: 28px;
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
         }
 
         .dispatch-top-row {
@@ -1349,84 +1383,88 @@ export default function DashboardPage() {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 0.75rem;
-          color: #8da0b6;
-          font-weight: 600;
-          text-transform: lowercase;
+          font-size: 0.7rem;
+          font-weight: 800;
+          color: #2563eb;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
         }
 
         .radio-icon {
-          color: #38bdf8;
+          color: #2563eb;
         }
 
         .dispatch-resolved-pill {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #34d399;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
+          color: #047857;
+          font-size: 0.7rem;
+          font-weight: 800;
+          text-transform: uppercase;
         }
 
         .dispatch-ticket-title {
-          font-size: 1rem;
+          font-size: 1.05rem;
           font-weight: 700;
-          color: #ffffff;
+          color: #0f172a;
           margin: 0 0 4px 0;
         }
 
         .dispatch-ticket-meta {
           font-size: 0.813rem;
-          color: #8da0b6;
-          margin: 0 0 12px 0;
+          color: #64748b;
+          margin: 0 0 14px 0;
         }
 
         .dispatch-divider {
           height: 1px;
-          background-color: rgba(255, 255, 255, 0.08);
-          margin-bottom: 10px;
+          background-color: #f1f5f9;
+          margin-bottom: 12px;
         }
 
         .dispatch-resident-loop {
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 0.781rem;
-          color: #34d399;
+          font-size: 0.785rem;
           font-weight: 600;
+          color: #047857;
         }
 
         .verified-check {
-          color: #34d399;
+          color: #059669;
         }
 
-        /* -------------------------------------------------------------
-           STAFF TOOLS ROW
-           ------------------------------------------------------------- */
+        /* Staff Tools */
         .staff-tools-row {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 14px;
-          margin-bottom: 32px;
+          margin-bottom: 28px;
         }
 
         .tool-quick-card {
           display: flex;
           align-items: center;
-          gap: 14px;
+          gap: 16px;
           padding: 18px 20px;
-          background-color: #10151c;
-          border: 1px solid #1e293b;
           border-radius: 16px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
           text-decoration: none;
-          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
           transition: all 0.2s ease;
         }
 
         .tool-quick-card:hover {
-          border-color: #38bdf8;
-          background-color: #151b24;
+          border-color: #2563eb;
           transform: translateY(-2px);
+          box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.12);
         }
 
         .tool-icon {
@@ -1440,56 +1478,59 @@ export default function DashboardPage() {
         }
 
         .tool-title {
-          font-size: 0.938rem;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #0f172a;
           display: block;
         }
 
         .tool-desc {
-          font-size: 0.781rem;
-          color: #8da0b6;
-          margin-top: 2px;
-          display: block;
+          font-size: 0.785rem;
+          color: #64748b;
         }
 
         .tool-arrow {
           margin-left: auto;
-          color: #64748b;
+          color: #94a3b8;
+          transition: transform 0.2s ease;
         }
 
-        /* -------------------------------------------------------------
-           ADMIN & SUPER ADMIN COMMAND HUB
-           ------------------------------------------------------------- */
+        .tool-quick-card:hover .tool-arrow {
+          transform: translateX(3px);
+          color: #2563eb;
+        }
+
+        /* Admin Hub */
         .admin-hub-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 14px;
-          margin-bottom: 32px;
+          margin-bottom: 28px;
         }
 
         .admin-hub-card {
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 20px 22px;
-          background-color: #10151c;
-          border: 1px solid #1e293b;
+          padding: 18px 20px;
           border-radius: 16px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
           text-decoration: none;
-          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
           transition: all 0.2s ease;
         }
 
         .admin-hub-card:hover {
-          border-color: #38bdf8;
-          background-color: #151b24;
+          border-color: #2563eb;
           transform: translateY(-2px);
-          box-shadow: 0 10px 24px -5px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.12);
         }
 
         .hub-icon-wrap {
           width: 48px;
           height: 48px;
-          border-radius: 12px;
+          border-radius: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1497,53 +1538,86 @@ export default function DashboardPage() {
         }
 
         .hub-text-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
           flex: 1;
         }
 
         .hub-title {
-          font-size: 0.969rem;
-          display: block;
-          margin-bottom: 2px;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #0f172a;
         }
 
         .hub-desc {
-          font-size: 0.781rem;
-          color: #8da0b6;
+          font-size: 0.785rem;
+          color: #64748b;
           margin: 0;
           line-height: 1.35;
         }
 
         .hub-arrow {
-          color: #64748b;
-          transition: transform 0.15s ease, color 0.15s ease;
+          color: #94a3b8;
+          transition: transform 0.2s ease;
         }
 
         .admin-hub-card:hover .hub-arrow {
-          color: #38bdf8;
           transform: translateX(3px);
+          color: #2563eb;
         }
 
-        /* -------------------------------------------------------------
-           SHARED REPORTS / QUEUE FEED
-           ------------------------------------------------------------- */
+        /* Reports Feed Section */
         .reports-feed-section {
-          margin-bottom: 40px;
+          margin-bottom: 32px;
         }
 
         .view-all-link {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          font-size: 0.844rem;
+          font-size: 0.813rem;
           font-weight: 700;
-          color: #38bdf8;
+          color: #2563eb;
           text-decoration: none;
           transition: color 0.15s ease;
         }
 
         .view-all-link:hover {
-          color: #7dd3fc;
+          color: #1d4ed8;
           text-decoration: underline;
+        }
+
+        .empty-state-card {
+          padding: 48px 20px;
+          text-align: center;
+          background: #ffffff;
+          border: 1.5px dashed #cbd5e1;
+          border-radius: 18px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .empty-icon {
+          color: #94a3b8;
+          margin-bottom: 12px;
+        }
+
+        .empty-title {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 0 0 6px 0;
+        }
+
+        .empty-desc {
+          font-size: 0.85rem;
+          color: #64748b;
+          max-width: 460px;
+          margin: 0 0 20px 0;
+          line-height: 1.5;
         }
 
         .reports-list-grid {
@@ -1555,29 +1629,32 @@ export default function DashboardPage() {
         .report-item-card {
           display: flex;
           align-items: center;
-          gap: 16px;
-          padding: 16px 18px;
-          background-color: #10151c;
-          border: 1px solid #1e293b;
-          border-radius: 16px;
+          gap: 18px;
+          padding: 16px 20px;
+          border-radius: 14px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
           text-decoration: none;
-          color: #ffffff;
-          transition: all 0.2s ease;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .report-item-card:hover {
-          border-color: #38bdf8;
-          background-color: #141a23;
+          border-color: #2563eb;
           transform: translateY(-1px);
+          box-shadow: 0 6px 20px -3px rgba(37, 99, 235, 0.1);
         }
 
         .report-thumbnail-box {
-          width: 76px;
-          height: 76px;
+          width: 72px;
+          height: 72px;
           border-radius: 12px;
-          background-color: #0b0f16;
-          border: 1px solid #1e293b;
           overflow: hidden;
+          background-color: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           flex-shrink: 0;
         }
 
@@ -1588,15 +1665,13 @@ export default function DashboardPage() {
         }
 
         .camera-placeholder {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .report-info-col {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
           flex: 1;
           min-width: 0;
         }
@@ -1606,20 +1681,23 @@ export default function DashboardPage() {
           align-items: center;
           gap: 8px;
           flex-wrap: wrap;
-          margin-bottom: 4px;
         }
 
         .ref-tag {
-          font-family: var(--font-mono);
-          font-size: 0.75rem;
+          font-family: var(--font-mono, monospace);
+          font-size: 0.725rem;
           font-weight: 700;
-          color: #38bdf8;
+          color: #475569;
+          background: #f1f5f9;
+          padding: 2px 8px;
+          border-radius: 6px;
         }
 
         .report-headline {
-          display: block;
-          font-size: 0.938rem;
-          color: #ffffff;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #0f172a;
+          margin-top: 2px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -1627,154 +1705,97 @@ export default function DashboardPage() {
 
         .report-summary {
           font-size: 0.813rem;
-          color: #8da0b6;
-          white-space: nowrap;
+          color: #475569;
+          margin: 0;
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
           overflow: hidden;
-          text-overflow: ellipsis;
-          margin: 2px 0 6px 0;
         }
 
         .report-meta-footer {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 0.75rem;
-          color: #64748b;
+          margin-top: 4px;
         }
 
         .meta-item {
           display: inline-flex;
           align-items: center;
           gap: 4px;
+          font-size: 0.75rem;
+          color: #64748b;
         }
 
         .meta-icon {
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .meta-bullet {
-          color: #475569;
+          color: #cbd5e1;
+          font-size: 0.75rem;
         }
 
         .report-arrow {
-          color: #64748b;
-          flex-shrink: 0;
+          color: #94a3b8;
+          transition: transform 0.2s ease;
         }
 
-        .empty-state-card {
-          padding: 48px 24px;
-          text-align: center;
-          background-color: #10151c;
-          border: 1px dashed #1e293b;
-          border-radius: 16px;
+        .report-item-card:hover .report-arrow {
+          transform: translateX(3px);
+          color: #2563eb;
         }
 
-        .empty-icon {
-          color: #64748b;
-          margin-bottom: 12px;
-        }
-
-        .empty-title {
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: #ffffff;
-          margin: 0 0 6px 0;
-        }
-
-        .empty-desc {
-          font-size: 0.875rem;
-          color: #8da0b6;
-          max-width: 440px;
-          margin: 0 auto 20px auto;
-        }
-
-        /* -------------------------------------------------------------
-           BOTTOM SEAL
-           ------------------------------------------------------------- */
+        /* Bottom Seal */
         .dashboard-bottom-seal {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          font-size: 0.719rem;
-          color: #64748b;
+          font-size: 0.75rem;
+          color: #94a3b8;
           padding-top: 24px;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
+          border-top: 1px solid #e2e8f0;
         }
 
         .seal-shield {
-          color: #059669;
-          flex-shrink: 0;
+          color: #2563eb;
         }
 
-        /* -------------------------------------------------------------
-           RESPONSIVE BREAKPOINTS
-           ------------------------------------------------------------- */
-        @media (max-width: 960px) {
-          .quick-access-grid {
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+          .quick-access-grid, .kpi-grid {
             grid-template-columns: repeat(2, 1fr);
           }
-
-          .admin-hub-grid {
+          .admin-hub-grid, .staff-tools-row {
             grid-template-columns: 1fr;
           }
+        }
 
-          .staff-tools-row {
+        @media (max-width: 640px) {
+          .quick-access-grid, .kpi-grid {
             grid-template-columns: 1fr;
           }
-
           .resident-report-hero-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
             padding: 20px;
           }
-
-          .hero-left-content {
-            gap: 14px;
+          .hero-arrow-btn {
+            display: none;
           }
-
-          .hero-icon-container {
-            width: 48px;
-            height: 48px;
-          }
-
-          .hero-title {
-            font-size: 1.15rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .dashboard-root {
-            padding: 20px 12px 48px 12px;
-          }
-
-          .quick-access-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-          }
-
-          .kpi-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-          }
-
-          .kpi-card {
-            padding: 14px;
-          }
-
-          .kpi-number {
-            font-size: 1.75rem;
-          }
-
           .report-item-card {
-            padding: 12px;
-            gap: 12px;
+            flex-direction: column;
+            align-items: flex-start;
           }
-
           .report-thumbnail-box {
-            width: 64px;
-            height: 64px;
+            width: 100%;
+            height: 140px;
           }
-
-          .hero-desc {
+          .report-arrow {
             display: none;
           }
         }
