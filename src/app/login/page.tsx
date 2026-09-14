@@ -378,78 +378,80 @@ export default function LoginPage() {
             </NextLink>
           </div>
 
-          {/* Quick Demo Switcher (Collapsible for test environments) */}
-          <div className="demo-accordion-card">
-            <button
-              type="button"
-              onClick={() => setShowDemoDrawer(!showDemoDrawer)}
-              className="demo-accordion-toggle"
-              aria-expanded={showDemoDrawer}
-            >
-              <div className="demo-toggle-left">
-                <Sparkles size={14} className="sparkle-icon" />
-                <span>Quick Demo Accounts</span>
-              </div>
-              {showDemoDrawer ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-
-            {showDemoDrawer && (
-              <div className="demo-grid-body">
-                <p className="demo-hint-text">
-                  Click any role to fill credentials and test authentication:
-                </p>
-                <div className="demo-buttons-grid">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin("09204443333")}
-                    className="demo-role-btn"
-                  >
-                    <User size={14} className="role-icon resident-icon" />
-                    <div className="role-text">
-                      <span className="role-title">Resident</span>
-                      <span className="role-meta">Juan Dela Cruz</span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin("09193332222")}
-                    className="demo-role-btn"
-                  >
-                    <ShieldCheck size={14} className="role-icon staff-icon" />
-                    <div className="role-text">
-                      <span className="role-title">Barangay Staff</span>
-                      <span className="role-meta">Alex Santos</span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin("09182221111")}
-                    className="demo-role-btn"
-                  >
-                    <Crown size={14} className="role-icon admin-icon" />
-                    <div className="role-text">
-                      <span className="role-title">Barangay Admin</span>
-                      <span className="role-meta">Roberto Tan</span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin("09171110000")}
-                    className="demo-role-btn"
-                  >
-                    <Crown size={14} className="role-icon super-icon" />
-                    <div className="role-text">
-                      <span className="role-title">Super Admin</span>
-                      <span className="role-meta">System Operator</span>
-                    </div>
-                  </button>
+          {/* Quick Demo Switcher (Only visible in development/preview environments) */}
+          {process.env.NODE_ENV !== "production" && (
+            <div className="demo-accordion-card">
+              <button
+                type="button"
+                onClick={() => setShowDemoDrawer(!showDemoDrawer)}
+                className="demo-accordion-toggle"
+                aria-expanded={showDemoDrawer}
+              >
+                <div className="demo-toggle-left">
+                  <Sparkles size={14} className="sparkle-icon" />
+                  <span>Quick Demo Accounts</span>
                 </div>
-              </div>
-            )}
-          </div>
+                {showDemoDrawer ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+
+              {showDemoDrawer && (
+                <div className="demo-grid-body">
+                  <p className="demo-hint-text">
+                    Click any role to fill credentials and test authentication:
+                  </p>
+                  <div className="demo-buttons-grid">
+                    <button
+                      type="button"
+                      onClick={() => handleQuickLogin("09204443333")}
+                      className="demo-role-btn"
+                    >
+                      <User size={14} className="role-icon resident-icon" />
+                      <div className="role-text">
+                        <span className="role-title">Resident</span>
+                        <span className="role-meta">Juan Dela Cruz</span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleQuickLogin("09193332222")}
+                      className="demo-role-btn"
+                    >
+                      <ShieldCheck size={14} className="role-icon staff-icon" />
+                      <div className="role-text">
+                        <span className="role-title">Barangay Staff</span>
+                        <span className="role-meta">Alex Santos</span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleQuickLogin("09182221111")}
+                      className="demo-role-btn"
+                    >
+                      <Crown size={14} className="role-icon admin-icon" />
+                      <div className="role-text">
+                        <span className="role-title">Barangay Admin</span>
+                        <span className="role-meta">Roberto Tan</span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleQuickLogin("09171110000")}
+                      className="demo-role-btn"
+                    >
+                      <Crown size={14} className="role-icon super-icon" />
+                      <div className="role-text">
+                        <span className="role-title">Super Admin</span>
+                        <span className="role-meta">System Operator</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Trust & Civic Security Badge */}
           <footer className="login-footer">

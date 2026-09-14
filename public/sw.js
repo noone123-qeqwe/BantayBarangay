@@ -1,5 +1,5 @@
-// BantayBarangay PWA Service Worker - v3 (App Edition)
-const CACHE_NAME = "bantay-app-v3";
+// BantayBarangay PWA Service Worker - v4 (Production Release)
+const CACHE_NAME = "bantay-app-v4";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",

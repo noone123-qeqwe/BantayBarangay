@@ -3,9 +3,19 @@
  * No external dependencies. Uses encrypted tokens for verification.
  */
 
-import crypto from "crypto";
+function getCaptchaSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "CRITICAL SECURITY ERROR: The JWT_SECRET environment variable is not set. You must configure JWT_SECRET in production for CAPTCHA token verification."
+      );
+    }
+    return "bantay-captcha-key-2026";
+  }
+  return secret;
+}
 
-const CAPTCHA_SECRET = process.env.JWT_SECRET || "bantay-captcha-key-2026";
 const TOKEN_EXPIRY_MINUTES = 5;
 
 interface CaptchaChallenge {
@@ -45,7 +55,7 @@ export function generateChallenge(): CaptchaChallenge {
   });
 
   const iv = crypto.randomBytes(16);
-  const key = crypto.scryptSync(CAPTCHA_SECRET, "salt", 32);
+  const key = crypto.scryptSync(getCaptchaSecret(), "salt", 32);
   const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
   let encrypted = cipher.update(payload, "utf8", "hex");
   encrypted += cipher.final("hex");
@@ -69,7 +79,7 @@ export function verifyChallenge(token: string, userAnswer: number): {
     }
 
     const iv = Buffer.from(ivHex, "hex");
-    const key = crypto.scryptSync(CAPTCHA_SECRET, "salt", 32);
+    const key = crypto.scryptSync(getCaptchaSecret(), "salt", 32);
     const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
     let decrypted = decipher.update(encrypted, "hex", "utf8");
     decrypted += decipher.final("utf8");

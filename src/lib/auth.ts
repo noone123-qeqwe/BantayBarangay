@@ -4,7 +4,19 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "./db";
 
-const JWT_SECRET = process.env.JWT_SECRET || "bantay-barangay-super-secure-production-key-2026";
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "CRITICAL SECURITY ERROR: The JWT_SECRET environment variable is not set. You must configure JWT_SECRET in production to ensure secure sessions."
+      );
+    }
+    return "bantay-barangay-dev-secret-change-in-production";
+  }
+  return secret;
+}
+
 export const COOKIE_NAME = "bantay_session";
 
 export interface SessionUser {
@@ -34,14 +46,14 @@ export function signToken(user: SessionUser): string {
       role: user.role,
       avatar: user.avatar || null,
     },
-    JWT_SECRET,
+    getJwtSecret(),
     { expiresIn: "7d" }
   );
 }
 
 export function verifyToken(token: string): SessionUser | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as SessionUser;
+    const decoded = jwt.verify(token, getJwtSecret()) as SessionUser;
     return decoded;
   } catch {
     return null;
