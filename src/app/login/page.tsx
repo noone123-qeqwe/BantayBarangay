@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { normalizePhoneNumber, isValidPhilippinePhone, formatDisplayPhone } from "@/lib/phone";
 import {
   Smartphone,
+  Mail,
   Lock,
   Eye,
   EyeOff,
@@ -23,6 +24,11 @@ import {
   ChevronUp,
   Shield,
   ArrowRight,
+  MapPin,
+  Clock,
+  Check,
+  Activity,
+  FileCheck2,
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -40,11 +46,14 @@ export default function LoginPage() {
   const [showDemoDrawer, setShowDemoDrawer] = useState(false);
 
   // Field focus states for visual highlights
-  const [isPhoneFocused, setIsPhoneFocused] = useState(false);
+  const [isIdentifierFocused, setIsIdentifierFocused] = useState(false);
   const [isPassFocused, setIsPassFocused] = useState(false);
 
-  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const identifierInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-detect whether user is typing an email or phone number
+  const isEmailInput = identifier.includes("@");
 
   // If already logged in, seamlessly forward to dashboard
   useEffect(() => {
@@ -105,8 +114,8 @@ export default function LoginPage() {
 
     // Field-level validation
     if (!trimmedIdentifier) {
-      setError("Please enter your mobile number.");
-      phoneInputRef.current?.focus();
+      setError("Please enter your mobile number or email address.");
+      identifierInputRef.current?.focus();
       triggerShake();
       return;
     }
@@ -123,8 +132,8 @@ export default function LoginPage() {
     if (hasOnlyPhoneChars && !trimmedIdentifier.includes("@")) {
       const normalized = normalizePhoneNumber(trimmedIdentifier);
       if (!normalized) {
-        setError("Please enter a valid Philippine mobile number (e.g., 0917 123 4567 or +639171234567).");
-        phoneInputRef.current?.focus();
+        setError("Please enter a valid Philippine mobile number (e.g. 0917 123 4567) or staff email.");
+        identifierInputRef.current?.focus();
         triggerShake();
         return;
       }
@@ -140,15 +149,14 @@ export default function LoginPage() {
         setStatus("success");
         setTimeout(() => {
           router.push("/dashboard");
-        }, 500);
+        }, 450);
       } else {
         setStatus("error");
         triggerShake();
 
-        // Friendly error messages avoiding technical jargon
         const rawError = (result.error || "").toLowerCase();
         if (rawError.includes("invalid") || rawError.includes("credential") || rawError.includes("401")) {
-          setError("Incorrect mobile number or password. Please check your credentials and try again.");
+          setError("Incorrect mobile number/email or password. Please check your credentials.");
         } else if (rawError.includes("deactivated")) {
           setError("Your account is currently deactivated. Please contact your Barangay Hall.");
         } else if (rawError.includes("too many") || rawError.includes("rate") || rawError.includes("429")) {
@@ -156,7 +164,7 @@ export default function LoginPage() {
         } else if (rawError.includes("network") || rawError.includes("fetch") || rawError.includes("connection")) {
           setError("Unable to connect. Please check your internet connection and try again.");
         } else {
-          setError(result.error || "Incorrect mobile number or password. Please try again.");
+          setError(result.error || "Incorrect credentials. Please try again.");
         }
       }
     } catch {
@@ -180,206 +188,319 @@ export default function LoginPage() {
 
   return (
     <div className="login-screen-wrapper">
-      {/* Subtle Civic Decorative Ambient Mesh */}
-      <div className="ambient-glow ambient-glow-top" />
-      <div className="ambient-glow ambient-glow-bottom" />
+      {/* Decorative ambient background glows */}
+      <div className="ambient-glow ambient-glow-1" />
+      <div className="ambient-glow ambient-glow-2" />
+      <div className="ambient-glow ambient-glow-3" />
 
       <main className="login-container">
-        {/* Main Authentication Card */}
-        <div className={`login-card ${shake ? "shake-card" : ""}`}>
+        {/* Dual-Panel Showcase Card */}
+        <div className={`split-card-wrapper ${shake ? "shake-card" : ""}`}>
           
-          {/* Header & Official Identity */}
-          <header className="login-header">
-            <div className="logo-badge-wrapper">
+          {/* ========================================================
+              LEFT PANEL: Brand Showcase & Civic Highlights (Desktop)
+             ======================================================== */}
+          <section className="showcase-panel">
+            {/* Subtle background mesh & decorative grid */}
+            <div className="showcase-grid-bg" />
+            <div className="showcase-glow" />
+
+            <div className="showcase-content">
+              {/* Header Badge & Brand */}
+              <div className="showcase-brand-header">
+                <div className="showcase-logo-box">
+                  <img
+                    src="/logo.png"
+                    alt="BantayBarangay Official Logo"
+                    width={46}
+                    height={46}
+                    className="showcase-logo"
+                  />
+                </div>
+                <div>
+                  <div className="showcase-brand-title">BantayBarangay</div>
+                  <div className="showcase-brand-pill">
+                    <Shield size={11} />
+                    <span>Civic Action Platform</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Showcase Heading */}
+              <div className="showcase-hero-text">
+                <h2 className="showcase-headline">
+                  Empowering communities through <span className="text-highlight">rapid action</span>.
+                </h2>
+                <p className="showcase-subtext">
+                  Directly report civic issues, monitor repair timelines in real-time, and verify completed solutions together.
+                </p>
+              </div>
+
+              {/* 3 Core Value Pillars */}
+              <div className="showcase-features">
+                <div className="feature-item">
+                  <div className="feature-icon-box blue-box">
+                    <MapPin size={18} />
+                  </div>
+                  <div className="feature-text">
+                    <strong>Pinpoint GPS Geotagging</strong>
+                    <span>Instant coordinate lock & duplicate report prevention.</span>
+                  </div>
+                </div>
+
+                <div className="feature-item">
+                  <div className="feature-icon-box emerald-box">
+                    <Activity size={18} />
+                  </div>
+                  <div className="feature-text">
+                    <strong>Transparent Status Timelines</strong>
+                    <span>Track progress from triage to agency assignment and resolution.</span>
+                  </div>
+                </div>
+
+                <div className="feature-item">
+                  <div className="feature-icon-box amber-box">
+                    <FileCheck2 size={18} />
+                  </div>
+                  <div className="feature-text">
+                    <strong>Citizen Verification Loop</strong>
+                    <span>Residents confirm with photo proof before reports are closed.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Simulated Live Ticket Card */}
+              <div className="showcase-live-card">
+                <div className="live-card-top">
+                  <span className="live-tag">
+                    <span className="pulse-dot" />
+                    Live Community Proof
+                  </span>
+                  <span className="resolved-status-badge">
+                    <Check size={12} strokeWidth={3} />
+                    Resolved
+                  </span>
+                </div>
+                <div className="live-card-title">Streetlight Power Restored</div>
+                <div className="live-card-meta">
+                  <span>Verified by Resident</span> • <span>Completed in 18 hrs</span>
+                </div>
+              </div>
+
+              {/* Bottom Quote / Security Note */}
+              <div className="showcase-footer">
+                <ShieldCheck size={15} className="footer-shield-icon" />
+                <span>Encrypted & Protected Community Civic Network</span>
+              </div>
+            </div>
+          </section>
+
+          {/* ========================================================
+              RIGHT PANEL: Focused Authentication Form
+             ======================================================== */}
+          <section className="form-panel">
+            {/* Mobile Header (Shown on small screens) */}
+            <div className="mobile-header">
               <img
                 src="/logo.png"
-                alt="BantayBarangay Official Logo"
-                width={62}
-                height={62}
-                className="official-logo"
+                alt="BantayBarangay Logo"
+                width={52}
+                height={52}
+                className="mobile-logo"
               />
-              <span className="civic-emblem-badge">
-                <Shield size={12} className="emblem-icon" />
-                <span>Masbate Civic Portal</span>
+              <span className="civic-portal-pill">
+                <Shield size={12} />
+                <span>Official Civic Portal</span>
               </span>
             </div>
 
-            <h1 className="welcome-title">Welcome to BantayBarangay</h1>
-            <p className="welcome-subtitle">
-              Sign in to report, track, and help improve your community.
-            </p>
-          </header>
-
-          {/* Network Offline Warning */}
-          {isOffline && (
-            <div className="alert-box alert-warning" role="alert">
-              <WifiOff size={18} className="alert-icon" />
-              <span>You appear to be offline. Please check your internet connection.</span>
-            </div>
-          )}
-
-          {/* Friendly Error Alert */}
-          {error && (
-            <div className="alert-box alert-danger" role="alert" aria-live="assertive">
-              <AlertCircle size={18} className="alert-icon" />
-              <div className="alert-text-wrapper">
-                <span className="alert-title">Sign In Failed</span>
-                <span className="alert-description">{error}</span>
+            {/* Form Title & Subtitle */}
+            <div className="form-heading-group">
+              <div className="desktop-badge">
+                <Shield size={12} />
+                <span>Official Civic Portal</span>
               </div>
-            </div>
-          )}
-
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} noValidate className="login-form">
-            
-            {/* 1. Mobile Number Field */}
-            <div className="form-group">
-              <div className="label-row">
-                <label htmlFor="identifier" className="field-label">
-                  Mobile Number
-                </label>
-                {phonePreview && (
-                  <span className="format-preview" aria-live="polite">
-                    ✓ {phonePreview}
-                  </span>
-                )}
-              </div>
-
-              <div className={`input-container ${isPhoneFocused ? "is-focused" : ""} ${error && !identifier.trim() ? "is-error" : ""}`}>
-                <div className="input-prefix-flag" title="Philippines Country Code (+63)">
-                  <span className="flag-emoji" aria-hidden="true">🇵🇭</span>
-                  <span className="country-code">+63</span>
-                </div>
-
-                <input
-                  ref={phoneInputRef}
-                  id="identifier"
-                  name="identifier"
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  className="native-input"
-                  placeholder="09XXXXXXXXX or 9XXXXXXXXX"
-                  value={identifier}
-                  onChange={(e) => {
-                    setIdentifier(e.target.value);
-                    if (error) setError(null);
-                    if (status === "error") setStatus("idle");
-                  }}
-                  onFocus={() => setIsPhoneFocused(true)}
-                  onBlur={() => setIsPhoneFocused(false)}
-                  disabled={status === "loading" || status === "success"}
-                  aria-required="true"
-                  aria-invalid={!!error && !identifier.trim()}
-                  aria-describedby="phone-hint"
-                />
-
-                <div className="input-suffix-icon">
-                  <Smartphone size={18} />
-                </div>
-              </div>
-
-              <p id="phone-hint" className="field-helper">
-                Enter your 11-digit mobile number (e.g. 0917 123 4567) or registered staff account.
+              <h1 className="form-title">Welcome Back</h1>
+              <p className="form-subtitle">
+                Sign in to report issues, track tickets, and view updates.
               </p>
             </div>
 
-            {/* 2. Password Field */}
-            <div className="form-group">
-              <div className="label-row">
-                <label htmlFor="password" className="field-label">
-                  Password
-                </label>
-                <NextLink
-                  href="/forgot-password"
-                  className="forgot-link"
-                  tabIndex={0}
-                >
-                  Forgot Password?
-                </NextLink>
+            {/* Network Offline Warning */}
+            {isOffline && (
+              <div className="alert-box alert-warning" role="alert">
+                <WifiOff size={18} className="alert-icon" />
+                <span>You appear to be offline. Please check your internet connection.</span>
               </div>
+            )}
 
-              <div className={`input-container ${isPassFocused ? "is-focused" : ""} ${error && !password ? "is-error" : ""}`}>
-                <div className="input-prefix-icon">
-                  <Lock size={18} />
+            {/* Friendly Error Alert */}
+            {error && (
+              <div className="alert-box alert-danger" role="alert" aria-live="assertive">
+                <AlertCircle size={18} className="alert-icon" />
+                <div className="alert-text-wrapper">
+                  <span className="alert-title">Sign In Failed</span>
+                  <span className="alert-description">{error}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Login Form */}
+            <form onSubmit={handleSubmit} noValidate className="login-form">
+              
+              {/* 1. Mobile Number or Email */}
+              <div className="form-group">
+                <div className="label-row">
+                  <label htmlFor="identifier" className="field-label">
+                    Mobile Number or Email
+                  </label>
+                  {phonePreview && (
+                    <span className="format-preview" aria-live="polite">
+                      ✓ {phonePreview}
+                    </span>
+                  )}
                 </div>
 
-                <input
-                  ref={passwordInputRef}
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  className="native-input native-input-masked"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (error) setError(null);
-                    if (status === "error") setStatus("idle");
-                  }}
-                  onFocus={() => setIsPassFocused(true)}
-                  onBlur={() => setIsPassFocused(false)}
-                  disabled={status === "loading" || status === "success"}
-                  aria-required="true"
-                  aria-invalid={!!error && !password}
-                />
+                <div className={`input-container ${isIdentifierFocused ? "is-focused" : ""} ${error && !identifier.trim() ? "is-error" : ""}`}>
+                  {!isEmailInput ? (
+                    <div className="input-prefix-flag" title="Philippines (+63)">
+                      <span className="flag-emoji" aria-hidden="true">🇵🇭</span>
+                      <span className="country-code">+63</span>
+                    </div>
+                  ) : (
+                    <div className="input-prefix-icon">
+                      <Mail size={18} />
+                    </div>
+                  )}
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="password-toggle-btn"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  title={showPassword ? "Hide password" : "Show password"}
-                  disabled={status === "loading" || status === "success"}
-                  tabIndex={0}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+                  <input
+                    ref={identifierInputRef}
+                    id="identifier"
+                    name="identifier"
+                    type={isEmailInput ? "email" : "tel"}
+                    inputMode={isEmailInput ? "email" : "tel"}
+                    autoComplete="username"
+                    className="native-input"
+                    placeholder="09XXXXXXXXX or staff@bantay.ph"
+                    value={identifier}
+                    onChange={(e) => {
+                      setIdentifier(e.target.value);
+                      if (error) setError(null);
+                      if (status === "error") setStatus("idle");
+                    }}
+                    onFocus={() => setIsIdentifierFocused(true)}
+                    onBlur={() => setIsIdentifierFocused(false)}
+                    disabled={status === "loading" || status === "success"}
+                    aria-required="true"
+                    aria-invalid={!!error && !identifier.trim()}
+                    aria-describedby="identifier-hint"
+                  />
+
+                  <div className="input-suffix-icon">
+                    {isEmailInput ? <Mail size={18} /> : <Smartphone size={18} />}
+                  </div>
+                </div>
+
+                <p id="identifier-hint" className="field-helper">
+                  Enter your 11-digit mobile number or registered barangay account.
+                </p>
               </div>
+
+              {/* 2. Password Field */}
+              <div className="form-group">
+                <div className="label-row">
+                  <label htmlFor="password" className="field-label">
+                    Password
+                  </label>
+                  <NextLink
+                    href="/forgot-password"
+                    className="forgot-link"
+                    tabIndex={0}
+                  >
+                    Forgot Password?
+                  </NextLink>
+                </div>
+
+                <div className={`input-container ${isPassFocused ? "is-focused" : ""} ${error && !password ? "is-error" : ""}`}>
+                  <div className="input-prefix-icon">
+                    <Lock size={18} />
+                  </div>
+
+                  <input
+                    ref={passwordInputRef}
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    className="native-input native-input-masked"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (error) setError(null);
+                      if (status === "error") setStatus("idle");
+                    }}
+                    onFocus={() => setIsPassFocused(true)}
+                    onBlur={() => setIsPassFocused(false)}
+                    disabled={status === "loading" || status === "success"}
+                    aria-required="true"
+                    aria-invalid={!!error && !password}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="password-toggle-btn"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    title={showPassword ? "Hide password" : "Show password"}
+                    disabled={status === "loading" || status === "success"}
+                    tabIndex={0}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* 3. Multi-State Submit Button */}
+              <button
+                type="submit"
+                disabled={status === "loading" || status === "success"}
+                className={`primary-submit-btn ${status === "success" ? "btn-state-success" : ""}`}
+                aria-live="polite"
+              >
+                {status === "loading" && (
+                  <>
+                    <Loader2 size={20} className="spin-animation" />
+                    <span>Signing in...</span>
+                  </>
+                )}
+
+                {status === "success" && (
+                  <>
+                    <CheckCircle2 size={20} className="success-bounce" />
+                    <span>Login Successful</span>
+                  </>
+                )}
+
+                {status !== "loading" && status !== "success" && (
+                  <>
+                    <LogIn size={20} />
+                    <span>Sign In</span>
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Registration Callout */}
+            <div className="register-callout">
+              <span className="register-prompt">Don't have an account?</span>{" "}
+              <NextLink href="/register" className="register-link">
+                Create an account
+                <ArrowRight size={14} className="link-arrow" />
+              </NextLink>
             </div>
 
-            {/* 3. Multi-State Login Button */}
-            <button
-              type="submit"
-              disabled={status === "loading" || status === "success"}
-              className={`primary-submit-btn ${status === "success" ? "btn-state-success" : ""}`}
-              aria-live="polite"
-            >
-              {status === "loading" && (
-                <>
-                  <Loader2 size={20} className="spin-animation" />
-                  <span>Signing you in...</span>
-                </>
-              )}
-
-              {status === "success" && (
-                <>
-                  <CheckCircle2 size={20} className="success-bounce" />
-                  <span>Login Successful</span>
-                </>
-              )}
-
-              {status !== "loading" && status !== "success" && (
-                <>
-                  <LogIn size={20} />
-                  <span>Sign In</span>
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Registration Option */}
-          <div className="register-callout">
-            <span className="register-prompt">Don't have an account?</span>{" "}
-            <NextLink href="/register" className="register-link">
-              Create an account
-              <ArrowRight size={14} className="link-arrow" />
-            </NextLink>
-          </div>
-
-          {/* Quick Demo Switcher (Only visible in development/preview environments) */}
-          {process.env.NODE_ENV !== "production" && (
+            {/* Demo Accounts Pill & Drawer (Convenient for evaluators & testing) */}
             <div className="demo-accordion-card">
               <button
                 type="button"
@@ -389,7 +510,7 @@ export default function LoginPage() {
               >
                 <div className="demo-toggle-left">
                   <Sparkles size={14} className="sparkle-icon" />
-                  <span>Quick Demo Accounts</span>
+                  <span>One-Click Demo Accounts</span>
                 </div>
                 {showDemoDrawer ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
@@ -397,7 +518,7 @@ export default function LoginPage() {
               {showDemoDrawer && (
                 <div className="demo-grid-body">
                   <p className="demo-hint-text">
-                    Click any role to fill credentials and test authentication:
+                    Select any role to autofill test credentials:
                   </p>
                   <div className="demo-buttons-grid">
                     <button
@@ -451,86 +572,89 @@ export default function LoginPage() {
                 </div>
               )}
             </div>
-          )}
 
-          {/* Trust & Civic Security Badge */}
-          <footer className="login-footer">
-            <div className="trust-pill">
+            {/* Security Trust Footer */}
+            <footer className="form-trust-footer">
               <ShieldCheck size={14} className="trust-icon" />
-              <span>Official Civic Platform • 256-Bit Encrypted</span>
-            </div>
-            <p className="civic-motto">
-              Report. Track. Improve Our Community.
-            </p>
-          </footer>
+              <span>Official Civic Platform • 256-Bit SSL Encrypted</span>
+            </footer>
+          </section>
+
         </div>
       </main>
 
-      {/* Modern Scoped Styling with Mobile-First Responsive Breakpoints */}
+      {/* ========================================================
+          STYLES (Responsive Split-Screen Layout)
+         ======================================================== */}
       <style jsx>{`
         .login-screen-wrapper {
-          min-height: calc(100vh - var(--header-height, 60px));
+          min-height: calc(100vh - var(--header-height, 64px));
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 24px 16px;
-          padding-top: max(24px, env(safe-area-inset-top, 24px));
-          padding-bottom: max(32px, env(safe-area-inset-bottom, 32px));
+          padding: 32px 20px;
           position: relative;
           overflow: hidden;
-          background-color: var(--bg-app, #f8fafc);
+          background: #f8fafc;
         }
 
-        /* Ambient Glows */
+        /* Ambient Dynamic Glows */
         .ambient-glow {
           position: absolute;
           border-radius: 9999px;
-          filter: blur(80px);
+          filter: blur(90px);
           pointer-events: none;
-          opacity: 0.45;
           z-index: 0;
         }
 
-        .ambient-glow-top {
-          width: 320px;
-          height: 320px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, rgba(6, 182, 212, 0.1) 100%);
-          top: -100px;
-          left: 50%;
-          transform: translateX(-50%);
+        .ambient-glow-1 {
+          width: 440px;
+          height: 440px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.18) 0%, transparent 70%);
+          top: -120px;
+          left: 10%;
         }
 
-        .ambient-glow-bottom {
-          width: 280px;
-          height: 280px;
-          background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, transparent 80%);
-          bottom: -80px;
-          right: -40px;
+        .ambient-glow-2 {
+          width: 480px;
+          height: 480px;
+          background: radial-gradient(circle, rgba(13, 148, 136, 0.14) 0%, transparent 70%);
+          bottom: -100px;
+          right: 5%;
+        }
+
+        .ambient-glow-3 {
+          width: 320px;
+          height: 320px;
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+          top: 40%;
+          right: 35%;
         }
 
         .login-container {
           width: 100%;
-          max-width: 450px;
+          max-width: 1020px;
           margin: 0 auto;
           position: relative;
           z-index: 1;
         }
 
-        /* Authentication Card */
-        .login-card {
-          background: var(--bg-surface, #ffffff);
-          border: 1px solid var(--border-medium, #cbd5e1);
-          border-radius: 24px;
-          padding: 34px 28px;
-          box-shadow: 0 12px 36px -6px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-          animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        /* Dual-Panel Card Wrapper */
+        .split-card-wrapper {
+          display: grid;
+          grid-template-columns: 1.15fr 1fr;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 28px;
+          box-shadow: 0 20px 48px -12px rgba(15, 23, 42, 0.12), 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+          overflow: hidden;
+          animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(16px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
@@ -538,51 +662,302 @@ export default function LoginPage() {
           }
         }
 
-        /* Shake animation on invalid submit */
         .shake-card {
           animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
 
         @keyframes shake {
-          10%, 90% { transform: translate3d(-1.5px, 0, 0); }
-          20%, 80% { transform: translate3d(2.5px, 0, 0); }
+          10%, 90% { transform: translate3d(-2px, 0, 0); }
+          20%, 80% { transform: translate3d(3px, 0, 0); }
           30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* Header & Branding */
-        .login-header {
-          text-align: center;
-          margin-bottom: 26px;
-        }
-
-        .logo-badge-wrapper {
+        /* ----------------------------------------------------
+           LEFT SHOWCASE PANEL
+           ---------------------------------------------------- */
+        .showcase-panel {
+          position: relative;
+          background: linear-gradient(145deg, #091329 0%, #0d1e3d 45%, #152b55 100%);
+          color: #ffffff;
+          padding: 44px 38px;
           display: flex;
           flex-direction: column;
+          justify-content: space-between;
+          overflow: hidden;
+        }
+
+        .showcase-grid-bg {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+          background-size: 24px 24px;
+          opacity: 0.7;
+          pointer-events: none;
+        }
+
+        .showcase-glow {
+          position: absolute;
+          width: 300px;
+          height: 300px;
+          border-radius: 9999px;
+          background: radial-gradient(circle, rgba(37, 99, 235, 0.4) 0%, transparent 70%);
+          top: -60px;
+          left: -60px;
+          filter: blur(60px);
+          pointer-events: none;
+        }
+
+        .showcase-content {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .showcase-brand-header {
+          display: flex;
           align-items: center;
-          margin-bottom: 16px;
+          gap: 14px;
+          margin-bottom: 28px;
         }
 
-        .official-logo {
-          border-radius: 18px;
-          box-shadow: 0 8px 24px rgba(37, 99, 235, 0.28);
+        .showcase-logo-box {
+          background: rgba(255, 255, 255, 0.12);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
+          padding: 6px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .showcase-logo {
+          border-radius: 8px;
           object-fit: contain;
-          margin-bottom: 10px;
-          transition: transform 0.2s ease;
         }
 
-        .official-logo:hover {
-          transform: scale(1.04);
+        .showcase-brand-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+          line-height: 1.2;
         }
 
-        .civic-emblem-badge {
+        .showcase-brand-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 0.688rem;
+          font-weight: 700;
+          color: #93c5fd;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-top: 2px;
+        }
+
+        .showcase-hero-text {
+          margin-bottom: 30px;
+        }
+
+        .showcase-headline {
+          font-size: 1.85rem;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1.22;
+          letter-spacing: -0.03em;
+          margin-bottom: 12px;
+        }
+
+        .text-highlight {
+          background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .showcase-subtext {
+          font-size: 0.906rem;
+          color: #cbd5e1;
+          line-height: 1.5;
+        }
+
+        /* Feature Pillars */
+        .showcase-features {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-bottom: 28px;
+        }
+
+        .feature-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+        }
+
+        .feature-icon-box {
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .blue-box {
+          background: rgba(37, 99, 235, 0.25);
+          color: #60a5fa;
+        }
+
+        .emerald-box {
+          background: rgba(16, 185, 129, 0.25);
+          color: #34d399;
+        }
+
+        .amber-box {
+          background: rgba(245, 158, 11, 0.25);
+          color: #fbbf24;
+        }
+
+        .feature-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .feature-text strong {
+          font-size: 0.844rem;
+          color: #ffffff;
+          font-weight: 700;
+        }
+
+        .feature-text span {
+          font-size: 0.781rem;
+          color: #94a3b8;
+          line-height: 1.35;
+        }
+
+        /* Live Preview Card */
+        .showcase-live-card {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(12px);
+          border-radius: 16px;
+          padding: 14px 16px;
+          margin-bottom: 20px;
+        }
+
+        .live-card-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 6px;
+        }
+
+        .live-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.688rem;
+          font-weight: 700;
+          color: #cbd5e1;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .pulse-dot {
+          width: 7px;
+          height: 7px;
+          background-color: #10b981;
+          border-radius: 9999px;
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+          animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+          0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+          70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .resolved-status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.688rem;
+          font-weight: 800;
+          color: #10b981;
+          background: rgba(16, 185, 129, 0.18);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          padding: 2px 8px;
+          border-radius: 9999px;
+        }
+
+        .live-card-title {
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .live-card-meta {
+          font-size: 0.75rem;
+          color: #94a3b8;
+          margin-top: 3px;
+        }
+
+        .showcase-footer {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.75rem;
+          color: #94a3b8;
+          padding-top: 14px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-shield-icon {
+          color: #38bdf8;
+          flex-shrink: 0;
+        }
+
+        /* ----------------------------------------------------
+           RIGHT FORM PANEL
+           ---------------------------------------------------- */
+        .form-panel {
+          padding: 44px 38px;
+          background: #ffffff;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .mobile-header {
+          display: none;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+
+        .mobile-logo {
+          border-radius: 14px;
+          object-fit: contain;
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+          margin-bottom: 8px;
+        }
+
+        .civic-portal-pill {
           display: inline-flex;
           align-items: center;
           gap: 5px;
           padding: 3px 10px;
           background: rgba(37, 99, 235, 0.08);
           border: 1px solid rgba(37, 99, 235, 0.2);
-          color: var(--primary, #2563eb);
+          color: #2563eb;
           border-radius: 9999px;
           font-size: 0.688rem;
           font-weight: 700;
@@ -590,22 +965,38 @@ export default function LoginPage() {
           letter-spacing: 0.04em;
         }
 
-        .emblem-icon {
-          color: var(--primary, #2563eb);
+        .form-heading-group {
+          margin-bottom: 24px;
         }
 
-        .welcome-title {
-          font-size: 1.5rem;
+        .desktop-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 3px 10px;
+          background: rgba(37, 99, 235, 0.08);
+          border: 1px solid rgba(37, 99, 235, 0.2);
+          color: #2563eb;
+          border-radius: 9999px;
+          font-size: 0.688rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          margin-bottom: 12px;
+        }
+
+        .form-title {
+          font-size: 1.75rem;
           font-weight: 800;
-          color: var(--text-primary, #0f172a);
+          color: #0f172a;
           letter-spacing: -0.025em;
-          line-height: 1.25;
+          line-height: 1.2;
           margin: 0;
         }
 
-        .welcome-subtitle {
+        .form-subtitle {
           font-size: 0.875rem;
-          color: var(--text-muted, #64748b);
+          color: #64748b;
           margin-top: 6px;
           line-height: 1.45;
         }
@@ -616,8 +1007,8 @@ export default function LoginPage() {
           align-items: flex-start;
           gap: 12px;
           padding: 12px 14px;
-          border-radius: 14px;
-          font-size: 0.875rem;
+          border-radius: 12px;
+          font-size: 0.844rem;
           margin-bottom: 20px;
           line-height: 1.4;
           animation: fadeIn 0.2s ease;
@@ -653,13 +1044,13 @@ export default function LoginPage() {
 
         .alert-title {
           font-weight: 700;
-          font-size: 0.813rem;
+          font-size: 0.781rem;
           text-transform: uppercase;
           letter-spacing: 0.02em;
         }
 
         .alert-description {
-          font-size: 0.844rem;
+          font-size: 0.813rem;
         }
 
         /* Form Components */
@@ -682,17 +1073,17 @@ export default function LoginPage() {
         }
 
         .field-label {
-          font-size: 0.875rem;
+          font-size: 0.844rem;
           font-weight: 700;
-          color: var(--text-primary, #0f172a);
+          color: #1e293b;
           user-select: none;
         }
 
         .format-preview {
-          font-size: 0.75rem;
+          font-size: 0.719rem;
           font-weight: 700;
-          color: var(--status-resolved-dark, #065f46);
-          background: var(--status-resolved-bg, #d1fae5);
+          color: #065f46;
+          background: #d1fae5;
           padding: 2px 8px;
           border-radius: 9999px;
         }
@@ -700,13 +1091,13 @@ export default function LoginPage() {
         .forgot-link {
           font-size: 0.813rem;
           font-weight: 700;
-          color: var(--primary, #2563eb);
+          color: #2563eb;
           text-decoration: none;
           transition: color 0.15s ease;
         }
 
         .forgot-link:hover, .forgot-link:focus-visible {
-          color: var(--primary-dark, #1e40af);
+          color: #1d4ed8;
           text-decoration: underline;
           outline: none;
         }
@@ -715,23 +1106,30 @@ export default function LoginPage() {
         .input-container {
           display: flex;
           align-items: center;
-          background: var(--bg-surface, #ffffff);
-          border: 1.5px solid var(--border-medium, #cbd5e1);
+          background: #f8fafc;
+          border: 1.5px solid #cbd5e1;
           border-radius: 12px;
-          min-height: 50px;
+          min-height: 48px;
           padding: 0 14px;
-          transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+          transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
           position: relative;
         }
 
+        .input-container:hover {
+          background: #ffffff;
+          border-color: #94a3b8;
+        }
+
         .input-container.is-focused {
-          border-color: var(--primary, #2563eb);
-          box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.18);
+          background: #ffffff;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.16);
         }
 
         .input-container.is-error {
           border-color: #ef4444;
           box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.15);
+          background: #fff5f5;
         }
 
         .input-prefix-flag {
@@ -739,25 +1137,25 @@ export default function LoginPage() {
           align-items: center;
           gap: 6px;
           padding-right: 10px;
-          border-right: 1.5px solid var(--border-subtle, #e2e8f0);
-          color: var(--text-secondary, #334155);
-          font-size: 0.938rem;
+          border-right: 1.5px solid #e2e8f0;
+          color: #334155;
+          font-size: 0.875rem;
           font-weight: 700;
           user-select: none;
           flex-shrink: 0;
         }
 
         .flag-emoji {
-          font-size: 1.1rem;
+          font-size: 1rem;
           line-height: 1;
         }
 
         .country-code {
-          font-family: var(--font-sans, inherit);
+          font-family: inherit;
         }
 
         .input-prefix-icon {
-          color: var(--text-muted, #64748b);
+          color: #64748b;
           display: flex;
           align-items: center;
           margin-right: 10px;
@@ -771,15 +1169,15 @@ export default function LoginPage() {
           border: none;
           outline: none;
           background: transparent;
-          color: var(--text-primary, #0f172a);
-          font-size: 0.969rem;
+          color: #0f172a;
+          font-size: 0.906rem;
           font-weight: 500;
-          padding: 12px 10px;
+          padding: 10px 8px;
           height: 100%;
         }
 
         .native-input::placeholder {
-          color: var(--text-muted, #94a3b8);
+          color: #94a3b8;
           font-weight: 400;
         }
 
@@ -789,7 +1187,7 @@ export default function LoginPage() {
         }
 
         .input-suffix-icon {
-          color: var(--text-muted, #64748b);
+          color: #94a3b8;
           display: flex;
           align-items: center;
           flex-shrink: 0;
@@ -798,10 +1196,10 @@ export default function LoginPage() {
         .password-toggle-btn {
           background: transparent;
           border: none;
-          color: var(--text-muted, #64748b);
+          color: #64748b;
           cursor: pointer;
-          padding: 8px;
-          margin-right: -6px;
+          padding: 6px;
+          margin-right: -4px;
           border-radius: 8px;
           display: flex;
           align-items: center;
@@ -810,17 +1208,13 @@ export default function LoginPage() {
         }
 
         .password-toggle-btn:hover {
-          color: var(--primary, #2563eb);
-          background-color: var(--bg-subtle, #f1f5f9);
-        }
-
-        .password-toggle-btn:focus-visible {
-          outline: 2px solid var(--primary, #2563eb);
+          color: #2563eb;
+          background-color: #f1f5f9;
         }
 
         .field-helper {
-          font-size: 0.75rem;
-          color: var(--text-muted, #64748b);
+          font-size: 0.719rem;
+          color: #64748b;
           margin-top: 5px;
           padding-left: 2px;
           line-height: 1.35;
@@ -829,19 +1223,19 @@ export default function LoginPage() {
         /* Primary Submit Button */
         .primary-submit-btn {
           width: 100%;
-          min-height: 52px;
-          margin-top: 6px;
+          min-height: 50px;
+          margin-top: 4px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 10px;
-          border-radius: 14px;
-          font-size: 1.031rem;
-          font-weight: 800;
+          border-radius: 12px;
+          font-size: 0.969rem;
+          font-weight: 700;
           color: #ffffff;
           background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
           border: 1px solid rgba(255, 255, 255, 0.15);
-          box-shadow: 0 4px 18px rgba(37, 99, 235, 0.38);
+          box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
           cursor: pointer;
           user-select: none;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -849,12 +1243,12 @@ export default function LoginPage() {
 
         .primary-submit-btn:hover:not(:disabled) {
           background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-          box-shadow: 0 6px 24px rgba(37, 99, 235, 0.48);
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
           transform: translateY(-1px);
         }
 
         .primary-submit-btn:active:not(:disabled) {
-          transform: scale(0.98);
+          transform: scale(0.99);
         }
 
         .primary-submit-btn:disabled {
@@ -865,7 +1259,7 @@ export default function LoginPage() {
 
         .btn-state-success {
           background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-          box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4) !important;
+          box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35) !important;
         }
 
         .spin-animation {
@@ -889,25 +1283,25 @@ export default function LoginPage() {
         /* Register Callout */
         .register-callout {
           text-align: center;
-          margin-top: 20px;
-          padding-top: 18px;
-          border-top: 1px solid var(--border-subtle, #e2e8f0);
-          font-size: 0.875rem;
-          color: var(--text-secondary, #334155);
+          margin-top: 18px;
+          padding-top: 16px;
+          border-top: 1px solid #f1f5f9;
+          font-size: 0.844rem;
+          color: #475569;
         }
 
         .register-link {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          color: var(--primary, #2563eb);
+          color: #2563eb;
           font-weight: 700;
           text-decoration: none;
           transition: gap 0.15s ease, color 0.15s ease;
         }
 
         .register-link:hover {
-          color: var(--primary-dark, #1e40af);
+          color: #1d4ed8;
           text-decoration: underline;
         }
 
@@ -921,10 +1315,10 @@ export default function LoginPage() {
 
         /* Demo Accordion Card */
         .demo-accordion-card {
-          margin-top: 20px;
-          background-color: var(--bg-subtle, #f8fafc);
-          border: 1px dashed var(--border-medium, #cbd5e1);
-          border-radius: 14px;
+          margin-top: 16px;
+          background-color: #f8fafc;
+          border: 1px dashed #cbd5e1;
+          border-radius: 12px;
           overflow: hidden;
           transition: all 0.2s ease;
         }
@@ -934,66 +1328,66 @@ export default function LoginPage() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 10px 14px;
+          padding: 9px 12px;
           background: transparent;
           border: none;
           cursor: pointer;
-          color: var(--text-secondary, #334155);
-          font-size: 0.781rem;
+          color: #475569;
+          font-size: 0.75rem;
           font-weight: 700;
           transition: background-color 0.15s ease;
         }
 
         .demo-accordion-toggle:hover {
-          background-color: rgba(37, 99, 235, 0.04);
+          background-color: rgba(37, 99, 235, 0.05);
         }
 
         .demo-toggle-left {
           display: flex;
           align-items: center;
-          gap: 7px;
+          gap: 6px;
           text-transform: uppercase;
           letter-spacing: 0.03em;
         }
 
         .sparkle-icon {
-          color: var(--primary, #2563eb);
+          color: #2563eb;
         }
 
         .demo-grid-body {
-          padding: 12px 14px 14px;
-          border-top: 1px solid var(--border-subtle, #e2e8f0);
+          padding: 10px 12px 12px;
+          border-top: 1px solid #e2e8f0;
           animation: fadeIn 0.2s ease;
         }
 
         .demo-hint-text {
-          font-size: 0.719rem;
-          color: var(--text-muted, #64748b);
-          margin-bottom: 10px;
+          font-size: 0.688rem;
+          color: #64748b;
+          margin-bottom: 8px;
         }
 
         .demo-buttons-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 8px;
+          gap: 6px;
         }
 
         .demo-role-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 8px 10px;
-          background: var(--bg-surface, #ffffff);
-          border: 1px solid var(--border-subtle, #e2e8f0);
-          border-radius: 10px;
+          gap: 7px;
+          padding: 7px 9px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
           cursor: pointer;
           text-align: left;
           transition: all 0.15s ease;
         }
 
         .demo-role-btn:hover {
-          border-color: var(--primary, #2563eb);
-          background-color: var(--primary-light, #eff6ff);
+          border-color: #2563eb;
+          background-color: #eff6ff;
           transform: translateY(-1px);
         }
 
@@ -1001,8 +1395,8 @@ export default function LoginPage() {
           flex-shrink: 0;
         }
 
-        .resident-icon { color: var(--primary, #2563eb); }
-        .staff-icon { color: var(--accent, #f59e0b); }
+        .resident-icon { color: #2563eb; }
+        .staff-icon { color: #f59e0b; }
         .admin-icon { color: #dc2626; }
         .super-icon { color: #8b5cf6; }
 
@@ -1013,72 +1407,81 @@ export default function LoginPage() {
         }
 
         .role-title {
-          font-size: 0.75rem;
+          font-size: 0.719rem;
           font-weight: 700;
-          color: var(--text-primary, #0f172a);
+          color: #0f172a;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
         .role-meta {
-          font-size: 0.656rem;
-          color: var(--text-muted, #64748b);
+          font-size: 0.625rem;
+          color: #64748b;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
         /* Trust Footer */
-        .login-footer {
-          margin-top: 24px;
-          text-align: center;
+        .form-trust-footer {
+          margin-top: 20px;
           display: flex;
-          flex-direction: column;
           align-items: center;
+          justify-content: center;
           gap: 6px;
-        }
-
-        .trust-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 12px;
-          background: var(--bg-subtle, #f1f5f9);
-          border-radius: 9999px;
           font-size: 0.688rem;
           font-weight: 600;
-          color: var(--text-secondary, #475569);
+          color: #64748b;
         }
 
         .trust-icon {
-          color: var(--secondary, #0d9488);
+          color: #0d9488;
         }
 
-        .civic-motto {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: var(--text-muted, #64748b);
-          margin: 0;
+        /* ----------------------------------------------------
+           RESPONSIVE BREAKPOINTS
+           ---------------------------------------------------- */
+        @media (max-width: 960px) {
+          .split-card-wrapper {
+            grid-template-columns: 1fr;
+            max-width: 480px;
+            margin: 0 auto;
+            border-radius: 24px;
+          }
+
+          .showcase-panel {
+            display: none;
+          }
+
+          .mobile-header {
+            display: flex;
+          }
+
+          .desktop-badge {
+            display: none;
+          }
+
+          .form-panel {
+            padding: 36px 28px;
+          }
+
+          .form-heading-group {
+            text-align: center;
+          }
         }
 
-        /* Responsive Breakpoints & Mobile Optimization */
         @media (max-width: 480px) {
           .login-screen-wrapper {
             padding: 16px 12px;
           }
 
-          .login-card {
+          .form-panel {
             padding: 26px 18px;
-            border-radius: 20px;
           }
 
-          .welcome-title {
-            font-size: 1.375rem;
-          }
-
-          .welcome-subtitle {
-            font-size: 0.813rem;
+          .form-title {
+            font-size: 1.5rem;
           }
 
           .demo-buttons-grid {
@@ -1086,22 +1489,22 @@ export default function LoginPage() {
           }
 
           .input-container {
-            min-height: 48px;
+            min-height: 46px;
           }
 
           .primary-submit-btn {
-            min-height: 48px;
-            font-size: 0.969rem;
+            min-height: 46px;
           }
         }
 
         /* Reduced Motion Accessibility */
         @media (prefers-reduced-motion: reduce) {
-          .login-card,
+          .split-card-wrapper,
           .alert-box,
           .demo-grid-body,
           .primary-submit-btn,
-          .shake-card {
+          .shake-card,
+          .pulse-dot {
             animation: none !important;
             transition: none !important;
           }
