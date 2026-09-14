@@ -81,7 +81,7 @@ export default function LandingPage() {
               height={20}
               style={{ borderRadius: "5px", objectFit: "contain" }}
             />
-            <span>Official Civic Reporting Platform • Barangay San Antonio, Pasig City</span>
+            <span>Official Civic Reporting & Community Response Platform</span>
           </div>
 
           <h1
@@ -395,7 +395,7 @@ export default function LandingPage() {
               Life-Threatening Emergency Notice
             </strong>
             <span style={{ fontSize: "0.875rem", color: "var(--text-primary)" }}>
-              BantayBarangay is for civic and infrastructure tracking. In cases of active fire, medical crisis, or imminent structural collapse, call national emergency hotline <strong>911</strong> or Barangay San Antonio Operations at <strong>(02) 8643-1111</strong> immediately.
+              BantayBarangay is for civic and infrastructure tracking. In cases of active fire, medical crisis, or imminent structural collapse, call national emergency hotline <strong>911</strong> or local emergency operations immediately.
             </span>
           </div>
         </div>
@@ -434,7 +434,7 @@ export default function LandingPage() {
               <strong style={{ color: "var(--text-primary)", display: "block", marginBottom: "2px" }}>
                 BantayBarangay Civic Technology
               </strong>
-              <span>Barangay San Antonio, Pasig City, Metro Manila • All rights reserved.</span>
+              <span>Community Civic Infrastructure Platform • All rights reserved.</span>
             </div>
           </div>
 

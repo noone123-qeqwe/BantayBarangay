@@ -193,7 +193,7 @@ export default function ProfilePage() {
           </div>
 
           <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "4px" }}>
-            Barangay San Antonio, Pasig City
+            Verified Community Member
           </div>
         </div>
       </div>
@@ -469,10 +469,10 @@ export default function ProfilePage() {
               </div>
               <div>
                 <strong style={{ fontSize: "0.875rem", color: "var(--text-primary)", display: "block" }}>
-                  Barangay San Antonio Operations
+                  Barangay Operations Center
                 </strong>
                 <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                  (02) 8643-1111 • 24/7 Hotline
+                  24/7 Community Support Hotline
                 </span>
               </div>
             </div>
