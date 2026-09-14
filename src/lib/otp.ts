@@ -200,8 +200,11 @@ export async function requestOtp(
     success: true,
     maskedPhone,
     cooldownSeconds: RESEND_COOLDOWN_SECONDS,
-    expiresInSeconds: OTP_EXPIRY_MINUTES * 60,
-    devCode: process.env.NODE_ENV !== "production" ? code : undefined,
+    devCode:
+      process.env.NODE_ENV !== "production" ||
+      (!process.env.SEMAPHORE_API_KEY && !process.env.TEXTBEE_DEVICE_ID)
+        ? code
+        : undefined,
     status: 200,
   };
 }
