@@ -234,7 +234,7 @@ export default function DashboardPage() {
             {/* Quick Primary Header Actions */}
             <div className="header-actions-group">
               {isResident ? (
-                <NextLink href="/reports/new" className="emerald-action-btn">
+                <NextLink href="/reports/new" className="emerald-action-btn resident-header-btn">
                   <PlusCircle size={18} />
                   <span>+ Report Issue</span>
                 </NextLink>
@@ -1763,6 +1763,9 @@ export default function DashboardPage() {
 
         /* Responsive Breakpoints */
         @media (max-width: 1024px) {
+          .dashboard-root {
+            padding: 24px 16px calc(var(--bottom-nav-height, 64px) + 24px) 16px;
+          }
           .quick-access-grid, .kpi-grid {
             grid-template-columns: repeat(2, 1fr);
           }
@@ -1772,28 +1775,322 @@ export default function DashboardPage() {
         }
 
         @media (max-width: 640px) {
-          .quick-access-grid, .kpi-grid {
-            grid-template-columns: 1fr;
+          .dashboard-root {
+            padding: 16px 12px calc(var(--bottom-nav-height, 64px) + 28px) 12px;
           }
+
+          /* Header Area */
+          .dashboard-header-block {
+            margin-bottom: 18px;
+          }
+          .header-meta-row {
+            gap: 8px;
+            margin-bottom: 10px;
+          }
+          .role-pill {
+            font-size: 0.688rem;
+            padding: 3px 9px;
+          }
+          .status-live-indicator {
+            font-size: 0.688rem;
+            padding: 3px 9px;
+          }
+          .greeting-heading {
+            font-size: 1.45rem;
+            margin-bottom: 4px;
+            line-height: 1.25;
+          }
+          .greeting-subtext {
+            font-size: 0.813rem;
+            line-height: 1.4;
+          }
+          .resident-header-btn {
+            display: none !important;
+          }
+          .staff-header-actions {
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+          }
+          .staff-header-actions .emerald-action-btn,
+          .staff-header-actions .outline-action-btn {
+            flex: 1;
+            justify-content: center;
+            padding: 9px 12px;
+            font-size: 0.813rem;
+          }
+
+          /* Announcements */
+          .announcements-section {
+            margin-bottom: 18px;
+          }
+          .announcement-banner {
+            padding: 12px 14px;
+            gap: 10px;
+            border-radius: 14px;
+          }
+          .ann-title {
+            font-size: 0.85rem;
+          }
+          .ann-body {
+            font-size: 0.775rem;
+          }
+
+          /* Resident Hero CTA */
           .resident-report-hero-card {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-            padding: 20px;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            gap: 12px;
+          }
+          .hero-left-content {
+            gap: 12px;
+            min-width: 0;
+          }
+          .hero-icon-container {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 12px;
+          }
+          .hero-badge {
+            font-size: 0.675rem;
+            padding: 2px 7px;
+            margin-bottom: 3px;
+          }
+          .hero-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin: 0 0 2px 0;
+          }
+          .hero-desc {
+            font-size: 0.75rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
           }
           .hero-arrow-btn {
-            display: none;
+            display: flex !important;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+          }
+
+          /* Section Titles */
+          .section-header-row, .section-header-bar {
+            margin-bottom: 10px;
+          }
+          .section-title {
+            font-size: 1.1rem;
+          }
+          .section-subtitle {
+            font-size: 0.775rem;
+            margin-top: 2px;
+          }
+          .section-badge-pill {
+            font-size: 0.688rem;
+            padding: 2px 8px;
+          }
+
+          /* Quick Access 2x2 Grid */
+          .quick-access-section {
+            margin-bottom: 20px;
+          }
+          .quick-access-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px !important;
+            margin-top: 10px;
+          }
+          .dark-nav-card {
+            padding: 12px;
+            border-radius: 14px;
+            gap: 4px;
+          }
+          .nav-card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+          }
+          .nav-card-title {
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .nav-card-subtitle {
+            font-size: 0.72rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          /* KPI Metrics 2x2 Grid */
+          .kpi-metrics-section {
+            margin-bottom: 20px;
+          }
+          .kpi-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px !important;
+            margin-top: 10px;
+          }
+          .kpi-card {
+            padding: 12px 14px;
+            border-radius: 14px;
+          }
+          .kpi-header {
+            margin-bottom: 6px;
+          }
+          .kpi-label {
+            font-size: 0.725rem;
+          }
+          .kpi-number {
+            font-size: 1.55rem;
+            margin-bottom: 2px;
+          }
+          .kpi-caption {
+            font-size: 0.688rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          /* Live Municipal Dispatch Widget */
+          .dispatch-live-widget {
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+          }
+          .dispatch-ticket-title {
+            font-size: 0.95rem;
+          }
+          .dispatch-ticket-meta {
+            font-size: 0.775rem;
+            margin-bottom: 10px;
+          }
+          .dispatch-resident-loop {
+            font-size: 0.75rem;
+          }
+
+          /* Staff Tools & Admin Hub */
+          .staff-tools-row, .admin-hub-grid {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+            margin-bottom: 20px;
+          }
+          .tool-quick-card, .admin-hub-card {
+            padding: 12px 14px;
+            border-radius: 14px;
+            gap: 12px;
+          }
+          .tool-icon, .hub-icon-wrap {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 11px;
+          }
+          .tool-title, .hub-title {
+            font-size: 0.875rem;
+          }
+          .tool-desc, .hub-desc {
+            font-size: 0.75rem;
+            line-height: 1.3;
+          }
+
+          /* Incident Reports Feed */
+          .reports-feed-section {
+            margin-bottom: 20px;
           }
           .report-item-card {
-            flex-direction: column;
-            align-items: flex-start;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
           }
           .report-thumbnail-box {
-            width: 100%;
-            height: 140px;
+            width: 58px !important;
+            height: 58px !important;
+            min-width: 58px !important;
+            border-radius: 10px;
+          }
+          .report-info-col {
+            gap: 2px;
+            min-width: 0;
+          }
+          .report-meta-header {
+            gap: 6px;
+          }
+          .ref-tag {
+            font-size: 0.688rem;
+            padding: 2px 6px;
+          }
+          .report-headline {
+            font-size: 0.875rem;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .report-summary {
+            font-size: 0.75rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+          .report-meta-footer {
+            gap: 6px;
+            margin-top: 2px;
+          }
+          .meta-item {
+            font-size: 0.7rem;
           }
           .report-arrow {
-            display: none;
+            display: flex !important;
+            color: #64748b;
+            flex-shrink: 0;
+          }
+
+          /* Bottom Civic Seal */
+          .dashboard-bottom-seal {
+            font-size: 0.688rem;
+            padding-top: 18px;
+            flex-direction: column;
+            text-align: center;
+            gap: 6px;
+            line-height: 1.4;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .dashboard-root {
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+          .quick-access-grid, .kpi-grid {
+            gap: 8px !important;
+          }
+          .dark-nav-card, .kpi-card {
+            padding: 10px 8px;
+          }
+          .kpi-number {
+            font-size: 1.35rem;
+          }
+          .hero-title {
+            font-size: 0.95rem;
+          }
+          .report-thumbnail-box {
+            width: 50px !important;
+            height: 50px !important;
+            min-width: 50px !important;
           }
         }
       `}</style>
