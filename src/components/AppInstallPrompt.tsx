@@ -14,10 +14,6 @@ export default function AppInstallPrompt() {
   const [bannerDismissed, setBannerDismissed] = useState(true);
   const [installedSuccess, setInstalledSuccess] = useState(false);
 
-  if (pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/forgot-password") {
-    return null;
-  }
-
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -105,8 +101,14 @@ export default function AppInstallPrompt() {
     localStorage.setItem("bantay_install_dismissed", Date.now().toString());
   };
 
-  // If already standalone or successfully installed, don't show prompt banner
-  if (isStandalone) return null;
+  const isAuthPage =
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password";
+
+  // If on auth/intro pages, already standalone, or successfully installed, don't show prompt banner
+  if (isAuthPage || isStandalone) return null;
 
   return (
     <>

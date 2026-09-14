@@ -117,14 +117,9 @@ export default function DashboardPage() {
             borderRadius: "50%",
             border: "3px solid #e2e8f0",
             borderTopColor: "#2563eb",
-            animation: "dashboardSpin 0.7s linear infinite",
+            animation: "spin 0.7s linear infinite",
           }}
         />
-        <style jsx>{`
-          @keyframes dashboardSpin {
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     );
   }
