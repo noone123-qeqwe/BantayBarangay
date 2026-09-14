@@ -2,6 +2,7 @@
  * Simple CAPTCHA Challenge — Server-side math CAPTCHA.
  * No external dependencies. Uses encrypted tokens for verification.
  */
+import crypto from "crypto";
 
 function getCaptchaSecret(): string {
   const secret = process.env.JWT_SECRET;
