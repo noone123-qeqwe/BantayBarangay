@@ -29,7 +29,11 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/login");
+      if (typeof window !== "undefined") {
+        window.location.replace("/login");
+      } else {
+        router.replace("/login");
+      }
       return;
     }
 

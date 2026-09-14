@@ -242,7 +242,11 @@ export default function NewReportWizard() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/login");
+      if (typeof window !== "undefined") {
+        window.location.replace("/login");
+      } else {
+        router.replace("/login");
+      }
       return;
     }
 

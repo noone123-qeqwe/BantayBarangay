@@ -60,7 +60,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace("/login");
+      if (typeof window !== "undefined") {
+        window.location.replace("/login");
+      } else {
+        router.replace("/login");
+      }
       return;
     }
 

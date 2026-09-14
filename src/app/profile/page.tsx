@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -63,7 +63,17 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading && !user) {
+      if (typeof window !== "undefined") {
+        window.location.replace("/login");
+      } else {
+        router.replace("/login");
+      }
+    }
+  }, [loading, user, router]);
+
+  if (loading || !user) {
     return (
       <div className="page-container" style={{ textAlign: "center", padding: "80px 20px" }}>
         <img
@@ -81,15 +91,10 @@ export default function ProfilePage() {
           }}
         />
         <div style={{ fontSize: "1.1rem", color: "var(--text-muted)", fontWeight: 600 }}>
-          Loading profile...
+          {loading ? "Loading profile..." : "Redirecting to sign in..."}
         </div>
       </div>
     );
-  }
-
-  if (!user) {
-    router.push("/login");
-    return null;
   }
 
   const handleClearLocationCache = () => {
@@ -101,7 +106,6 @@ export default function ProfilePage() {
     setIsLoggingOut(true);
     try {
       await logout();
-      router.push("/login");
     } catch {
       setIsLoggingOut(false);
     }

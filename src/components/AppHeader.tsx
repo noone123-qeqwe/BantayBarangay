@@ -49,8 +49,8 @@ export default function AppHeader() {
     return "BantayBarangay";
   };
 
-  // Do not render on auth pages to avoid duplicate stacked headers with Navbar
-  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname);
+  // Do not render on auth pages or landing to avoid duplicate stacked headers
+  const isAuthPage = ["/login", "/register", "/forgot-password", "/"].includes(pathname);
   if (isAuthPage) return null;
 
   // Only render in standalone app mode to provide the dedicated App Bar
