@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
+import {
+  APP_LATEST_VERSION,
+  APP_BUILD_IDENTIFIER,
+  APP_RELEASE_NOTES,
+} from "@/lib/version";
 
 export const dynamic = "force-dynamic";
-
-// BantayBarangay semantic application version
-const CURRENT_APP_VERSION = "2.5.0";
-// Build marker
-const BUILD_IDENTIFIER = "20260915-v2.5.0-redesign";
 
 export async function GET() {
   return NextResponse.json(
     {
-      version: CURRENT_APP_VERSION,
-      build: BUILD_IDENTIFIER,
+      version: APP_LATEST_VERSION,
+      build: APP_BUILD_IDENTIFIER,
       timestamp: Date.now(),
-      releaseNotes: "Obsidian minimal redesign for login, registration, and dashboard. Enhanced PWA cache busting.",
+      releaseNotes: APP_RELEASE_NOTES,
     },
     {
       headers: {

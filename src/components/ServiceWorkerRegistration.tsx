@@ -1,22 +1,51 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Sparkles, X, Check, Loader2 } from "lucide-react";
-
-interface VersionInfo {
-  version: string;
-  build: string;
-  releaseNotes?: string;
-}
+import { isNewerVersion, BASELINE_INSTALLED_VERSION } from "@/lib/version";
 
 const CURRENT_EXPECTED_CACHE = "bantay-app-v5-20260915";
 
 export default function ServiceWorkerRegistration() {
-  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-  const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Helper to check version against installed version
+  const checkVersionUpdate = useCallback(async (worker?: ServiceWorker | null) => {
+    try {
+      const res = await fetch("/api/version", {
+        cache: "no-store",
+        headers: { Pragma: "no-cache", "Cache-Control": "no-cache" },
+      });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      const serverVersion = data?.version;
+      if (!serverVersion) return;
+
+      setLatestVersion(serverVersion);
+
+      // Determine installed version from storage or baseline
+      const installedVersion =
+        localStorage.getItem("bb_installed_version") || BASELINE_INSTALLED_VERSION;
+
+      // Only display popup when latest version is strictly newer than installed version
+      const hasNewer = isNewerVersion(serverVersion, installedVersion);
+
+      // If a service worker is waiting or installed, that also indicates a pending update
+      if (hasNewer || worker) {
+        const dismissedFor = sessionStorage.getItem("bb_update_dismissed");
+        if (dismissedFor !== serverVersion) {
+          setShowPopup(true);
+        }
+      } else {
+        setShowPopup(false);
+      }
+    } catch {
+      // Silently fail network check
+    }
+  }, []);
 
   // 1. Purge legacy caches and Register Service Worker
   useEffect(() => {
@@ -53,7 +82,7 @@ export default function ServiceWorkerRegistration() {
         // Check if a worker is already waiting in background
         if (registration.waiting) {
           setWaitingWorker(registration.waiting);
-          setUpdateAvailable(true);
+          checkVersionUpdate(registration.waiting);
         }
 
         // Listen for new service worker installation
@@ -64,19 +93,20 @@ export default function ServiceWorkerRegistration() {
           newWorker.addEventListener("statechange", () => {
             if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
               setWaitingWorker(newWorker);
-              setUpdateAvailable(true);
+              checkVersionUpdate(newWorker);
             }
           });
         });
 
-        // Periodic background update check (every 3 minutes)
+        // Periodic background update check (every 2 minutes)
         const updateInterval = setInterval(() => {
           try {
             registration.update();
+            checkVersionUpdate();
           } catch {
-            // Ignore background check failure
+            // Ignore
           }
-        }, 3 * 60 * 1000);
+        }, 2 * 60 * 1000);
 
         return () => clearInterval(updateInterval);
       } catch (err) {
@@ -100,93 +130,45 @@ export default function ServiceWorkerRegistration() {
     };
     navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
 
-    // Background update check on tab/app visibility regain
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && swRegistration) {
-        try {
-          swRegistration.update();
-        } catch {
-          // Ignore
+    // Background update check on tab/app visibility regain or focus
+    const handleCheck = () => {
+      if (document.visibilityState === "visible") {
+        if (swRegistration) {
+          try {
+            swRegistration.update();
+          } catch {
+            // Ignore
+          }
         }
+        checkVersionUpdate();
       }
     };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    document.addEventListener("visibilitychange", handleCheck);
+    window.addEventListener("focus", handleCheck);
+
+    // Initial check on mount
+    checkVersionUpdate();
 
     return () => {
       window.removeEventListener("load", registerSW);
       navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleCheck);
+      window.removeEventListener("focus", handleCheck);
     };
-  }, []);
+  }, [checkVersionUpdate]);
 
-  // 2. Periodic Build/Version API Poller (covers PWA standalone mode)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    let initialBuild: string | null = null;
-
-    const checkAppVersion = async () => {
-      try {
-        const res = await fetch("/api/version", {
-          cache: "no-store",
-          headers: { Pragma: "no-cache", "Cache-Control": "no-cache" },
-        });
-        if (!res.ok) return;
-
-        const data: VersionInfo = await res.json();
-        setVersionInfo(data);
-
-        if (!initialBuild) {
-          initialBuild = data.build;
-        } else if (initialBuild !== data.build) {
-          // New build deployed on the server
-          setUpdateAvailable(true);
-        }
-      } catch {
-        // Silently fail network check
-      }
-    };
-
-    // Initial check
-    checkAppVersion();
-
-    // Check every 2 minutes
-    const versionInterval = setInterval(checkAppVersion, 2 * 60 * 1000);
-
-    // Check when user refocuses the app
-    const onFocus = () => checkAppVersion();
-    window.addEventListener("focus", onFocus);
-
-    return () => {
-      clearInterval(versionInterval);
-      window.removeEventListener("focus", onFocus);
-    };
-  }, []);
-
-  // 3. Custom Event listener for testing and manual triggers
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handleManualPrompt = (e: any) => {
-      setDismissed(false);
-      setUpdateAvailable(true);
-      if (e?.detail) {
-        setVersionInfo(e.detail);
-      }
-    };
-
-    window.addEventListener("bantay:simulate-update", handleManualPrompt);
-    return () => {
-      window.removeEventListener("bantay:simulate-update", handleManualPrompt);
-    };
-  }, []);
-
-  // 4. Handle User Refresh Action
-  const handleApplyUpdate = useCallback(async () => {
-    setIsRefreshing(true);
+  // 2. Real Application Update Mechanism (UPDATE NOW)
+  const handleUpdateNow = useCallback(async () => {
+    setIsUpdating(true);
 
     try {
-      sessionStorage.removeItem("bantay_update_dismissed");
+      sessionStorage.removeItem("bb_update_dismissed");
+
+      // Mark installed version as the new latest version so it won't prompt again after reload
+      if (latestVersion) {
+        localStorage.setItem("bb_installed_version", latestVersion);
+      }
 
       // Wipe client caches directly
       if ("caches" in window) {
@@ -194,6 +176,7 @@ export default function ServiceWorkerRegistration() {
         await Promise.all(keys.map((k) => caches.delete(k)));
       }
 
+      // Message waiting service worker to take over immediately
       if (waitingWorker) {
         waitingWorker.postMessage({ type: "SKIP_WAITING" });
         waitingWorker.postMessage({ type: "CLEAR_ALL_CACHES" });
@@ -206,227 +189,187 @@ export default function ServiceWorkerRegistration() {
         }
       }
 
+      // Reload with fresh assets
       setTimeout(() => {
         window.location.reload();
-      }, 350);
+      }, 300);
     } catch {
       window.location.reload();
     }
-  }, [waitingWorker]);
+  }, [latestVersion, waitingWorker]);
 
-  const handleDismiss = () => {
-    setDismissed(true);
-    try {
-      sessionStorage.setItem("bantay_update_dismissed", "true");
-    } catch {
-      // Ignore
+  // 3. Later button: simply close the popup
+  const handleLater = () => {
+    setShowPopup(false);
+    if (latestVersion) {
+      try {
+        sessionStorage.setItem("bb_update_dismissed", latestVersion);
+      } catch {
+        // Ignore
+      }
     }
   };
 
-  // Don't render if no update is available or dismissed
-  if (!updateAvailable || dismissed) {
+  // Do not display if no update is available or dismissed
+  if (!showPopup || !latestVersion) {
     return null;
   }
 
-  const displayVersion = versionInfo?.version ? `v${versionInfo.version}` : "v2.5.0";
-  const releaseNotes =
-    versionInfo?.releaseNotes ||
-    "A clean obsidian redesign for login, registration, and dashboard is ready. Tap refresh to update instantly.";
-
   return (
-    <aside
+    <div
       role="dialog"
-      aria-live="polite"
-      aria-label="New update available"
+      aria-modal="true"
+      aria-label="Update Available"
       style={{
         position: "fixed",
+        inset: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.75)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
         zIndex: 999999,
-        left: "16px",
-        right: "16px",
-        bottom: "calc(var(--bottom-nav-height, 64px) + 16px)",
-        maxWidth: "440px",
-        margin: "0 auto",
-        pointerEvents: "auto",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "16px",
       }}
     >
+      {/* 
+        Final Appearance:
+        ┌─────────────────────────┐
+        │    UPDATE AVAILABLE     │
+        │                         │
+        │ A new version is        │
+        │ available!              │
+        │                         │
+        │      Version 2.4.6      │
+        │                         │
+        │ [ UPDATE NOW ] [ LATER ]│
+        └─────────────────────────┘
+      */}
       <div
         style={{
           width: "100%",
-          background: "linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(8, 13, 26, 0.99) 100%)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1.5px solid rgba(56, 189, 248, 0.35)",
-          borderRadius: "20px",
-          padding: "18px 20px",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08)",
+          maxWidth: "340px",
+          backgroundColor: "#0d1527",
+          backgroundImage:
+            "linear-gradient(180deg, rgba(17, 28, 52, 0.98) 0%, rgba(10, 17, 32, 0.99) 100%)",
+          border: "1.5px solid rgba(245, 158, 11, 0.45)",
+          borderRadius: "18px",
+          padding: "26px 22px",
+          boxShadow:
+            "0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 35px -5px rgba(245, 158, 11, 0.22)",
           display: "flex",
           flexDirection: "column",
-          gap: "12px",
+          alignItems: "center",
+          textAlign: "center",
           color: "#f8fafc",
         }}
       >
-        {/* Header */}
+        {/* Header: UPDATE AVAILABLE */}
+        <div
+          style={{
+            fontSize: "0.85rem",
+            fontWeight: 800,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "#fbbf24",
+            marginBottom: "12px",
+          }}
+        >
+          UPDATE AVAILABLE
+        </div>
+
+        {/* Subtitle: A new version is available! */}
+        <div
+          style={{
+            fontSize: "1.05rem",
+            fontWeight: 700,
+            color: "#f8fafc",
+            lineHeight: 1.35,
+            marginBottom: "18px",
+          }}
+        >
+          A new version is
+          <br />
+          available!
+        </div>
+
+        {/* Version Display: Version X.X.X (Only latest version, no current version) */}
+        <div
+          style={{
+            display: "inline-block",
+            fontSize: "1.1rem",
+            fontWeight: 800,
+            color: "#fbbf24",
+            fontFamily:
+              'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "JetBrains Mono", monospace',
+            backgroundColor: "rgba(245, 158, 11, 0.12)",
+            border: "1px solid rgba(245, 158, 11, 0.3)",
+            borderRadius: "9999px",
+            padding: "6px 18px",
+            marginBottom: "22px",
+          }}
+        >
+          Version {latestVersion}
+        </div>
+
+        {/* Action Buttons: [ UPDATE NOW ] [ LATER ] */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "center",
+            gap: "10px",
+            width: "100%",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "8px",
-                background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#ffffff",
-              }}
-            >
-              <Sparkles size={15} />
-            </div>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "5px",
-                padding: "3px 9px",
-                borderRadius: "9999px",
-                fontSize: "0.725rem",
-                fontWeight: 700,
-                color: "#38bdf8",
-                background: "rgba(56, 189, 248, 0.12)",
-                border: "1px solid rgba(56, 189, 248, 0.25)",
-              }}
-            >
-              <span
-                style={{
-                  width: "6px",
-                  height: "6px",
-                  borderRadius: "50%",
-                  backgroundColor: "#34d399",
-                  boxShadow: "0 0 6px #34d399",
-                }}
-              />
-              <span>Update Ready · {displayVersion}</span>
-            </div>
-          </div>
-
           <button
             type="button"
-            onClick={handleDismiss}
-            aria-label="Dismiss update notification"
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#94a3b8",
-              cursor: "pointer",
-              padding: "4px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div>
-          <h2
-            style={{
-              fontSize: "1rem",
-              fontWeight: 800,
-              color: "#f8fafc",
-              margin: "0 0 4px 0",
-            }}
-          >
-            New Update Available
-          </h2>
-          <p
-            style={{
-              fontSize: "0.825rem",
-              color: "#cbd5e1",
-              lineHeight: 1.4,
-              margin: "0 0 10px 0",
-            }}
-          >
-            {releaseNotes}
-          </p>
-
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "0.75rem",
-              color: "#34d399",
-              fontWeight: 600,
-            }}
-          >
-            <Check size={14} />
-            <span>Instant reload · Preserves your data & sign-in</span>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
-          <button
-            type="button"
-            onClick={handleApplyUpdate}
-            disabled={isRefreshing}
+            onClick={handleUpdateNow}
+            disabled={isUpdating}
             style={{
               flex: 1,
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              padding: "10px 16px",
+              padding: "12px 14px",
               borderRadius: "12px",
-              background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
-              color: "#ffffff",
-              fontSize: "0.85rem",
-              fontWeight: 700,
+              background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+              color: "#080c15",
+              fontSize: "0.825rem",
+              fontWeight: 800,
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
               border: "1px solid rgba(255, 255, 255, 0.2)",
-              boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
-              cursor: "pointer",
+              boxShadow: "0 4px 14px rgba(245, 158, 11, 0.35)",
+              cursor: isUpdating ? "wait" : "pointer",
+              opacity: isUpdating ? 0.75 : 1,
+              transition: "opacity 0.15s ease",
             }}
           >
-            {isRefreshing ? (
-              <>
-                <Loader2 size={16} className="spin-icon" />
-                <span>Updating App...</span>
-              </>
-            ) : (
-              <>
-                <RefreshCw size={15} />
-                <span>Refresh & Apply Update</span>
-              </>
-            )}
+            {isUpdating ? "UPDATING..." : "UPDATE NOW"}
           </button>
 
           <button
             type="button"
-            onClick={handleDismiss}
-            disabled={isRefreshing}
+            onClick={handleLater}
+            disabled={isUpdating}
             style={{
-              padding: "10px 14px",
+              flex: 1,
+              padding: "12px 14px",
               borderRadius: "12px",
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
+              backgroundColor: "rgba(255, 255, 255, 0.06)",
               color: "#94a3b8",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              cursor: "pointer",
+              fontSize: "0.825rem",
+              fontWeight: 700,
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              cursor: isUpdating ? "not-allowed" : "pointer",
+              transition: "background-color 0.15s ease, color 0.15s ease",
             }}
           >
-            Later
+            LATER
           </button>
         </div>
       </div>
-    </aside>
+    </div>
   );
 }
