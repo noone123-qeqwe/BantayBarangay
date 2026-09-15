@@ -5,7 +5,32 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // Ensure uploads directory is served statically if placed in public
+  async headers() {
+    return [
+      {
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          },
+          {
+            key: "Content-Type",
+            value: "application/javascript; charset=utf-8",
+          },
+        ],
+      },
+      {
+        source: "/globals.css",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, must-revalidate, max-age=0",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

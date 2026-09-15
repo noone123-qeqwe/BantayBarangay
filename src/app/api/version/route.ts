@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 // BantayBarangay semantic application version
-const CURRENT_APP_VERSION = "2.4.0";
+const CURRENT_APP_VERSION = "2.5.0";
 // Build marker
-const BUILD_IDENTIFIER = "20260914-v2.4.0";
+const BUILD_IDENTIFIER = "20260915-v2.5.0-redesign";
 
 export async function GET() {
   return NextResponse.json(
@@ -13,7 +13,7 @@ export async function GET() {
       version: CURRENT_APP_VERSION,
       build: BUILD_IDENTIFIER,
       timestamp: Date.now(),
-      releaseNotes: "Performance upgrades, authentication stability fixes, and refreshed civic dark theme UI.",
+      releaseNotes: "Obsidian minimal redesign for login, registration, and dashboard. Enhanced PWA cache busting.",
     },
     {
       headers: {

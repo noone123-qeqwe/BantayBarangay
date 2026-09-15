@@ -110,16 +110,24 @@ export default function ProfilePage() {
   const handleCheckForUpdates = async () => {
     setCheckingUpdate(true);
     try {
+      if ("caches" in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
       if ("serviceWorker" in navigator) {
         const reg = await navigator.serviceWorker.getRegistration();
         if (reg) {
           await reg.update();
         }
       }
-      const res = await fetch("/api/version");
+      const res = await fetch("/api/version", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        showToast(`BantayBarangay is up to date (v${data.version || "2.4.0"})`, "success");
+        showToast(`BantayBarangay updated to v${data.version || "2.5.0"}! Reloading...`, "success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+        return;
       }
     } catch {
       showToast("Unable to check for updates. Please check connection.", "error");
@@ -608,7 +616,7 @@ export default function ProfilePage() {
                   BantayBarangay PWA
                 </div>
                 <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>
-                  Release v2.4.0 · Production Ready
+                  Release v2.5.0 · Live Modern UI
                 </div>
               </div>
             </div>
