@@ -124,7 +124,7 @@ export default function LoginPage() {
     let hasFieldError = false;
 
     if (!trimmedIdentifier) {
-      setIdentifierError("Please enter your mobile number or email.");
+      setIdentifierError("Please enter your mobile number.");
       hasFieldError = true;
     } else {
       const hasOnlyPhoneChars = /^[\d\s\+\-\(\)]+$/.test(trimmedIdentifier);
@@ -454,7 +454,7 @@ export default function LoginPage() {
                   className="login-field-label"
                   style={{ fontSize: "0.813rem", fontWeight: 600, color: "#cbd5e1" }}
                 >
-                  Mobile number or email
+                  Mobile number
                 </label>
                 {phonePreview && (
                   <span

@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     if (!identifier || !password) {
       return NextResponse.json(
-        { error: "Mobile number (or email) and password are required." },
+        { error: "Mobile number and password are required." },
         { status: 400 }
       );
     }
