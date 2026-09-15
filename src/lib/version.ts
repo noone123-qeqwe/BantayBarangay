@@ -1,13 +1,9 @@
 // Application Semantic Version and Build Information
 export const APP_LATEST_VERSION = "2.5.0";
+export const CURRENT_CLIENT_VERSION = "2.5.0";
 export const APP_BUILD_IDENTIFIER = "20260915-v2.5.0-redesign";
 export const APP_RELEASE_NOTES =
   "Obsidian minimal redesign for login, registration, and dashboard. Enhanced PWA cache busting.";
-
-/**
- * Baseline version for older installed clients prior to version tracking.
- */
-export const BASELINE_INSTALLED_VERSION = "2.4.0";
 
 /**
  * Compares two semantic version strings.

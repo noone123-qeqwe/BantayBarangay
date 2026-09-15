@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { isNewerVersion, BASELINE_INSTALLED_VERSION } from "@/lib/version";
+import { isNewerVersion, CURRENT_CLIENT_VERSION } from "@/lib/version";
 
 const CURRENT_EXPECTED_CACHE = "bantay-app-v5-20260915";
 
@@ -11,7 +11,7 @@ export default function ServiceWorkerRegistration() {
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Helper to check version against installed version
+  // Helper to check version against installed client version
   const checkVersionUpdate = useCallback(async (worker?: ServiceWorker | null) => {
     try {
       const res = await fetch("/api/version", {
@@ -24,22 +24,27 @@ export default function ServiceWorkerRegistration() {
       const serverVersion = data?.version;
       if (!serverVersion) return;
 
-      setLatestVersion(serverVersion);
-
-      // Determine installed version from storage or baseline
+      // Determine client's installed version (stored in localStorage or fallback to running build version)
       const installedVersion =
-        localStorage.getItem("bb_installed_version") || BASELINE_INSTALLED_VERSION;
+        localStorage.getItem("bb_installed_version") || CURRENT_CLIENT_VERSION;
 
-      // Only display popup when latest version is strictly newer than installed version
+      // Only display popup when server version is strictly newer than installed version
       const hasNewer = isNewerVersion(serverVersion, installedVersion);
 
-      // If a service worker is waiting or installed, that also indicates a pending update
-      if (hasNewer || worker) {
-        const dismissedFor = sessionStorage.getItem("bb_update_dismissed");
-        if (dismissedFor !== serverVersion) {
-          setShowPopup(true);
+      if (hasNewer) {
+        setLatestVersion(serverVersion);
+
+        // Check if user previously clicked "Later" for this exact version
+        const dismissedVersion = localStorage.getItem("bb_dismissed_update_version");
+        if (dismissedVersion === serverVersion) {
+          // User already dismissed this update, do not show again
+          setShowPopup(false);
+          return;
         }
+
+        setShowPopup(true);
       } else {
+        // No newer version available; ensure popup is closed
         setShowPopup(false);
       }
     } catch {
@@ -47,7 +52,7 @@ export default function ServiceWorkerRegistration() {
     }
   }, []);
 
-  // 1. Purge legacy caches and Register Service Worker
+  // 1. Clean legacy caches and Register Service Worker
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
       return;
@@ -72,7 +77,7 @@ export default function ServiceWorkerRegistration() {
         });
         swRegistration = registration;
 
-        // Force an immediate update check from the server
+        // Proactively check for SW updates
         try {
           await registration.update();
         } catch {
@@ -98,7 +103,7 @@ export default function ServiceWorkerRegistration() {
           });
         });
 
-        // Periodic background update check (every 2 minutes)
+        // Periodic background update check (every 5 minutes)
         const updateInterval = setInterval(() => {
           try {
             registration.update();
@@ -106,7 +111,7 @@ export default function ServiceWorkerRegistration() {
           } catch {
             // Ignore
           }
-        }, 2 * 60 * 1000);
+        }, 5 * 60 * 1000);
 
         return () => clearInterval(updateInterval);
       } catch (err) {
@@ -130,22 +135,14 @@ export default function ServiceWorkerRegistration() {
     };
     navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
 
-    // Background update check on tab/app visibility regain or focus
-    const handleCheck = () => {
+    // Check when user refocuses the app or tab
+    const handleVisibility = () => {
       if (document.visibilityState === "visible") {
-        if (swRegistration) {
-          try {
-            swRegistration.update();
-          } catch {
-            // Ignore
-          }
-        }
         checkVersionUpdate();
       }
     };
 
-    document.addEventListener("visibilitychange", handleCheck);
-    window.addEventListener("focus", handleCheck);
+    document.addEventListener("visibilitychange", handleVisibility);
 
     // Initial check on mount
     checkVersionUpdate();
@@ -153,8 +150,7 @@ export default function ServiceWorkerRegistration() {
     return () => {
       window.removeEventListener("load", registerSW);
       navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
-      document.removeEventListener("visibilitychange", handleCheck);
-      window.removeEventListener("focus", handleCheck);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [checkVersionUpdate]);
 
@@ -163,7 +159,8 @@ export default function ServiceWorkerRegistration() {
     setIsUpdating(true);
 
     try {
-      sessionStorage.removeItem("bb_update_dismissed");
+      // Clear any dismissal markers
+      localStorage.removeItem("bb_dismissed_update_version");
 
       // Mark installed version as the new latest version so it won't prompt again after reload
       if (latestVersion) {
@@ -198,19 +195,19 @@ export default function ServiceWorkerRegistration() {
     }
   }, [latestVersion, waitingWorker]);
 
-  // 3. Later button: simply close the popup
+  // 3. Later button: simply close the popup and remember dismissal
   const handleLater = () => {
     setShowPopup(false);
     if (latestVersion) {
       try {
-        sessionStorage.setItem("bb_update_dismissed", latestVersion);
+        localStorage.setItem("bb_dismissed_update_version", latestVersion);
       } catch {
         // Ignore
       }
     }
   };
 
-  // Do not display if no update is available or dismissed
+  // Do not display if no update is available or if dismissed
   if (!showPopup || !latestVersion) {
     return null;
   }
