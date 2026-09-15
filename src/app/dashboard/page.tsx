@@ -286,7 +286,7 @@ export default function DashboardPage() {
         {isResident && (
           <div className="role-view-resident">
             {/* DOMINANT HERO CTA: Report an Issue */}
-            <NextLink href="/reports/new" className="resident-report-hero-card">
+            <NextLink href="/reports/new" className="resident-report-hero-card shimmer-effect">
               <div className="hero-left-content">
                 <div className="hero-icon-container">
                   <PlusCircle size={28} strokeWidth={2.5} />
@@ -804,6 +804,20 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
+
+        {/* ===============================================================
+            MOBILE FLOATING QUICK ACTION BUTTON
+           =============================================================== */}
+        {isResident && (
+          <NextLink
+            href="/reports/new"
+            className="mobile-fab-btn"
+            aria-label="Report Issue Quickly"
+          >
+            <PlusCircle size={20} strokeWidth={2.5} />
+            <span>+ Report</span>
+          </NextLink>
+        )}
 
         {/* ===============================================================
             BOTTOM CIVIC SECURITY & COMPLIANCE SEAL
@@ -2068,6 +2082,56 @@ export default function DashboardPage() {
             gap: 6px;
             line-height: 1.4;
           }
+
+          /* Staggered Animations for Mobile Elements */
+          .dashboard-header-block {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+          .resident-report-hero-card {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+          }
+          .quick-access-section {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
+          }
+          .kpi-metrics-section {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.20s both;
+          }
+          .dispatch-live-widget {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both;
+          }
+          .reports-feed-section {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+          }
+
+          /* Mobile Floating Action Button */
+          .mobile-fab-btn {
+            display: flex !important;
+            align-items: center;
+            gap: 7px;
+            position: fixed;
+            bottom: calc(var(--bottom-nav-height, 64px) + 16px);
+            right: 16px;
+            z-index: 40;
+            padding: 11px 18px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
+            color: #ffffff;
+            font-size: 0.813rem;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(2, 132, 199, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
+          }
+          .mobile-fab-btn:active {
+            transform: scale(0.92);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+          }
+        }
+
+        .mobile-fab-btn {
+          display: none;
         }
 
         @media (max-width: 380px) {
@@ -2091,6 +2155,12 @@ export default function DashboardPage() {
             width: 50px !important;
             height: 50px !important;
             min-width: 50px !important;
+          }
+          .mobile-fab-btn {
+            right: 12px;
+            bottom: calc(var(--bottom-nav-height, 64px) + 12px);
+            padding: 9px 14px;
+            font-size: 0.75rem;
           }
         }
       `}</style>

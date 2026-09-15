@@ -808,6 +808,14 @@ export default function ReportsListPage() {
             padding: 12px 14px !important;
             gap: 12px !important;
             border-radius: 14px !important;
+            transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease !important;
+          }
+          .mobile-reports-cards .card:active {
+            transform: scale(0.98) !important;
+            background-color: var(--bg-subtle) !important;
+          }
+          .reports-tab-pill:active {
+            transform: scale(0.94) !important;
           }
         }
       `}</style>

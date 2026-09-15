@@ -1150,3 +1150,278 @@ html, body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM MOBILE ANIMATION & DESIGN SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Staggered Entrance Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.15); }
+  50% { box-shadow: 0 0 0 8px rgba(56, 189, 248, 0); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(56, 189, 248, 0.3); }
+  50% { border-color: rgba(52, 211, 153, 0.4); }
+}
+
+/* Animated Gradient Border Wrapper */
+.gradient-border-card {
+  position: relative;
+  border-radius: 18px;
+  background: var(--bg-card);
+}
+
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.4), rgba(129, 140, 248, 0.3), rgba(52, 211, 153, 0.4));
+  background-size: 300% 300%;
+  animation: gradientShift 6s ease infinite;
+  z-index: -1;
+  opacity: 0.7;
+}
+
+/* Glass Shimmer Overlay Effect */
+@keyframes glassShimmer {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  animation: glassShimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Mobile Card Elevation System */
+@media (max-width: 768px) {
+  .card, .card-interactive {
+    border-radius: var(--radius-lg) !important;
+  }
+  
+  /* Premium touch feedback for all interactive cards */
+  .card-interactive:active,
+  a[class*="card"]:active,
+  a[class*="nav-card"]:active,
+  a[class*="hub-card"]:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  }
+
+  /* Smoother scrolling on mobile */
+  .page-container, .main-content {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Premium Section Divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.2), rgba(52, 211, 153, 0.15), transparent);
+  margin: 24px 0;
+  border: none;
+}
+
+/* Floating Glow Badge */
+.glow-badge {
+  position: relative;
+}
+
+.glow-badge::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(8px);
+  opacity: 0.4;
+  z-index: -1;
+}
+
+/* Premium Notification Dot */
+.notification-dot-pulse {
+  position: relative;
+}
+
+.notification-dot-pulse::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid var(--bg-app);
+  animation: breathe 2s ease-in-out infinite;
+}
+
+/* Enhanced Skeleton with Gradient */
+.skeleton-premium {
+  background: linear-gradient(
+    110deg,
+    var(--bg-subtle) 8%,
+    rgba(56, 189, 248, 0.06) 18%,
+    var(--bg-subtle) 33%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Active State Indicator Bar */
+.active-indicator {
+  position: relative;
+}
+
+.active-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, #38bdf8, #34d399);
+  border-radius: 9999px;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.active-indicator.is-active::after {
+  width: 60%;
+}
+
+/* Premium Progress Ring */
+@keyframes progressRing {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Touch Ripple Effect */
+.ripple-touch {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-touch::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(56, 189, 248, 0.15);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ripple-touch:active::after {
+  width: 200%;
+  height: 200%;
+  opacity: 1;
+  transition: none;
+}
+
+/* Floating Action Button Enhancement */
+@media (max-width: 768px) {
+  .fab-premium {
+    position: fixed;
+    bottom: calc(var(--bottom-nav-height) + 16px);
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45), 0 0 0 4px rgba(37, 99, 235, 0.1);
+    z-index: 35;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+  }
+
+  .fab-premium:active {
+    transform: scale(0.90);
+  }
+}
+
+/* Frosted Glass Card Mobile */
+.frost-card {
+  background: rgba(18, 28, 50, 0.75) !important;
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Mobile Swipe Indicator */
+.swipe-indicator {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .swipe-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 0;
+  }
+  
+  .swipe-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.25s ease;
+  }
+  
+  .swipe-dot.active {
+    width: 18px;
+    border-radius: 9999px;
+    background: var(--primary);
+  }
+}
+

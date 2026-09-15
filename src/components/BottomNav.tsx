@@ -103,7 +103,7 @@ export default function BottomNav() {
         alignItems: "center",
         justifyContent: "space-around",
         padding: "0 6px",
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        paddingBottom: "max(env(safe-area-inset-bottom, 0px), 6px)",
         boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.45)",
       }}
     >

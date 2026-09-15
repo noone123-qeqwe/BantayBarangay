@@ -22,6 +22,7 @@ import {
   Sparkles,
   ArrowRight,
   Check,
+  ArrowLeft,
 } from "lucide-react";
 
 export default function LoginPage() {
@@ -36,7 +37,6 @@ export default function LoginPage() {
   const [identifierError, setIdentifierError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [shake, setShake] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
@@ -59,11 +59,9 @@ export default function LoginPage() {
     const defaultRoute = (upperRole === "ADMIN" || upperRole === "SUPER_ADMIN") ? "/admin" : "/dashboard";
     const targetUrl = fromParam && fromParam.startsWith("/") && !fromParam.startsWith("/login") ? fromParam : defaultRoute;
 
-    // Refresh Next.js router cache and navigate
     router.refresh();
     router.replace(targetUrl);
 
-    // Guaranteed hard navigation fallback to ensure instant transition even if router cache is stale
     setTimeout(() => {
       if (window.location.pathname === "/login") {
         window.location.replace(targetUrl);
@@ -125,7 +123,6 @@ export default function LoginPage() {
 
     if (typeof window !== "undefined" && !window.navigator.onLine) {
       setError("Unable to connect. Please check your internet connection.");
-      triggerShake();
       return;
     }
 
@@ -152,7 +149,6 @@ export default function LoginPage() {
     }
 
     if (hasFieldError) {
-      triggerShake();
       if (!trimmedIdentifier) {
         identifierInputRef.current?.focus();
       } else if (!password) {
@@ -171,8 +167,6 @@ export default function LoginPage() {
         navigateToDashboard(result.user.role);
       } else {
         setStatus("error");
-        triggerShake();
-
         const rawError = (result.error || "").toLowerCase();
         if (rawError.includes("invalid") || rawError.includes("credential") || rawError.includes("401")) {
           setError("Incorrect mobile number or password. Please try again.");
@@ -188,14 +182,8 @@ export default function LoginPage() {
       }
     } catch {
       setStatus("error");
-      triggerShake();
       setError("Unable to connect. Please check your internet connection.");
     }
-  };
-
-  const triggerShake = () => {
-    setShake(true);
-    setTimeout(() => setShake(false), 500);
   };
 
   const handleQuickLogin = (demoIdentifier: string, roleName: string, personName: string) => {
@@ -210,81 +198,90 @@ export default function LoginPage() {
 
     setTimeout(() => {
       setAutofillNotice(null);
-    }, 4000);
+    }, 3000);
   };
 
   return (
-    <div className="login-canvas-wrapper">
-      {/* Radiant Background Ambiance */}
-      <div className="ambient-sphere sphere-sapphire" aria-hidden="true" />
-      <div className="ambient-sphere sphere-cyan" aria-hidden="true" />
-      <div className="ambient-sphere sphere-emerald" aria-hidden="true" />
+    <div className="login-static-viewport" id="login-viewport">
+      {/* Static Subtle Background Ambient (immobile, no movement) */}
+      <div className="static-bg-glow" aria-hidden="true" />
 
-      <main className="login-center-container">
-        <div className={`login-unified-card ${shake ? "card-shake" : ""}`}>
-          {/* Top Decorative Edge Specular Shine */}
-          <div className="card-top-shine" aria-hidden="true" />
+      {/* Centered Static Modal/Card */}
+      <main className="login-card-container">
+        <div className="login-modern-card">
+          {/* Top Brand Header */}
+          <div className="login-brand-header">
+            <NextLink href="/" className="brand-link" title="Return to BantayBarangay Home">
+              <img
+                src="/logo.png"
+                alt="BantayBarangay Emblem"
+                width={40}
+                height={40}
+                className="brand-logo-img"
+              />
+              <div className="brand-text-block">
+                <span className="brand-name">BantayBarangay</span>
+                <span className="brand-tag">Masbate City Civic Portal</span>
+              </div>
+            </NextLink>
 
-          {/* Civic Badge Pill */}
-          <div className="civic-badge-pill">
-            <span className="civic-status-dot" />
-            <span className="civic-badge-text">Barangay Citizen Portal</span>
+            <NextLink href="/" className="back-portal-link" title="Back to Home">
+              <ArrowLeft size={14} />
+              <span>Portal Home</span>
+            </NextLink>
           </div>
 
-          {/* Intro Heading */}
-          <div className="auth-card-header">
-            <h1 className="auth-title">Welcome back</h1>
-            <p className="auth-subtitle">
-              Sign in to report community hazards, track tickets, or access barangay operations.
+          {/* Heading Section */}
+          <div className="auth-title-section">
+            <h1 className="auth-heading">Sign In</h1>
+            <p className="auth-desc">
+              Access your civic account to track tickets and report hazards.
             </p>
           </div>
 
           {/* Offline Alert */}
           {isOffline && (
-            <div className="status-banner banner-warning" role="alert">
-              <WifiOff size={16} />
-              <span>You are currently offline. Please check your internet connection.</span>
+            <div className="status-notice status-warning" role="alert">
+              <WifiOff size={15} className="notice-icon" />
+              <span>You are currently offline. Please check your connection.</span>
             </div>
           )}
 
           {/* General Error Alert */}
           {error && (
-            <div className="status-banner banner-error" role="alert">
-              <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "2px" }} />
-              <div className="banner-text">
-                <strong>Sign In Failed</strong>
-                <span>{error}</span>
-              </div>
+            <div className="status-notice status-error" role="alert">
+              <AlertCircle size={15} className="notice-icon" />
+              <span>{error}</span>
             </div>
           )}
 
-          {/* Authentication Form */}
-          <form onSubmit={handleSubmit} noValidate className="auth-form">
-            {/* Field 1: Mobile number / Email */}
-            <div className="form-field-group">
-              <div className="field-top-row">
-                <label htmlFor="identifier" className="field-label">
+          {/* Form */}
+          <form onSubmit={handleSubmit} noValidate className="login-form">
+            {/* Field: Identifier */}
+            <div className="form-field">
+              <div className="field-header">
+                <label htmlFor="identifier" className="field-title">
                   Mobile number or email
                 </label>
                 {phonePreview && (
-                  <span className="phone-validation-hint" aria-live="polite">
+                  <span className="phone-badge" aria-live="polite">
                     ✓ {phonePreview}
                   </span>
                 )}
               </div>
 
               <div
-                className={`composite-input ${isIdentifierFocused ? "composite-focus" : ""} ${
-                  identifierError ? "composite-error" : ""
+                className={`input-box ${isIdentifierFocused ? "input-box-focused" : ""} ${
+                  identifierError ? "input-box-error" : ""
                 }`}
               >
                 {!isEmailInput ? (
-                  <div className="country-prefix-badge" title="Philippines (+63)">
+                  <div className="input-prefix-tag" title="Philippine Mobile (+63)">
                     <span className="flag-icon">🇵🇭</span>
-                    <span className="prefix-num">+63</span>
+                    <span className="prefix-code">+63</span>
                   </div>
                 ) : (
-                  <div className="country-prefix-badge prefix-email" title="Email address">
+                  <div className="input-prefix-icon" title="Email address">
                     <Mail size={15} />
                   </div>
                 )}
@@ -296,7 +293,7 @@ export default function LoginPage() {
                   type={isEmailInput ? "email" : "tel"}
                   inputMode={isEmailInput ? "email" : "tel"}
                   autoComplete="username"
-                  className="styled-text-input"
+                  className="native-input"
                   placeholder={isEmailInput ? "name@barangay.gov.ph" : "09XXXXXXXXX"}
                   value={identifier}
                   onChange={(e) => {
@@ -310,26 +307,21 @@ export default function LoginPage() {
                   disabled={status === "loading" || status === "success"}
                   aria-required="true"
                   aria-invalid={!!identifierError}
-                  aria-describedby={identifierError ? "identifier-error-msg" : undefined}
                 />
               </div>
 
-              {identifierError ? (
-                <div id="identifier-error-msg" className="inline-field-error" role="alert">
-                  <AlertCircle size={13} />
+              {identifierError && (
+                <p className="field-error-text" role="alert">
+                  <AlertCircle size={12} />
                   <span>{identifierError}</span>
-                </div>
-              ) : (
-                <span className="field-hint-text">
-                  Enter your 11-digit mobile number or official barangay email.
-                </span>
+                </p>
               )}
             </div>
 
-            {/* Field 2: Password */}
-            <div className="form-field-group">
-              <div className="field-top-row">
-                <label htmlFor="password" className="field-label">
+            {/* Field: Password */}
+            <div className="form-field">
+              <div className="field-header">
+                <label htmlFor="password" className="field-title">
                   Password
                 </label>
                 <NextLink href="/forgot-password" className="forgot-link">
@@ -338,11 +330,11 @@ export default function LoginPage() {
               </div>
 
               <div
-                className={`composite-input ${isPassFocused ? "composite-focus" : ""} ${
-                  passwordError ? "composite-error" : ""
+                className={`input-box ${isPassFocused ? "input-box-focused" : ""} ${
+                  passwordError ? "input-box-error" : ""
                 }`}
               >
-                <div className="country-prefix-badge prefix-lock">
+                <div className="input-prefix-icon">
                   <Lock size={15} />
                 </div>
 
@@ -352,7 +344,7 @@ export default function LoginPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
-                  className="styled-text-input"
+                  className="native-input"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => {
@@ -366,26 +358,25 @@ export default function LoginPage() {
                   disabled={status === "loading" || status === "success"}
                   aria-required="true"
                   aria-invalid={!!passwordError}
-                  aria-describedby={passwordError ? "password-error-msg" : undefined}
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="eye-toggle-btn"
+                  className="password-toggle-btn"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   disabled={status === "loading" || status === "success"}
                   tabIndex={0}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
 
               {passwordError && (
-                <div id="password-error-msg" className="inline-field-error" role="alert">
-                  <AlertCircle size={13} />
+                <p className="field-error-text" role="alert">
+                  <AlertCircle size={12} />
                   <span>{passwordError}</span>
-                </div>
+                </p>
               )}
             </div>
 
@@ -393,559 +384,497 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={status === "loading" || status === "success"}
-              className={`primary-submit-btn ${status === "success" ? "btn-success-state" : ""}`}
+              className={`submit-btn ${status === "success" ? "submit-btn-success" : ""}`}
             >
               {status === "loading" && (
                 <>
-                  <Loader2 size={18} className="spin-loader" />
-                  <span>Signing in securely...</span>
+                  <Loader2 size={16} className="btn-spinner" />
+                  <span>Signing in...</span>
                 </>
               )}
 
               {status === "success" && (
                 <>
-                  <CheckCircle2 size={18} />
-                  <span>Redirecting to Dashboard...</span>
+                  <CheckCircle2 size={16} />
+                  <span>Redirecting...</span>
                 </>
               )}
 
               {status !== "loading" && status !== "success" && (
                 <>
-                  <span>Sign In to Platform</span>
-                  <ArrowRight size={17} className="btn-arrow-icon" />
+                  <span>Sign In</span>
+                  <ArrowRight size={15} />
                 </>
               )}
             </button>
           </form>
 
-          {/* Registration Secondary Section */}
-          <div className="register-redirect-banner">
-            <span className="register-prompt">Don't have an account yet?</span>
-            <NextLink href="/register" className="register-bold-link">
-              <span>Register as Resident</span>
-              <ArrowRight size={13} className="register-arrow-icon" />
-            </NextLink>
-          </div>
-
-          {/* Quick Test Roles Segment (Streamlined Dev Autofill) */}
-          <section className="quick-roles-container" aria-label="Quick test accounts">
-            <div className="quick-roles-header">
-              <div className="quick-roles-title">
-                <Sparkles size={13} className="sparkle-cyan" />
+          {/* Quick 1-Tap Test Accounts (Clean horizontal pill selector) */}
+          <div className="demo-accounts-bar">
+            <div className="demo-header">
+              <span className="demo-label">
+                <Sparkles size={12} className="sparkle-icon" />
                 <span>Quick Test Accounts</span>
-              </div>
-              {autofillNotice ? (
-                <span className="autofill-feedback-pill">
+              </span>
+              {autofillNotice && (
+                <span className="demo-notice">
                   <Check size={11} /> {autofillNotice}
                 </span>
-              ) : (
-                <span className="quick-roles-sub">1-Tap Autofill</span>
               )}
             </div>
 
-            <div className="quick-roles-grid">
-              {/* Role 1: Resident */}
+            <div className="demo-roles-row">
               <button
                 type="button"
                 onClick={() => handleQuickLogin("09204443333", "Resident", "Juan Dela Cruz")}
-                className={`role-chip ${selectedRole === "Resident" ? "role-chip-active chip-resident" : ""}`}
-                aria-pressed={selectedRole === "Resident"}
+                className={`demo-pill ${selectedRole === "Resident" ? "demo-pill-active" : ""}`}
+                title="Autofill Resident (Juan Dela Cruz)"
               >
-                <div className="role-icon-circle icon-blue">
-                  <User size={13} />
-                </div>
-                <div className="role-chip-text">
-                  <span className="role-chip-title">Resident</span>
-                  <span className="role-chip-sub">Juan Dela Cruz</span>
-                </div>
-                {selectedRole === "Resident" && <Check size={13} className="role-active-check text-blue" />}
+                <User size={12} />
+                <span>Resident</span>
               </button>
 
-              {/* Role 2: Staff */}
               <button
                 type="button"
                 onClick={() => handleQuickLogin("09193332222", "Staff", "Alex Santos")}
-                className={`role-chip ${selectedRole === "Staff" ? "role-chip-active chip-staff" : ""}`}
-                aria-pressed={selectedRole === "Staff"}
+                className={`demo-pill ${selectedRole === "Staff" ? "demo-pill-active" : ""}`}
+                title="Autofill Staff (Alex Santos)"
               >
-                <div className="role-icon-circle icon-emerald">
-                  <Wrench size={13} />
-                </div>
-                <div className="role-chip-text">
-                  <span className="role-chip-title">Staff</span>
-                  <span className="role-chip-sub">Alex Santos</span>
-                </div>
-                {selectedRole === "Staff" && <Check size={13} className="role-active-check text-emerald" />}
+                <Wrench size={12} />
+                <span>Staff</span>
               </button>
 
-              {/* Role 3: Admin */}
               <button
                 type="button"
                 onClick={() => handleQuickLogin("09182221111", "Admin", "Roberto Tan")}
-                className={`role-chip ${selectedRole === "Admin" ? "role-chip-active chip-admin" : ""}`}
-                aria-pressed={selectedRole === "Admin"}
+                className={`demo-pill ${selectedRole === "Admin" ? "demo-pill-active" : ""}`}
+                title="Autofill Admin (Roberto Tan)"
               >
-                <div className="role-icon-circle icon-indigo">
-                  <Building2 size={13} />
-                </div>
-                <div className="role-chip-text">
-                  <span className="role-chip-title">Admin</span>
-                  <span className="role-chip-sub">Roberto Tan</span>
-                </div>
-                {selectedRole === "Admin" && <Check size={13} className="role-active-check text-indigo" />}
+                <Building2 size={12} />
+                <span>Admin</span>
               </button>
 
-              {/* Role 4: Super Admin */}
               <button
                 type="button"
                 onClick={() => handleQuickLogin("09171110000", "Super Admin", "Sys Operator")}
-                className={`role-chip ${selectedRole === "Super Admin" ? "role-chip-active chip-super" : ""}`}
-                aria-pressed={selectedRole === "Super Admin"}
+                className={`demo-pill ${selectedRole === "Super Admin" ? "demo-pill-active" : ""}`}
+                title="Autofill Super Admin (Sys Operator)"
               >
-                <div className="role-icon-circle icon-amber">
-                  <Crown size={13} />
-                </div>
-                <div className="role-chip-text">
-                  <span className="role-chip-title">Super Admin</span>
-                  <span className="role-chip-sub">Sys Operator</span>
-                </div>
-                {selectedRole === "Super Admin" && <Check size={13} className="role-active-check text-amber" />}
+                <Crown size={12} />
+                <span>Super Admin</span>
               </button>
             </div>
-          </section>
+          </div>
 
-          {/* Bottom Security Footer */}
-          <footer className="auth-card-footer">
-            <div className="footer-security-pill">
-              <Shield size={12} className="footer-shield" />
-              <span>Official Civic Portal</span>
-              <span className="footer-sep">·</span>
-              <span>256-Bit SSL</span>
-              <span className="footer-sep">·</span>
-              <span>RA 10173</span>
+          {/* Card Footer: Register & Security */}
+          <div className="card-footer-area">
+            <div className="register-prompt-row">
+              <span className="prompt-text">Don't have an account?</span>
+              <NextLink href="/register" className="register-action-link">
+                Register as Resident
+              </NextLink>
             </div>
-          </footer>
+
+            <div className="security-tag">
+              <Shield size={11} className="security-icon" />
+              <span>Official Civic Platform · 256-Bit SSL Encrypted</span>
+            </div>
+          </div>
         </div>
       </main>
 
       {/* ===============================================================
-          STYLES: Elevated Obsidian Glass Civic Login
+          STYLES: Clean, Modern, and Completely Static
+          - Position: fixed inset 0 ensures ZERO scrolling or moving
+          - overflow: hidden prevents any document dragging or bouncing
+          - No translateY, translateX, scale, or shaking animations
          =============================================================== */}
       <style jsx>{`
-        /* Canvas Wrapper - Complete Dark Theme Atmosphere */
-        .login-canvas-wrapper {
-          min-height: calc(100dvh - var(--header-height, 54px));
+        /* Locked Static Full-Screen Viewport */
+        .login-static-viewport {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100vw;
+          height: 100dvh;
+          overflow: hidden;
+          background-color: #080d1a;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 16px 14px 28px 14px;
-          background-color: #060911;
-          background-image: 
-            radial-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
-            linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-          background-size: 24px 24px, 48px 48px, 48px 48px;
-          position: relative;
-          overflow: hidden;
+          padding: 16px;
+          z-index: 100;
+          overscroll-behavior: none;
+          touch-action: none;
         }
 
-        /* Ambient Glow Spheres */
-        .ambient-sphere {
+        /* Static Center Glow Mesh (completely immobile) */
+        .static-bg-glow {
           position: absolute;
-          border-radius: 9999px;
-          filter: blur(130px);
+          top: 50%;
+          left: 50%;
+          width: 600px;
+          height: 600px;
+          margin-top: -300px;
+          margin-left: -300px;
+          background: radial-gradient(
+            circle,
+            rgba(2, 132, 199, 0.14) 0%,
+            rgba(37, 99, 235, 0.08) 40%,
+            transparent 70%
+          );
           pointer-events: none;
           z-index: 0;
-          opacity: 0.6;
         }
 
-        .sphere-sapphire {
-          width: 440px;
-          height: 440px;
-          background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
-          top: -60px;
-          left: -60px;
-        }
-
-        .sphere-cyan {
-          width: 400px;
-          height: 400px;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, transparent 70%);
-          bottom: -40px;
-          right: -40px;
-        }
-
-        .sphere-emerald {
-          width: 320px;
-          height: 320px;
-          background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
-          top: 40%;
-          left: 45%;
-        }
-
-        /* Centered Container */
-        .login-center-container {
+        /* Centered Modal Container */
+        .login-card-container {
           width: 100%;
-          max-width: 436px;
+          max-width: 440px;
           position: relative;
           z-index: 1;
-          margin: 0 auto;
         }
 
-        /* Modern Glassmorphic Civic Card */
-        .login-unified-card {
+        /* Modern Glass Card */
+        .login-modern-card {
           width: 100%;
+          background: rgba(15, 23, 42, 0.88);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.09);
+          border-radius: 20px;
+          box-shadow:
+            0 24px 48px -12px rgba(0, 0, 0, 0.7),
+            0 0 0 1px rgba(255, 255, 255, 0.04),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          padding: 24px;
           display: flex;
           flex-direction: column;
-          border-radius: 22px;
-          background: linear-gradient(180deg, rgba(14, 22, 40, 0.9) 0%, rgba(9, 14, 28, 0.95) 100%);
-          backdrop-filter: blur(28px);
-          -webkit-backdrop-filter: blur(28px);
-          border: 1px solid rgba(56, 189, 248, 0.18);
-          box-shadow: 
-            0 24px 60px -12px rgba(0, 0, 0, 0.75),
-            0 0 40px -8px rgba(2, 132, 199, 0.12),
-            inset 0 1px 0 rgba(255, 255, 255, 0.14);
-          padding: 24px 20px 20px 20px;
-          position: relative;
-          overflow: hidden;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        /* Top Specular Edge Shine */
-        .card-top-shine {
-          position: absolute;
-          top: 0;
-          left: 10%;
-          right: 10%;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6), rgba(255, 255, 255, 0.8), rgba(56, 189, 248, 0.6), transparent);
-          pointer-events: none;
-        }
-
-        .card-shake {
-          animation: shakeCardEffect 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-        }
-
-        @keyframes shakeCardEffect {
-          10%, 90% { transform: translate3d(-2px, 0, 0); }
-          20%, 80% { transform: translate3d(3px, 0, 0); }
-          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-          40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        /* Civic Badge Pill */
-        .civic-badge-pill {
-          align-self: flex-start;
-          display: inline-flex;
+        /* Brand Header */
+        .login-brand-header {
+          display: flex;
           align-items: center;
-          gap: 7px;
-          padding: 4px 10px;
-          border-radius: 9999px;
-          background: rgba(56, 189, 248, 0.08);
-          border: 1px solid rgba(56, 189, 248, 0.22);
-          margin-bottom: 12px;
+          justify-content: space-between;
+          margin-bottom: 18px;
         }
 
-        .civic-status-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #34d399;
-          box-shadow: 0 0 8px #34d399;
-          animation: livePulseDot 2s infinite ease-in-out;
+        .brand-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
         }
 
-        @keyframes livePulseDot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.85); }
+        .brand-logo-img {
+          width: 36px;
+          height: 36px;
+          border-radius: 9px;
+          object-fit: contain;
+          box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
         }
 
-        .civic-badge-text {
-          font-size: 0.688rem;
-          font-weight: 700;
-          color: #7dd3fc;
-          letter-spacing: 0.04em;
+        .brand-text-block {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .brand-name {
+          font-size: 0.938rem;
+          font-weight: 800;
+          color: #f8fafc;
+          letter-spacing: -0.02em;
+          line-height: 1.15;
+        }
+
+        .brand-tag {
+          font-size: 0.65rem;
+          color: #38bdf8;
+          font-weight: 600;
+          letter-spacing: 0.03em;
           text-transform: uppercase;
         }
 
-        /* Intro Header */
-        .auth-card-header {
+        .back-portal-link {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #94a3b8;
+          text-decoration: none;
+          padding: 5px 9px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          transition: color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .back-portal-link:hover {
+          color: #f8fafc;
+          background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Title Section */
+        .auth-title-section {
           margin-bottom: 16px;
         }
 
-        .auth-title {
-          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-          font-size: 1.55rem;
+        .auth-heading {
+          font-size: 1.45rem;
           font-weight: 800;
           color: #f8fafc;
-          background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
           letter-spacing: -0.03em;
-          line-height: 1.15;
-          margin: 0 0 6px 0;
+          line-height: 1.2;
+          margin: 0 0 4px 0;
         }
 
-        .auth-subtitle {
+        .auth-desc {
           font-size: 0.813rem;
           color: #94a3b8;
-          line-height: 1.45;
+          line-height: 1.4;
           margin: 0;
         }
 
-        /* Status Banners */
-        .status-banner {
+        /* Status & Error Notices */
+        .status-notice {
           display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          padding: 10px 12px;
-          border-radius: 12px;
-          font-size: 0.813rem;
-          margin-bottom: 14px;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 12px;
+          border-radius: 10px;
+          font-size: 0.775rem;
+          margin-bottom: 12px;
         }
 
-        .banner-warning {
+        .status-warning {
           background-color: rgba(245, 158, 11, 0.12);
-          border: 1px solid rgba(245, 158, 11, 0.3);
+          border: 1px solid rgba(245, 158, 11, 0.28);
           color: #fbbf24;
         }
 
-        .banner-error {
+        .status-error {
           background-color: rgba(239, 68, 68, 0.12);
-          border: 1px solid rgba(239, 68, 68, 0.3);
+          border: 1px solid rgba(239, 68, 68, 0.28);
           color: #fca5a5;
         }
 
-        .banner-text {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
+        .notice-icon {
+          flex-shrink: 0;
         }
 
-        /* Form Controls */
-        .auth-form {
+        /* Form */
+        .login-form {
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 12px;
           margin-bottom: 14px;
         }
 
-        .form-field-group {
+        .form-field {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 5px;
         }
 
-        .field-top-row {
+        .field-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
 
-        .field-label {
-          font-size: 0.813rem;
-          font-weight: 700;
-          color: #e2e8f0;
-          letter-spacing: -0.01em;
+        .field-title {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #cbd5e1;
         }
 
-        .phone-validation-hint {
-          font-size: 0.725rem;
+        .phone-badge {
+          font-size: 0.7rem;
           font-weight: 700;
           color: #34d399;
-          background: rgba(16, 185, 129, 0.14);
-          padding: 2px 8px;
+          background: rgba(16, 185, 129, 0.12);
+          padding: 1px 7px;
           border-radius: 9999px;
-          border: 1px solid rgba(16, 185, 129, 0.35);
-          display: inline-flex;
-          align-items: center;
-          gap: 3px;
+          border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .forgot-link {
-          font-size: 0.785rem;
+          font-size: 0.75rem;
           font-weight: 600;
           color: #38bdf8;
           text-decoration: none;
-          padding: 2px 0;
-          transition: all 0.15s ease;
+          transition: color 0.15s ease;
         }
 
-        .forgot-link:hover, .forgot-link:focus {
+        .forgot-link:hover {
           color: #7dd3fc;
           text-decoration: underline;
         }
 
-        .composite-input {
+        /* Input Container */
+        .input-box {
           display: flex;
           align-items: center;
-          background: rgba(7, 12, 23, 0.85);
-          border: 1.5px solid rgba(255, 255, 255, 0.1);
-          border-radius: 13px;
+          height: 44px;
+          background-color: rgba(7, 12, 23, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 10px;
           overflow: hidden;
-          height: 48px;
-          transition: all 0.2s ease;
+          transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
         }
 
-        .composite-focus {
-          border-color: #38bdf8 !important;
-          background: rgba(10, 18, 36, 0.95);
-          box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25), 0 4px 18px rgba(56, 189, 248, 0.12);
+        .input-box-focused {
+          border-color: #38bdf8;
+          background-color: rgba(10, 18, 36, 0.85);
+          box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
 
-        .composite-error {
-          border-color: #f87171 !important;
-          background: rgba(24, 12, 16, 0.95);
-          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22);
+        .input-box-error {
+          border-color: #ef4444;
+          background-color: rgba(26, 12, 18, 0.8);
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
         }
 
-        .inline-field-error {
+        .input-prefix-tag {
           display: flex;
           align-items: center;
           gap: 5px;
-          color: #fca5a5;
-          font-size: 0.735rem;
-          font-weight: 600;
-          margin-top: 2px;
-        }
-
-        .country-prefix-badge {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 0 12px;
           height: 100%;
-          background-color: rgba(255, 255, 255, 0.035);
-          border-right: 1.5px solid rgba(255, 255, 255, 0.08);
-          color: #cbd5e1;
-          font-size: 0.813rem;
-          font-weight: 700;
+          padding: 0 10px;
+          background-color: rgba(255, 255, 255, 0.03);
+          border-right: 1px solid rgba(255, 255, 255, 0.08);
+          color: #94a3b8;
+          font-size: 0.8rem;
           user-select: none;
           flex-shrink: 0;
-          transition: background-color 0.2s ease;
         }
 
         .flag-icon {
-          font-size: 1rem;
+          font-size: 0.95rem;
         }
 
-        .prefix-num {
+        .prefix-code {
           color: #38bdf8;
-          font-weight: 800;
+          font-weight: 700;
         }
 
-        .prefix-email, .prefix-lock {
-          color: #94a3b8;
-          padding: 0 13px;
+        .input-prefix-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          padding: 0 11px;
+          color: #64748b;
+          border-right: 1px solid rgba(255, 255, 255, 0.08);
+          flex-shrink: 0;
         }
 
-        .composite-focus .prefix-lock {
+        .input-box-focused .input-prefix-icon {
           color: #38bdf8;
         }
 
-        .styled-text-input {
+        .native-input {
           flex: 1;
           height: 100%;
-          padding: 0 12px;
           background: transparent;
           border: none;
           outline: none;
-          font-size: 0.885rem;
+          padding: 0 11px;
+          font-size: 0.875rem;
           color: #f8fafc;
           font-weight: 500;
           min-width: 0;
         }
 
-        .styled-text-input::placeholder {
+        .native-input::placeholder {
           color: #64748b;
+          font-size: 0.813rem;
           font-weight: 400;
-          font-size: 0.825rem;
         }
 
-        .styled-text-input:-webkit-autofill,
-        .styled-text-input:-webkit-autofill:hover, 
-        .styled-text-input:-webkit-autofill:focus {
+        .native-input:-webkit-autofill,
+        .native-input:-webkit-autofill:hover, 
+        .native-input:-webkit-autofill:focus {
           -webkit-text-fill-color: #f8fafc !important;
-          -webkit-box-shadow: 0 0 0px 1000px #070c17 inset !important;
-          box-shadow: 0 0 0px 1000px #070c17 inset !important;
+          -webkit-box-shadow: 0 0 0px 1000px #090f1d inset !important;
+          box-shadow: 0 0 0px 1000px #090f1d inset !important;
           transition: background-color 5000s ease-in-out 0s;
         }
 
-        .eye-toggle-btn {
-          height: 38px;
-          width: 38px;
-          margin-right: 5px;
+        .password-toggle-btn {
+          height: 36px;
+          width: 36px;
+          margin-right: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: transparent;
           border: none;
-          border-radius: 9px;
-          color: #94a3b8;
+          border-radius: 7px;
+          color: #64748b;
           cursor: pointer;
           flex-shrink: 0;
-          transition: all 0.18s ease;
+          transition: color 0.15s ease, background-color 0.15s ease;
         }
 
-        .eye-toggle-btn:hover {
+        .password-toggle-btn:hover {
           color: #38bdf8;
-          background: rgba(56, 189, 248, 0.1);
+          background-color: rgba(56, 189, 248, 0.08);
         }
 
-        .field-hint-text {
-          font-size: 0.72rem;
-          color: #94a3b8;
-          line-height: 1.35;
+        .field-error-text {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          color: #fca5a5;
+          font-size: 0.725rem;
+          font-weight: 600;
+          margin: 1px 0 0 0;
         }
 
-        /* Primary Submit Button */
-        .primary-submit-btn {
+        /* Static Primary Submit Button */
+        .submit-btn {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          height: 48px;
-          border-radius: 13px;
-          background: linear-gradient(135deg, #0284c7 0%, #2563eb 55%, #1d4ed8 100%);
+          height: 44px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
           color: #ffffff;
-          font-size: 0.935rem;
+          font-size: 0.885rem;
           font-weight: 700;
-          border: 1px solid rgba(255, 255, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           cursor: pointer;
-          box-shadow: 
-            inset 0 1px 0 rgba(255, 255, 255, 0.25),
-            0 8px 24px -4px rgba(37, 99, 235, 0.45);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
           margin-top: 4px;
-          touch-action: manipulation;
+          transition: filter 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .primary-submit-btn:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 
-            inset 0 1px 0 rgba(255, 255, 255, 0.35),
-            0 10px 28px -4px rgba(37, 99, 235, 0.6);
-          background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 55%, #1e40af 100%);
+        .submit-btn:hover:not(:disabled) {
+          filter: brightness(1.08);
+          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
         }
 
-        .primary-submit-btn:active:not(:disabled) {
-          transform: scale(0.985);
+        .submit-btn:active:not(:disabled) {
+          filter: brightness(0.95);
         }
 
-        .primary-submit-btn:disabled {
+        .submit-btn:disabled {
           opacity: 0.8;
           cursor: not-allowed;
         }
 
-        .btn-success-state {
+        .submit-btn-success {
           background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
-          box-shadow: 
-            inset 0 1px 0 rgba(255, 255, 255, 0.3),
-            0 8px 24px -4px rgba(16, 185, 129, 0.45) !important;
+          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
         }
 
-        .spin-loader {
+        .btn-spinner {
           animation: spin 0.8s linear infinite;
         }
 
@@ -954,289 +883,142 @@ export default function LoginPage() {
           to { transform: rotate(360deg); }
         }
 
-        .btn-arrow-icon {
-          transition: transform 0.2s ease;
+        /* Demo Accounts Segmented Row */
+        .demo-accounts-bar {
+          background: rgba(10, 16, 30, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 12px;
+          padding: 9px 10px;
+          margin-bottom: 14px;
         }
 
-        .primary-submit-btn:hover .btn-arrow-icon {
-          transform: translateX(3px);
-        }
-
-        /* Register Redirect Secondary Section */
-        .register-redirect-banner {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          flex-wrap: wrap;
-          font-size: 0.813rem;
-          padding: 10px 0 12px 0;
-          margin-bottom: 12px;
-          border-top: 1px solid rgba(255, 255, 255, 0.07);
-        }
-
-        .register-prompt {
-          color: #94a3b8;
-        }
-
-        .register-bold-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          color: #38bdf8;
-          font-weight: 700;
-          text-decoration: none;
-          padding: 3px 0;
-          transition: all 0.15s ease;
-        }
-
-        .register-bold-link:hover {
-          color: #7dd3fc;
-        }
-
-        .register-arrow-icon {
-          transition: transform 0.15s ease;
-        }
-
-        .register-bold-link:hover .register-arrow-icon {
-          transform: translateX(2px);
-        }
-
-        /* Streamlined Dev Test Accounts Box */
-        .quick-roles-container {
-          background: rgba(8, 14, 26, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
-          padding: 11px;
-          margin-bottom: 12px;
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-        }
-
-        .quick-roles-header {
+        .demo-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 9px;
-          padding: 0 3px;
+          margin-bottom: 7px;
         }
 
-        .quick-roles-title {
+        .demo-label {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 0.75rem;
+          gap: 5px;
+          font-size: 0.725rem;
           font-weight: 700;
-          color: #cbd5e1;
+          color: #94a3b8;
         }
 
-        .sparkle-cyan {
+        .sparkle-icon {
           color: #38bdf8;
         }
 
-        .quick-roles-sub {
-          font-size: 0.688rem;
-          color: #64748b;
-          font-weight: 600;
-          background: rgba(255, 255, 255, 0.04);
-          padding: 2px 7px;
+        .demo-notice {
+          display: flex;
+          align-items: center;
+          gap: 3px;
+          font-size: 0.675rem;
+          font-weight: 700;
+          color: #34d399;
+          background: rgba(16, 185, 129, 0.12);
+          padding: 1px 6px;
           border-radius: 6px;
         }
 
-        .autofill-feedback-pill {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 0.688rem;
-          font-weight: 700;
-          color: #34d399;
-          background: rgba(16, 185, 129, 0.14);
-          padding: 2px 8px;
-          border-radius: 9999px;
-          border: 1px solid rgba(16, 185, 129, 0.35);
-          animation: fadeIn 0.2s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-2px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .quick-roles-grid {
+        .demo-roles-row {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 7px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 5px;
         }
 
-        /* Compact Role Chip */
-        .role-chip {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 7px 10px;
-          border-radius: 11px;
-          background: rgba(14, 22, 38, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.07);
-          cursor: pointer;
-          text-align: left;
-          transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
-          touch-action: manipulation;
-          min-height: 42px;
-        }
-
-        .role-chip:hover {
-          background: rgba(20, 31, 54, 0.8);
-          border-color: rgba(255, 255, 255, 0.16);
-          transform: translateY(-1px);
-        }
-
-        .role-chip:active {
-          transform: scale(0.97);
-        }
-
-        .chip-resident.role-chip-active {
-          border-color: #38bdf8 !important;
-          background: rgba(56, 189, 248, 0.14) !important;
-          box-shadow: 0 0 14px -2px rgba(56, 189, 248, 0.3);
-        }
-
-        .chip-staff.role-chip-active {
-          border-color: #10b981 !important;
-          background: rgba(16, 185, 129, 0.14) !important;
-          box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.3);
-        }
-
-        .chip-admin.role-chip-active {
-          border-color: #818cf8 !important;
-          background: rgba(129, 140, 248, 0.14) !important;
-          box-shadow: 0 0 14px -2px rgba(129, 140, 248, 0.3);
-        }
-
-        .chip-super.role-chip-active {
-          border-color: #fbbf24 !important;
-          background: rgba(251, 191, 36, 0.14) !important;
-          box-shadow: 0 0 14px -2px rgba(251, 191, 36, 0.3);
-        }
-
-        .role-icon-circle {
-          width: 24px;
-          height: 24px;
-          border-radius: 7px;
+        .demo-pill {
           display: flex;
           align-items: center;
           justify-content: center;
-          flex-shrink: 0;
+          gap: 4px;
+          height: 30px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          border-radius: 7px;
+          color: #cbd5e1;
+          font-size: 0.7rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+          white-space: nowrap;
+          padding: 0 4px;
         }
 
-        .icon-blue {
-          background: rgba(56, 189, 248, 0.18);
+        .demo-pill:hover {
+          background-color: rgba(56, 189, 248, 0.1);
+          border-color: rgba(56, 189, 248, 0.25);
           color: #38bdf8;
         }
 
-        .icon-emerald {
-          background: rgba(16, 185, 129, 0.18);
-          color: #34d399;
+        .demo-pill-active {
+          background-color: rgba(56, 189, 248, 0.18) !important;
+          border-color: #38bdf8 !important;
+          color: #38bdf8 !important;
         }
 
-        .icon-indigo {
-          background: rgba(129, 140, 248, 0.18);
-          color: #818cf8;
-        }
-
-        .icon-amber {
-          background: rgba(251, 191, 36, 0.18);
-          color: #fbbf24;
-        }
-
-        .role-chip-text {
+        /* Footer Area */
+        .card-footer-area {
           display: flex;
           flex-direction: column;
-          flex: 1;
-          min-width: 0;
+          align-items: center;
+          gap: 8px;
+          padding-top: 4px;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .role-chip-title {
-          font-size: 0.735rem;
-          font-weight: 700;
-          color: #f8fafc;
-          line-height: 1.15;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .role-chip-sub {
-          font-size: 0.625rem;
-          color: #94a3b8;
-          font-weight: 500;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .role-active-check {
-          flex-shrink: 0;
-        }
-
-        .text-blue { color: #38bdf8; }
-        .text-emerald { color: #34d399; }
-        .text-indigo { color: #818cf8; }
-        .text-amber { color: #fbbf24; }
-
-        /* Security Card Footer */
-        .auth-card-footer {
+        .register-prompt-row {
           display: flex;
           align-items: center;
-          justify-content: center;
-          padding-top: 4px;
+          gap: 5px;
+          font-size: 0.775rem;
         }
 
-        .footer-security-pill {
-          display: inline-flex;
+        .prompt-text {
+          color: #94a3b8;
+        }
+
+        .register-action-link {
+          color: #38bdf8;
+          font-weight: 700;
+          text-decoration: none;
+          transition: color 0.15s ease;
+        }
+
+        .register-action-link:hover {
+          color: #7dd3fc;
+          text-decoration: underline;
+        }
+
+        .security-tag {
+          display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 0.688rem;
+          gap: 5px;
+          font-size: 0.65rem;
           color: #64748b;
           font-weight: 500;
         }
 
-        .footer-sep {
-          color: #334155;
-        }
-
-        .footer-shield {
+        .security-icon {
           color: #0284c7;
-          flex-shrink: 0;
         }
 
-        /* Responsive Breakpoints */
-        @media (min-width: 481px) {
-          .login-canvas-wrapper {
-            padding: 36px 20px;
+        /* Compact screens adjustments */
+        @media (max-width: 380px) {
+          .login-modern-card {
+            padding: 18px 14px;
+            border-radius: 16px;
           }
 
-          .login-unified-card {
-            border-radius: 26px;
-            padding: 34px 28px;
+          .demo-roles-row {
+            grid-template-columns: repeat(2, 1fr);
           }
 
-          .auth-title {
-            font-size: 1.75rem;
-          }
-        }
-
-        /* Compact phones (<= 360px) */
-        @media (max-width: 360px) {
-          .login-unified-card {
-            padding: 20px 14px;
-            border-radius: 18px;
-          }
-
-          .auth-title {
-            font-size: 1.35rem;
-          }
-
-          .quick-roles-grid {
-            grid-template-columns: 1fr;
+          .auth-heading {
+            font-size: 1.3rem;
           }
         }
       `}</style>
