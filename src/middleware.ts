@@ -45,8 +45,8 @@ export function middleware(req: NextRequest) {
     pathname === "/register" ||
     pathname === "/forgot-password";
 
-  // 1. Authenticated users should NEVER see or access auth pages (/login, /register, /forgot-password)
-  if (isAuthPage) {
+  // 1. Authenticated users redirect from /register and /forgot-password
+  if (pathname === "/register" || pathname === "/forgot-password") {
     if (isAuthenticated) {
       const role = session.role?.toUpperCase();
       const targetDashboard = (role === "ADMIN" || role === "SUPER_ADMIN") ? "/admin" : "/dashboard";

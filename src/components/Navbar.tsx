@@ -54,7 +54,7 @@ export default function Navbar() {
   const isAdmin = user && ["ADMIN", "SUPER_ADMIN"].includes(user.role);
   const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname);
 
-  if (pathname === "/" || isAuthPage) {
+  if (pathname === "/") {
     return null;
   }
 
