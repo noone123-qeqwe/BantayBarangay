@@ -15,14 +15,8 @@ import {
   AlertCircle,
   Shield,
   WifiOff,
-  User,
-  Wrench,
-  Building2,
-  Crown,
-  Sparkles,
-  ArrowRight,
-  Check,
   ArrowLeft,
+  ArrowRight,
   LogOut,
 } from "lucide-react";
 
@@ -39,8 +33,6 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [isOffline, setIsOffline] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [autofillNotice, setAutofillNotice] = useState<string | null>(null);
 
   // Focus states
   const [isIdentifierFocused, setIsIdentifierFocused] = useState(false);
@@ -178,21 +170,6 @@ export default function LoginPage() {
       setStatus("error");
       setError("Unable to connect. Please check your internet connection.");
     }
-  };
-
-  const handleQuickLogin = (demoIdentifier: string, roleName: string, personName: string) => {
-    setIdentifier(demoIdentifier);
-    setPassword("Password123!");
-    setSelectedRole(roleName);
-    setAutofillNotice(`${personName} (${roleName})`);
-    setError(null);
-    setIdentifierError(null);
-    setPasswordError(null);
-    setStatus("idle");
-
-    setTimeout(() => {
-      setAutofillNotice(null);
-    }, 3000);
   };
 
   return (
@@ -770,174 +747,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick 1-Tap Test Accounts (Clean horizontal pill selector) */}
-          <div
-            className="login-demo-bar"
-            style={{
-              background: "rgba(10, 16, 30, 0.65)",
-              border: "1px solid rgba(255, 255, 255, 0.07)",
-              borderRadius: "12px",
-              padding: "10px 11px",
-              marginBottom: "14px",
-            }}
-          >
-            <div
-              className="login-demo-header"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "8px",
-              }}
-            >
-              <span
-                className="login-demo-title"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  fontSize: "0.725rem",
-                  fontWeight: 700,
-                  color: "#94a3b8",
-                }}
-              >
-                <Sparkles size={12} color="#38bdf8" />
-                <span>Quick Test Accounts</span>
-              </span>
-              {autofillNotice && (
-                <span
-                  className="login-demo-feedback"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "3px",
-                    fontSize: "0.675rem",
-                    fontWeight: 700,
-                    color: "#34d399",
-                    background: "rgba(16, 185, 129, 0.12)",
-                    padding: "1px 6px",
-                    borderRadius: "6px",
-                  }}
-                >
-                  <Check size={11} /> {autofillNotice}
-                </span>
-              )}
-            </div>
-
-            <div
-              className="login-demo-roles"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: "6px",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09204443333", "Resident", "Juan Dela Cruz")}
-                className={`login-role-pill-btn ${selectedRole === "Resident" ? "login-role-pill-active" : ""}`}
-                title="Autofill Resident (Juan Dela Cruz)"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "4px",
-                  height: "32px",
-                  background: selectedRole === "Resident" ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                  border: selectedRole === "Resident" ? "1px solid #38bdf8" : "1px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "8px",
-                  color: selectedRole === "Resident" ? "#38bdf8" : "#cbd5e1",
-                  fontSize: "0.715rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  padding: "0 4px",
-                }}
-              >
-                <User size={12} />
-                <span>Resident</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09193332222", "Staff", "Alex Santos")}
-                className={`login-role-pill-btn ${selectedRole === "Staff" ? "login-role-pill-active" : ""}`}
-                title="Autofill Staff (Alex Santos)"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "4px",
-                  height: "32px",
-                  background: selectedRole === "Staff" ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                  border: selectedRole === "Staff" ? "1px solid #38bdf8" : "1px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "8px",
-                  color: selectedRole === "Staff" ? "#38bdf8" : "#cbd5e1",
-                  fontSize: "0.715rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  padding: "0 4px",
-                }}
-              >
-                <Wrench size={12} />
-                <span>Staff</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09182221111", "Admin", "Roberto Tan")}
-                className={`login-role-pill-btn ${selectedRole === "Admin" ? "login-role-pill-active" : ""}`}
-                title="Autofill Admin (Roberto Tan)"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "4px",
-                  height: "32px",
-                  background: selectedRole === "Admin" ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                  border: selectedRole === "Admin" ? "1px solid #38bdf8" : "1px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "8px",
-                  color: selectedRole === "Admin" ? "#38bdf8" : "#cbd5e1",
-                  fontSize: "0.715rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  padding: "0 4px",
-                }}
-              >
-                <Building2 size={12} />
-                <span>Admin</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("09171110000", "Super Admin", "Sys Operator")}
-                className={`login-role-pill-btn ${selectedRole === "Super Admin" ? "login-role-pill-active" : ""}`}
-                title="Autofill Super Admin (Sys Operator)"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "4px",
-                  height: "32px",
-                  background: selectedRole === "Super Admin" ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.05)",
-                  border: selectedRole === "Super Admin" ? "1px solid #38bdf8" : "1px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "8px",
-                  color: selectedRole === "Super Admin" ? "#38bdf8" : "#cbd5e1",
-                  fontSize: "0.715rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  padding: "0 4px",
-                }}
-              >
-                <Crown size={12} />
-                <span>Super Admin</span>
-              </button>
-            </div>
-          </div>
 
           {/* Card Footer: Register & Security */}
           <div
