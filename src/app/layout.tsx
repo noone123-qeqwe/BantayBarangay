@@ -11,6 +11,7 @@ import AiAssistantWidget from "@/components/AiAssistantWidget";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import AppInstallPrompt from "@/components/AppInstallPrompt";
 import AppHeader from "@/components/AppHeader";
+import SplashScreen from "@/components/SplashScreen";
 
 export const metadata: Metadata = {
   title: "BantayBarangay - Civic Infrastructure Reporting & Tracking Platform",
@@ -67,6 +68,7 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <AiAssistantProvider>
+              <SplashScreen />
               <ServiceWorkerRegistration />
               <OfflineIndicator />
               <AppHeader />
