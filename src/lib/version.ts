@@ -1,9 +1,9 @@
 // Application Semantic Version and Build Information
-export const APP_LATEST_VERSION = "2.5.0";
+export const APP_LATEST_VERSION = "2.6.0";
 export const CURRENT_CLIENT_VERSION = "2.5.0";
-export const APP_BUILD_IDENTIFIER = "20260915-v2.5.0-redesign";
+export const APP_BUILD_IDENTIFIER = "20260916-v2.6.0-scenic-civic-update";
 export const APP_RELEASE_NOTES =
-  "Obsidian minimal redesign for login, registration, and dashboard. Enhanced PWA cache busting.";
+  "Scenic Masbate aerial desktop login interface, refined mobile civic UI, and real-time PWA update delivery.";
 
 /**
  * Compares two semantic version strings.

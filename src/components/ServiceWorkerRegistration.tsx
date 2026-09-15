@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { isNewerVersion, CURRENT_CLIENT_VERSION } from "@/lib/version";
 
-const CURRENT_EXPECTED_CACHE = "bantay-app-v5-20260915";
+const CURRENT_EXPECTED_CACHE = "bantay-app-v6-20260916";
 
 export default function ServiceWorkerRegistration() {
+  const pathname = usePathname();
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
@@ -14,9 +16,13 @@ export default function ServiceWorkerRegistration() {
   // Helper to check version against installed client version
   const checkVersionUpdate = useCallback(async (worker?: ServiceWorker | null) => {
     try {
-      const res = await fetch("/api/version", {
+      // Use cache-busting timestamp query parameter so mobile browsers never return cached 304 responses
+      const res = await fetch(`/api/version?t=${Date.now()}`, {
         cache: "no-store",
-        headers: { Pragma: "no-cache", "Cache-Control": "no-cache" },
+        headers: {
+          Pragma: "no-cache",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
       });
       if (!res.ok) return;
 
@@ -28,16 +34,15 @@ export default function ServiceWorkerRegistration() {
       const installedVersion =
         localStorage.getItem("bb_installed_version") || CURRENT_CLIENT_VERSION;
 
-      // Only display popup when server version is strictly newer than installed version
-      const hasNewer = isNewerVersion(serverVersion, installedVersion);
+      // Display popup when server version is strictly newer OR when a new worker is actively waiting
+      const hasNewer = isNewerVersion(serverVersion, installedVersion) || !!worker;
 
       if (hasNewer) {
         setLatestVersion(serverVersion);
 
-        // Check if user previously clicked "Later" for this exact version
+        // Check if user previously clicked "Later" for this exact version (unless a worker is actively waiting)
         const dismissedVersion = localStorage.getItem("bb_dismissed_update_version");
-        if (dismissedVersion === serverVersion) {
-          // User already dismissed this update, do not show again
+        if (dismissedVersion === serverVersion && !worker) {
           setShowPopup(false);
           return;
         }
@@ -52,7 +57,43 @@ export default function ServiceWorkerRegistration() {
     }
   }, []);
 
-  // 1. Clean legacy caches and Register Service Worker
+  // 1. UNIVERSAL VERSION CHECK (Runs on ALL mobile & desktop browsers, regardless of ServiceWorker support)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Check on initial load
+    checkVersionUpdate();
+
+    // Check when user navigates, switches tabs, or refocuses the app
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        checkVersionUpdate();
+      }
+    };
+
+    // Custom event listener so any button or notification can trigger update check
+    const handleCustomCheck = () => {
+      checkVersionUpdate();
+    };
+
+    // Periodic check every 30 seconds
+    const interval = setInterval(() => {
+      checkVersionUpdate();
+    }, 30 * 1000);
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleVisibility);
+    window.addEventListener("check-app-update", handleCustomCheck);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleVisibility);
+      window.removeEventListener("check-app-update", handleCustomCheck);
+    };
+  }, [checkVersionUpdate, pathname]);
+
+  // 2. SERVICE WORKER REGISTRATION & LIFECYCLE (When supported by environment)
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
       return;
@@ -103,11 +144,10 @@ export default function ServiceWorkerRegistration() {
           });
         });
 
-        // Periodic background update check (every 5 minutes)
+        // Periodic background worker update
         const updateInterval = setInterval(() => {
           try {
             registration.update();
-            checkVersionUpdate();
           } catch {
             // Ignore
           }
@@ -135,26 +175,13 @@ export default function ServiceWorkerRegistration() {
     };
     navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
 
-    // Check when user refocuses the app or tab
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        checkVersionUpdate();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibility);
-
-    // Initial check on mount
-    checkVersionUpdate();
-
     return () => {
       window.removeEventListener("load", registerSW);
       navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
-      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [checkVersionUpdate]);
 
-  // 2. Real Application Update Mechanism (UPDATE NOW)
+  // 3. Real Application Update Mechanism (UPDATE NOW)
   const handleUpdateNow = useCallback(async () => {
     setIsUpdating(true);
 
@@ -189,13 +216,13 @@ export default function ServiceWorkerRegistration() {
       // Reload with fresh assets
       setTimeout(() => {
         window.location.reload();
-      }, 300);
+      }, 250);
     } catch {
       window.location.reload();
     }
   }, [latestVersion, waitingWorker]);
 
-  // 3. Later button: simply close the popup and remember dismissal
+  // 4. Later button: simply close the popup and remember dismissal
   const handleLater = () => {
     setShowPopup(false);
     if (latestVersion) {
