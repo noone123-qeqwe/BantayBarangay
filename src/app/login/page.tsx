@@ -282,13 +282,10 @@ export default function LoginPage() {
           <div className="login-title-block" style={{ marginBottom: "16px" }}>
             <h1
               className="login-title-heading"
-              style={{ fontSize: "1.55rem", fontWeight: 800, color: "#f8fafc", margin: "0 0 4px 0", lineHeight: 1.2 }}
+              style={{ fontSize: "1.55rem", fontWeight: 800, color: "#f8fafc", margin: 0, lineHeight: 1.2 }}
             >
               Sign In
             </h1>
-            <p className="login-title-sub" style={{ fontSize: "0.813rem", color: "#94a3b8", margin: 0, lineHeight: 1.4 }}>
-              Enter your credentials to access tickets, announcements, and civic reports.
-            </p>
           </div>
 
           {/* Active Session Notification (Allows desktop users who are already logged in to switch account or jump to dashboard) */}
