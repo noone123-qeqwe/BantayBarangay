@@ -13,6 +13,11 @@ import {
   CheckCircle2,
   AlertCircle,
   Shield,
+  ShieldCheck,
+  Users,
+  FileText,
+  ChevronDown,
+  Info,
   WifiOff,
   ArrowLeft,
   ArrowRight,
@@ -203,439 +208,380 @@ export default function LoginPage() {
       {/* =====================================================================
           DESKTOP CIVIC PORTAL LAYOUT (VIEWPORT > 768px)
           ===================================================================== */}
-      <div className="login-portal-shell login-desktop-only" id="login-viewport">
-      {/* Background ambient lighting */}
-      <div className="login-portal-glow" aria-hidden="true" />
+      {/* =====================================================================
+          DESKTOP CIVIC PORTAL LAYOUT (VIEWPORT > 768px, SCENIC MASBATE AERIAL)
+          ===================================================================== */}
+      <div className="login-desktop-shell login-desktop-only" id="login-viewport">
+        {/* Ambient aerial overlay for contrast */}
+        <div className="login-desktop-overlay" aria-hidden="true" />
 
-      <main className="login-portal-split">
-        {/* Left Column: Official Civic Portal Showcase (Desktop / Tablet) */}
-        <section className="login-portal-showcase" aria-label="About BantayBarangay">
-          <div>
-            <div className="login-showcase-badge">
-              <Sparkles size={13} />
-              <span>Masbate City Civic Technology</span>
+        {/* 1. Header (Logo + Hotline) */}
+        <header className="login-desktop-header">
+          <NextLink href="/" className="login-desktop-brand" title="Return to Home">
+            <img
+              src="/logo.png"
+              alt="BantayBarangay Emblem"
+              width={42}
+              height={42}
+              className="login-desktop-logo"
+            />
+            <div className="login-desktop-brand-text">
+              <span className="login-desktop-brand-name">BantayBarangay</span>
+              <span className="login-desktop-brand-sub">MASBATE CITY CIVIC NETWORK</span>
             </div>
-          </div>
+          </NextLink>
 
-          <div>
-            <h1 className="login-showcase-title">
-              Empowering Citizens.
-              <br />
-              <span className="text-gradient">Strengthening Communities.</span>
+          <a
+            href="tel:0286431111"
+            className="login-desktop-hotline-btn"
+            title="Emergency Hotline"
+          >
+            <PhoneCall size={13} style={{ color: "#f472b6" }} />
+            <span>Hotline</span>
+          </a>
+        </header>
+
+        {/* 2. Main Two-Column Content Grid */}
+        <main className="login-desktop-main">
+          {/* Left Column: Civic Showcase */}
+          <section className="login-desktop-left" aria-label="About BantayBarangay">
+            <div className="login-desktop-tag">
+              <span className="login-desktop-tag-bar" aria-hidden="true" />
+              <span className="login-desktop-tag-text">RESIDENT ACCESS</span>
+            </div>
+
+            <h1 className="login-desktop-title">
+              Welcome back to<br />
+              <span className="login-desktop-title-teal">your barangay.</span>
             </h1>
-            <p className="login-showcase-desc" style={{ marginTop: "12px" }}>
-              The official municipal reporting and public infrastructure tracking network for Barangay Masbate City.
-              Report incidents, monitor repair SLA, and receive verified announcements.
+
+            <p className="login-desktop-desc">
+              Sign in to report concerns, follow requests, and receive local safety updates.
             </p>
-          </div>
 
-          <div className="login-showcase-features">
-            <div className="login-feature-item">
-              <div className="login-feature-icon">
-                <Activity size={18} />
+            {/* 3 Value Pillars */}
+            <div className="login-desktop-pillars">
+              <div className="login-pillar-item">
+                <div className="login-pillar-icon">
+                  <ShieldCheck size={20} />
+                </div>
+                <div className="login-pillar-text">
+                  <span>Safer</span>
+                  <span>Communities</span>
+                </div>
               </div>
-              <div>
-                <div className="login-feature-title">Real-Time Incident Dispatch</div>
-                <p className="login-feature-desc">
-                  Direct escalation to engineering crews, electric utilities, and public safety teams.
-                </p>
-              </div>
-            </div>
 
-            <div className="login-feature-item">
-              <div className="login-feature-icon">
-                <MapPin size={18} />
-              </div>
-              <div>
-                <div className="login-feature-title">Geo-Tagged Transparency</div>
-                <p className="login-feature-desc">
-                  Interactive community maps with verified photographic evidence and timeline updates.
-                </p>
-              </div>
-            </div>
+              <div className="login-pillar-divider" aria-hidden="true" />
 
-            <div className="login-feature-item">
-              <div className="login-feature-icon">
-                <Bell size={18} />
+              <div className="login-pillar-item">
+                <div className="login-pillar-icon">
+                  <Users size={20} />
+                </div>
+                <div className="login-pillar-text">
+                  <span>Faster</span>
+                  <span>Assistance</span>
+                </div>
               </div>
-              <div>
-                <div className="login-feature-title">Verified Public Advisories</div>
-                <p className="login-feature-desc">
-                  Direct notifications on infrastructure repairs, weather notices, and barangay council announcements.
-                </p>
-              </div>
-            </div>
-          </div>
 
-          <div className="login-showcase-seal">
-            <Shield size={14} color="#38bdf8" />
-            <span>Republic of the Philippines · City Government of Masbate · Official Portal</span>
-          </div>
-        </section>
+              <div className="login-pillar-divider" aria-hidden="true" />
 
-        {/* Right Column: Clean & Professional Auth Container */}
-        <section className="login-portal-card" aria-label="Sign In Form">
-          {/* Top Branding Row */}
-          <div className="login-portal-top">
-            <NextLink href="/" className="login-portal-brand" title="Return to Home">
-              <img
-                src="/logo.png"
-                alt="BantayBarangay Emblem"
-                width={38}
-                height={38}
-                className="login-portal-logo"
-              />
-              <div className="login-portal-brand-text">
-                <span className="login-portal-brand-name">BantayBarangay</span>
-                <span className="login-portal-brand-tag">Masbate City Civic Net</span>
-              </div>
-            </NextLink>
-
-            <NextLink href="/" className="login-portal-home-btn" title="Back to Home">
-              <ArrowLeft size={13} />
-              <span>Home</span>
-            </NextLink>
-          </div>
-
-          {/* Title Block */}
-          <div className="login-portal-title-block">
-            <h2 className="login-portal-heading">Sign In</h2>
-            <p className="login-portal-subheading">
-              Enter your registered mobile number to access your account.
-            </p>
-          </div>
-
-          {/* Active Session Notification */}
-          {user && (
-            <div className="login-portal-session">
-              <div className="login-portal-session-text">
-                Currently signed in as <strong style={{ color: "#38bdf8" }}>{user.name}</strong> ({user.role})
-              </div>
-              <div style={{ display: "flex", gap: "8px", marginTop: "2px" }}>
-                <button
-                  type="button"
-                  onClick={() => navigateToDashboard(user.role)}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
-                    height: "34px",
-                    background: "linear-gradient(135deg, #0284c7, #0ea5e9)",
-                    color: "#ffffff",
-                    borderRadius: "8px",
-                    fontSize: "0.775rem",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    border: "none",
-                  }}
-                >
-                  <span>Go to Dashboard</span>
-                  <ArrowRight size={13} />
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await logout();
-                    router.refresh();
-                  }}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "5px",
-                    height: "34px",
-                    padding: "0 12px",
-                    background: "rgba(255, 255, 255, 0.06)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    color: "#f8fafc",
-                    borderRadius: "8px",
-                    fontSize: "0.775rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  <LogOut size={13} />
-                  <span>Log Out</span>
-                </button>
+              <div className="login-pillar-item">
+                <div className="login-pillar-icon">
+                  <FileText size={20} />
+                </div>
+                <div className="login-pillar-text">
+                  <span>Transparent</span>
+                  <span>Reports</span>
+                </div>
               </div>
             </div>
-          )}
+          </section>
 
-          {/* Offline Alert */}
-          {isOffline && (
-            <div
-              role="alert"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "9px 12px",
-                borderRadius: "10px",
-                fontSize: "0.785rem",
-                marginBottom: "14px",
-                backgroundColor: "rgba(245, 158, 11, 0.12)",
-                border: "1px solid rgba(245, 158, 11, 0.3)",
-                color: "#fbbf24",
-              }}
-            >
-              <WifiOff size={15} style={{ flexShrink: 0 }} />
-              <span>You are currently offline. Please check your connection.</span>
-            </div>
-          )}
+          {/* Right Column: Clean White Login Card */}
+          <section className="login-desktop-right">
+            <div className="login-card-shell">
+              {/* Card Header */}
+              <div className="login-card-header">
+                <div className="login-card-title-row">
+                  <span className="login-card-tag-bar" aria-hidden="true" />
+                  <h2 className="login-card-title">Resident Login</h2>
+                </div>
+                <p className="login-card-subtitle">Access your barangay services</p>
+              </div>
 
-          {/* Error Alert */}
-          {error && (
-            <div
-              role="alert"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "10px 14px",
-                borderRadius: "10px",
-                fontSize: "0.8rem",
-                marginBottom: "14px",
-                backgroundColor: "rgba(239, 68, 68, 0.12)",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                color: "#fca5a5",
-              }}
-            >
-              <AlertCircle size={15} style={{ flexShrink: 0 }} />
-              <span>{error}</span>
-            </div>
-          )}
+              {/* Active Session Notice */}
+              {user && (
+                <div className="login-card-session">
+                  <div style={{ fontSize: "0.8rem", color: "#334155", marginBottom: "8px" }}>
+                    Currently signed in as <strong style={{ color: "#0284c7" }}>{user.name}</strong> ({user.role})
+                  </div>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      type="button"
+                      onClick={() => navigateToDashboard(user.role)}
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        height: "36px",
+                        background: "linear-gradient(135deg, #0284c7, #0ea5e9)",
+                        color: "#ffffff",
+                        borderRadius: "8px",
+                        fontSize: "0.775rem",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        border: "none",
+                      }}
+                    >
+                      <span>Go to Dashboard</span>
+                      <ArrowRight size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await logout();
+                        router.refresh();
+                      }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "5px",
+                        height: "36px",
+                        padding: "0 12px",
+                        background: "#ffffff",
+                        border: "1px solid #cbd5e1",
+                        color: "#334155",
+                        borderRadius: "8px",
+                        fontSize: "0.775rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <LogOut size={13} />
+                      <span>Log Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} noValidate className="login-portal-form">
-            {/* Field: Mobile Number */}
-            <div className="login-portal-field">
-              <div className="login-portal-field-head">
-                <label htmlFor="identifier" className="login-portal-label">
-                  Mobile Number
-                </label>
-                {phonePreview && (
-                  <span
-                    aria-live="polite"
-                    style={{
-                      fontSize: "0.7rem",
-                      fontWeight: 700,
-                      color: "#34d399",
-                      background: "rgba(16, 185, 129, 0.12)",
-                      padding: "1px 8px",
-                      borderRadius: "9999px",
-                      border: "1px solid rgba(16, 185, 129, 0.3)",
-                    }}
+              {/* Offline Alert */}
+              {isOffline && (
+                <div role="alert" className="login-card-alert warning">
+                  <WifiOff size={16} style={{ flexShrink: 0 }} />
+                  <span>You are currently offline. Please check your connection.</span>
+                </div>
+              )}
+
+              {/* Error Alert */}
+              {error && (
+                <div role="alert" className="login-card-alert error">
+                  <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} noValidate className="login-card-form">
+                {/* Mobile number Field */}
+                <div className="login-card-field">
+                  <label htmlFor="identifier" className="login-card-label">
+                    Mobile number
+                  </label>
+
+                  <div
+                    className={`login-card-input-box ${isIdentifierFocused ? "focus" : ""} ${
+                      identifierError ? "error" : ""
+                    }`}
                   >
-                    ✓ {phonePreview}
-                  </span>
-                )}
-              </div>
+                    <div className="login-card-prefix" title="Philippine Country Code (+63)">
+                      <PhilippineFlagIcon />
+                      <span>+63</span>
+                      <ChevronDown size={14} color="#64748b" />
+                    </div>
 
-              <div
-                className={`login-portal-input-row ${isIdentifierFocused ? "focus" : ""} ${
-                  identifierError ? "error" : ""
-                }`}
-              >
-                <div className="login-portal-prefix" title="Philippine Country Code (+63)">
-                  <PhilippineFlagIcon />
-                  <span style={{ color: "#38bdf8", fontWeight: 700 }}>+63</span>
+                    <input
+                      ref={identifierInputRef}
+                      id="identifier"
+                      name="identifier"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="username"
+                      className="login-card-input"
+                      placeholder="9XX XXX XXXX"
+                      value={identifier}
+                      onChange={(e) => {
+                        setIdentifier(e.target.value);
+                        if (identifierError) setIdentifierError(null);
+                        if (error) setError(null);
+                        if (status === "error") setStatus("idle");
+                      }}
+                      onFocus={() => setIsIdentifierFocused(true)}
+                      onBlur={() => setIsIdentifierFocused(false)}
+                      disabled={status === "loading" || status === "success"}
+                      aria-required="true"
+                      aria-invalid={!!identifierError}
+                    />
+                  </div>
+
+                  {identifierError && (
+                    <p role="alert" className="login-field-error">
+                      <AlertCircle size={12} />
+                      <span>{identifierError}</span>
+                    </p>
+                  )}
                 </div>
 
-                <input
-                  ref={identifierInputRef}
-                  id="identifier"
-                  name="identifier"
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="username"
-                  className="login-portal-input"
-                  placeholder="09XXXXXXXXX"
-                  value={identifier}
-                  onChange={(e) => {
-                    setIdentifier(e.target.value);
-                    if (identifierError) setIdentifierError(null);
-                    if (error) setError(null);
-                    if (status === "error") setStatus("idle");
-                  }}
-                  onFocus={() => setIsIdentifierFocused(true)}
-                  onBlur={() => setIsIdentifierFocused(false)}
-                  disabled={status === "loading" || status === "success"}
-                  aria-required="true"
-                  aria-invalid={!!identifierError}
-                />
-              </div>
+                {/* Password Field */}
+                <div className="login-card-field">
+                  <div className="login-card-field-header">
+                    <label htmlFor="password" className="login-card-label" style={{ margin: 0 }}>
+                      Password
+                    </label>
+                    <NextLink href="/forgot-password" className="login-card-forgot">
+                      Forgot password?
+                    </NextLink>
+                  </div>
 
-              {identifierError && (
-                <p
-                  role="alert"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    color: "#fca5a5",
-                    fontSize: "0.725rem",
-                    fontWeight: 600,
-                    margin: "1px 0 0 0",
-                  }}
-                >
-                  <AlertCircle size={12} />
-                  <span>{identifierError}</span>
-                </p>
-              )}
-            </div>
+                  <div
+                    className={`login-card-input-box ${isPassFocused ? "focus" : ""} ${
+                      passwordError ? "error" : ""
+                    }`}
+                  >
+                    <div className="login-card-lock-icon">
+                      <Lock size={16} color="#64748b" />
+                    </div>
 
-            {/* Field: Password */}
-            <div className="login-portal-field">
-              <div className="login-portal-field-head">
-                <label htmlFor="password" className="login-portal-label">
-                  Password
-                </label>
-                <NextLink
-                  href="/forgot-password"
-                  style={{
-                    fontSize: "0.75rem",
-                    fontWeight: 600,
-                    color: "#38bdf8",
-                    textDecoration: "none",
-                  }}
-                >
-                  Forgot password?
-                </NextLink>
-              </div>
+                    <input
+                      ref={passwordInputRef}
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      className="login-card-input"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (passwordError) setPasswordError(null);
+                        if (error) setError(null);
+                        if (status === "error") setStatus("idle");
+                      }}
+                      onFocus={() => setIsPassFocused(true)}
+                      onBlur={() => setIsPassFocused(false)}
+                      disabled={status === "loading" || status === "success"}
+                      aria-required="true"
+                      aria-invalid={!!passwordError}
+                    />
 
-              <div
-                className={`login-portal-input-row ${isPassFocused ? "focus" : ""} ${
-                  passwordError ? "error" : ""
-                }`}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "100%",
-                    padding: "0 12px",
-                    color: isPassFocused ? "#38bdf8" : "#64748b",
-                    borderRight: "1px solid rgba(255, 255, 255, 0.1)",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Lock size={15} />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      disabled={status === "loading" || status === "success"}
+                      className="login-card-eye-btn"
+                    >
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+
+                  {passwordError && (
+                    <p role="alert" className="login-field-error">
+                      <AlertCircle size={12} />
+                      <span>{passwordError}</span>
+                    </p>
+                  )}
                 </div>
 
-                <input
-                  ref={passwordInputRef}
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  className="login-portal-input"
-                  placeholder="Enter your account password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (passwordError) setPasswordError(null);
-                    if (error) setError(null);
-                    if (status === "error") setStatus("idle");
-                  }}
-                  onFocus={() => setIsPassFocused(true)}
-                  onBlur={() => setIsPassFocused(false)}
-                  disabled={status === "loading" || status === "success"}
-                  aria-required="true"
-                  aria-invalid={!!passwordError}
-                />
+                {/* Options Row: Remember this device & Encrypted */}
+                <div className="login-card-options">
+                  <button
+                    type="button"
+                    onClick={() => setRememberMe(!rememberMe)}
+                    className="login-card-remember-btn"
+                    aria-pressed={rememberMe}
+                  >
+                    <div className={`login-mobile-checkbox ${rememberMe ? "checked" : "unchecked"}`}>
+                      {rememberMe && <Check size={12} color="#ffffff" strokeWidth={3} />}
+                    </div>
+                    <span className="login-card-remember-text">Remember this device</span>
+                  </button>
 
+                  <div className="login-card-encrypted">
+                    <Shield size={14} color="#0d9488" />
+                    <span>Encrypted</span>
+                  </div>
+                </div>
+
+                {/* Primary Submit Button */}
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  type="submit"
                   disabled={status === "loading" || status === "success"}
-                  style={{
-                    height: "38px",
-                    width: "38px",
-                    marginRight: "4px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "transparent",
-                    border: "none",
-                    borderRadius: "7px",
-                    color: "#64748b",
-                    cursor: "pointer",
-                    flexShrink: 0,
-                  }}
+                  className="login-card-submit-btn"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {status === "loading" && (
+                    <>
+                      <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <Loader2 size={16} className="spin" />
+                        <span>Signing in securely...</span>
+                      </span>
+                      <div className="login-card-submit-arrow">
+                        <ArrowRight size={14} color="#ffffff" strokeWidth={2.5} />
+                      </div>
+                    </>
+                  )}
+
+                  {status === "success" && (
+                    <>
+                      <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <CheckCircle2 size={16} />
+                        <span>Redirecting...</span>
+                      </span>
+                      <div className="login-card-submit-arrow">
+                        <ArrowRight size={14} color="#ffffff" strokeWidth={2.5} />
+                      </div>
+                    </>
+                  )}
+
+                  {status !== "loading" && status !== "success" && (
+                    <>
+                      <span>Sign in securely</span>
+                      <div className="login-card-submit-arrow">
+                        <ArrowRight size={14} color="#ffffff" strokeWidth={2.5} />
+                      </div>
+                    </>
+                  )}
                 </button>
-              </div>
 
-              {passwordError && (
-                <p
-                  role="alert"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    color: "#fca5a5",
-                    fontSize: "0.725rem",
-                    fontWeight: 600,
-                    margin: "1px 0 0 0",
-                  }}
-                >
-                  <AlertCircle size={12} />
-                  <span>{passwordError}</span>
-                </p>
-              )}
+                {/* Register Link */}
+                <div className="login-card-register">
+                  <span>New to BantayBarangay?</span>
+                  <NextLink href="/register" className="login-card-register-link">
+                    Create resident account
+                  </NextLink>
+                </div>
+
+                {/* Verified Services Callout */}
+                <div className="login-card-callout" role="note">
+                  <Info size={17} className="login-card-callout-icon" />
+                  <p className="login-card-callout-text">
+                    Your account connects you with verified services from Masbate City and your local barangay.
+                  </p>
+                </div>
+              </form>
             </div>
 
-            {/* Primary Submit Button */}
-            <button
-              type="submit"
-              disabled={status === "loading" || status === "success"}
-              className="login-portal-submit-btn"
-            >
-              {status === "loading" && (
-                <>
-                  <Loader2 size={16} className="spin" />
-                  <span>Signing in...</span>
-                </>
-              )}
-
-              {status === "success" && (
-                <>
-                  <CheckCircle2 size={16} />
-                  <span>Redirecting...</span>
-                </>
-              )}
-
-              {status !== "loading" && status !== "success" && (
-                <>
-                  <span>Sign In</span>
-                  <ArrowRight size={15} />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Footer: Register & SSL Encryption */}
-          <div className="login-portal-foot">
-            <div className="login-portal-register-text">
-              <span>Don't have an account?</span>
-              <NextLink href="/register" className="login-portal-register-link">
-                Register as Resident
-              </NextLink>
+            {/* Footer below card */}
+            <div className="login-desktop-footer">
+              <span>Official civic platform</span>
+              <span>•</span>
+              <span>Privacy protected</span>
             </div>
-
-            <div className="login-portal-ssl-badge">
-              <Shield size={12} color="#10b981" />
-              <span>Official Civic Platform · 256-Bit SSL Encrypted</span>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+          </section>
+        </main>
+      </div>
 
     {/* =====================================================================
         DEDICATED MOBILE CIVIC INTERFACE (VIEWPORT <= 768px, MATCHING IMAGE)
