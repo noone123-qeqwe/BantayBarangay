@@ -2677,7 +2677,23 @@ html, body {
   flex-wrap: wrap;
 }
 
-/* Responsive Rules */
+/* ═══════════════════════════════════════════════════════════════════════════
+   BANTAYBARANGAY MOBILE-FIRST DASHBOARD OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Mobile 4-Metric Summary Bar (Hidden on desktop, visible on mobile) */
+.dash-mobile-metrics {
+  display: none;
+}
+
+.dash-desktop-only {
+  display: block;
+}
+
+.dash-mobile-cta {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .dash-kpi-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2687,44 +2703,146 @@ html, body {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 680px) {
+  .dash-desktop-only {
+    display: none !important;
+  }
+
   .dash-page-canvas {
-    padding: 16px 12px 40px 12px;
+    padding: 14px 14px calc(var(--bottom-nav-height, 64px) + 24px) 14px !important;
   }
+
+  .dash-container {
+    gap: 12px !important;
+  }
+
+  /* Header Card: Ultra-clean and compact */
   .dash-header-card {
-    padding: 18px 16px;
-    border-radius: 16px;
+    padding: 16px !important;
+    border-radius: 16px !important;
+    gap: 12px !important;
   }
+
+  .dash-header-meta {
+    gap: 6px !important;
+  }
+
   .dash-greeting-title {
-    font-size: 1.35rem;
+    font-size: 1.25rem !important;
+    margin: 0 !important;
   }
+
+  .dash-greeting-sub {
+    display: none !important;
+  }
+
+  .dash-header-actions-desktop {
+    display: none !important;
+  }
+
+  /* Primary Action Bar on Mobile: 1-handed thumb access */
+  .dash-mobile-cta {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 13px 18px !important;
+    border-radius: 14px !important;
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    background: linear-gradient(135deg, #0284c7 0%, #10b981 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4) !important;
+  }
+
+  /* Hide bulky 4-card grid on mobile */
   .dash-kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    display: none !important;
   }
-  .dash-kpi-card {
-    padding: 14px;
+
+  /* Compact 1-Row 4-Metric Strip on Mobile */
+  .dash-mobile-metrics {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    background: rgba(15, 23, 42, 0.94) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 12px 4px !important;
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.6) !important;
   }
-  .dash-kpi-val {
-    font-size: 1.6rem;
+
+  .dash-mobile-metric-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2px !important;
+    flex: 1 !important;
+    text-align: center !important;
+    position: relative !important;
   }
-  .dash-hero-report {
-    padding: 16px;
-    border-radius: 16px;
+
+  .dash-mobile-metric-item:not(:last-child)::after {
+    content: '' !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 15% !important;
+    bottom: 15% !important;
+    width: 1px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
   }
-  .dash-hero-icon {
-    width: 44px;
-    height: 44px;
+
+  .dash-mobile-metric-val {
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    line-height: 1.1 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   }
+
+  .dash-mobile-metric-lbl {
+    font-size: 0.675rem !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  /* Hide redundant quick cards on mobile (handled by fixed BottomNav) */
   .dash-quick-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    display: none !important;
   }
+
+  /* Compact Recent Feed */
   .dash-feed-card {
-    padding: 16px;
-    border-radius: 16px;
+    padding: 16px 14px !important;
+    border-radius: 16px !important;
+    gap: 12px !important;
+  }
+
+  .dash-feed-header {
+    padding-bottom: 10px !important;
+  }
+
+  .dash-feed-title {
+    font-size: 1.05rem !important;
+  }
+
+  .dash-report-row {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .dash-bottom-seal {
+    display: none !important;
   }
 }
+
 
 
 

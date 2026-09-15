@@ -34,10 +34,7 @@ import {
   Settings,
   Users,
   ScrollText,
-  Sliders,
-  Check,
   Cpu,
-  Globe,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -125,7 +122,7 @@ export default function DashboardPage() {
     );
   }
 
-  // Counts & Filter Bins
+  // Resident KPI counts
   const totalCount = reports.length;
   const pendingCount = reports.filter((r) =>
     ["SUBMITTED", "RECEIVED", "UNDER_REVIEW"].includes(r.status)
@@ -160,6 +157,8 @@ export default function DashboardPage() {
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   };
+
+  const firstName = user.name.split(" ")[0];
 
   return (
     <div
@@ -201,11 +200,11 @@ export default function DashboardPage() {
           zIndex: 1,
           display: "flex",
           flexDirection: "column",
-          gap: "24px",
+          gap: "20px",
         }}
       >
         {/* ===============================================================
-            HEADER CARD: Greeting, Role Badge & Primary CTAs
+            1. HEADER SECTION: Compact Greeting & Direct CTA
            =============================================================== */}
         <header
           className="dash-header-card"
@@ -216,14 +215,15 @@ export default function DashboardPage() {
             WebkitBackdropFilter: "blur(24px)",
             border: "1.5px solid rgba(56, 189, 248, 0.18)",
             borderRadius: "20px",
-            padding: "24px 28px",
+            padding: "20px 24px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "14px",
             boxShadow:
               "0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.12)",
           }}
         >
+          {/* Header Meta: Role & Status */}
           <div
             className="dash-header-meta"
             style={{
@@ -231,7 +231,7 @@ export default function DashboardPage() {
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
-              gap: "10px",
+              gap: "8px",
             }}
           >
             {/* Role Badge */}
@@ -243,7 +243,7 @@ export default function DashboardPage() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",
-                    padding: "4px 11px",
+                    padding: "4px 10px",
                     borderRadius: "9999px",
                     fontSize: "0.725rem",
                     fontWeight: 700,
@@ -254,8 +254,8 @@ export default function DashboardPage() {
                     color: "#38bdf8",
                   }}
                 >
-                  <Shield size={13} />
-                  <span>Verified Resident</span>
+                  <Shield size={12} />
+                  <span>Resident</span>
                 </div>
               )}
               {isStaff && (
@@ -265,7 +265,7 @@ export default function DashboardPage() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",
-                    padding: "4px 11px",
+                    padding: "4px 10px",
                     borderRadius: "9999px",
                     fontSize: "0.725rem",
                     fontWeight: 700,
@@ -276,7 +276,7 @@ export default function DashboardPage() {
                     color: "#34d399",
                   }}
                 >
-                  <Wrench size={13} />
+                  <Wrench size={12} />
                   <span>Operations Staff</span>
                 </div>
               )}
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",
-                    padding: "4px 11px",
+                    padding: "4px 10px",
                     borderRadius: "9999px",
                     fontSize: "0.725rem",
                     fontWeight: 700,
@@ -298,8 +298,8 @@ export default function DashboardPage() {
                     color: "#818cf8",
                   }}
                 >
-                  <Building2 size={13} />
-                  <span>Barangay Administrator</span>
+                  <Building2 size={12} />
+                  <span>Administrator</span>
                 </div>
               )}
               {isSuperAdmin && (
@@ -309,7 +309,7 @@ export default function DashboardPage() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",
-                    padding: "4px 11px",
+                    padding: "4px 10px",
                     borderRadius: "9999px",
                     fontSize: "0.725rem",
                     fontWeight: 700,
@@ -320,8 +320,8 @@ export default function DashboardPage() {
                     color: "#fbbf24",
                   }}
                 >
-                  <Crown size={13} />
-                  <span>Super Administrator</span>
+                  <Crown size={12} />
+                  <span>Super Admin</span>
                 </div>
               )}
             </div>
@@ -348,10 +348,11 @@ export default function DashboardPage() {
                   boxShadow: "0 0 8px #34d399",
                 }}
               />
-              <span>System Operational · 100% Online</span>
+              <span>Live Civic Net</span>
             </div>
           </div>
 
+          {/* Main Greeting Row */}
           <div
             className="dash-header-main"
             style={{
@@ -359,14 +360,14 @@ export default function DashboardPage() {
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
-              gap: "16px",
+              gap: "14px",
             }}
           >
             <div>
               <h1
                 className="dash-greeting-title"
                 style={{
-                  fontSize: "1.65rem",
+                  fontSize: "1.55rem",
                   fontWeight: 800,
                   color: "#f8fafc",
                   letterSpacing: "-0.03em",
@@ -382,32 +383,28 @@ export default function DashboardPage() {
                     WebkitTextFillColor: "transparent",
                   }}
                 >
-                  {user.name.split(" ")[0]}
+                  {firstName}
                 </span>
                 !
               </h1>
               <p
                 className="dash-greeting-sub"
                 style={{
-                  fontSize: "0.875rem",
+                  fontSize: "0.85rem",
                   color: "#94a3b8",
                   lineHeight: 1.4,
                   margin: 0,
                 }}
               >
-                {isResident &&
-                  "Report community issues, track emergency fixes, and verify completed resolutions."}
-                {isStaff &&
-                  "Operational Incident Control · Active Field Dispatch & SLA Monitoring Queue."}
-                {isAdmin &&
-                  "Executive Municipal Command · Governance, SLA Compliance & Citizen Oversight."}
-                {isSuperAdmin &&
-                  "Municipal Platform Infrastructure, Security Audits & Cross-Agency Authority."}
+                {isResident && "Report community issues and track live resolutions."}
+                {isStaff && "Field incident triage and SLA dispatch queue."}
+                {isAdmin && "Municipal executive governance & citizen oversight."}
+                {isSuperAdmin && "Platform infrastructure & system administration."}
               </p>
             </div>
 
-            {/* Quick Action Buttons */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {/* Desktop Action Buttons */}
+            <div className="dash-header-actions-desktop" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               {isResident ? (
                 <NextLink
                   href="/reports/new"
@@ -479,24 +476,45 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
+
+          {/* Mobile One-Handed CTA Button (Full-width, thumb-friendly right under greeting) */}
+          <NextLink
+            href="/reports/new"
+            className="dash-mobile-cta"
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              padding: "13px 18px",
+              borderRadius: "14px",
+              fontSize: "0.95rem",
+              fontWeight: 800,
+              textDecoration: "none",
+              background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
+              color: "#ffffff",
+              boxShadow: "0 4px 16px rgba(2, 132, 199, 0.4)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+            }}
+          >
+            <PlusCircle size={19} />
+            <span>{isResident ? "+ Report Community Issue" : "+ Log Incident Ticket"}</span>
+          </NextLink>
         </header>
 
         {/* ===============================================================
-            MUNICIPAL ANNOUNCEMENTS BANNER (IF ACTIVE)
+            2. ACTIVE ANNOUNCEMENT (IF ANY)
            =============================================================== */}
         {announcements.length > 0 && (
           <section aria-label="Official Announcements">
             {announcements.slice(0, 1).map((ann) => (
               <div
                 key={ann.id}
-                className={`dash-announcement ${
-                  ann.priority === "URGENT" ? "dash-announcement-urgent" : ""
-                }`}
+                className={`dash-announcement ${ann.priority === "URGENT" ? "dash-announcement-urgent" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "14px",
-                  padding: "14px 20px",
+                  gap: "12px",
+                  padding: "12px 16px",
                   borderRadius: "14px",
                   backgroundColor:
                     ann.priority === "URGENT"
@@ -507,14 +525,14 @@ export default function DashboardPage() {
                       ? "1px solid rgba(239, 68, 68, 0.3)"
                       : "1px solid rgba(56, 189, 248, 0.25)",
                   color: ann.priority === "URGENT" ? "#fca5a5" : "#e2e8f0",
-                  fontSize: "0.875rem",
+                  fontSize: "0.85rem",
                 }}
               >
                 <div
                   style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "10px",
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "9px",
                     background:
                       ann.priority === "URGENT"
                         ? "rgba(239, 68, 68, 0.2)"
@@ -526,15 +544,17 @@ export default function DashboardPage() {
                   }}
                 >
                   <Megaphone
-                    size={18}
+                    size={16}
                     color={ann.priority === "URGENT" ? "#ef4444" : "#38bdf8"}
                   />
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                  <strong style={{ color: "#f8fafc", fontWeight: 700 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
+                  <strong style={{ color: "#f8fafc", fontSize: "0.85rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {ann.title}
                   </strong>
-                  <span style={{ color: "#cbd5e1" }}>{ann.content}</span>
+                  <span style={{ color: "#cbd5e1", fontSize: "0.785rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {ann.content}
+                  </span>
                 </div>
               </div>
             ))}
@@ -542,19 +562,109 @@ export default function DashboardPage() {
         )}
 
         {/* ===============================================================
-            RESIDENT VIEW: Hero CTA + KPI Metrics + Quick Access
+            3. MOBILE-FIRST 1-ROW 4-METRIC STRIP (Compact & Glanceable)
+           =============================================================== */}
+        {isResident && (
+          <div className="dash-mobile-metrics">
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#38bdf8" }}>
+                {totalCount}
+              </span>
+              <span className="dash-mobile-metric-lbl">Total</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#f59e0b" }}>
+                {pendingCount}
+              </span>
+              <span className="dash-mobile-metric-lbl">Review</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#c084fc" }}>
+                {inProgressCount}
+              </span>
+              <span className="dash-mobile-metric-lbl">Progress</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#34d399" }}>
+                {resolvedCount}
+              </span>
+              <span className="dash-mobile-metric-lbl">Resolved</span>
+            </div>
+          </div>
+        )}
+
+        {isStaff && (
+          <div className="dash-mobile-metrics">
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#f59e0b" }}>
+                {staffNeedsAttention.length}
+              </span>
+              <span className="dash-mobile-metric-lbl">Attention</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#ef4444" }}>
+                {staffCritical.length}
+              </span>
+              <span className="dash-mobile-metric-lbl">Critical</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#38bdf8" }}>
+                {staffNewReports.length}
+              </span>
+              <span className="dash-mobile-metric-lbl">New</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#fb7185" }}>
+                {staffOverdue.length}
+              </span>
+              <span className="dash-mobile-metric-lbl">Overdue</span>
+            </div>
+          </div>
+        )}
+
+        {(isAdmin || isSuperAdmin) && (
+          <div className="dash-mobile-metrics">
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#38bdf8" }}>
+                {isSuperAdmin ? "100%" : totalCount}
+              </span>
+              <span className="dash-mobile-metric-lbl">{isSuperAdmin ? "Health" : "Total"}</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#34d399" }}>
+                {analytics?.metrics?.resolutionRate || 85}%
+              </span>
+              <span className="dash-mobile-metric-lbl">Rate</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#c084fc" }}>
+                {analytics?.metrics?.avgResolutionHours || "18.5"}h
+              </span>
+              <span className="dash-mobile-metric-lbl">Avg SLA</span>
+            </div>
+            <div className="dash-mobile-metric-item">
+              <span className="dash-mobile-metric-val" style={{ color: "#f59e0b" }}>
+                {analytics?.hotspots?.length || 0}
+              </span>
+              <span className="dash-mobile-metric-lbl">Hotspots</span>
+            </div>
+          </div>
+        )}
+
+        {/* ===============================================================
+            4. DESKTOP-ONLY HERO & 4-COLUMN KPI CARDS (Untouched on Desktop)
            =============================================================== */}
         {isResident && (
           <>
-            {/* Clean Hero Report CTA */}
+            {/* Desktop Hero CTA */}
             <NextLink
               href="/reports/new"
-              className="dash-hero-report"
+              className="dash-hero-report dash-desktop-only"
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "22px 28px",
+                padding: "20px 26px",
                 borderRadius: "20px",
                 background:
                   "linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%)",
@@ -567,8 +677,8 @@ export default function DashboardPage() {
                 <div
                   className="dash-hero-icon"
                   style={{
-                    width: "52px",
-                    height: "52px",
+                    width: "50px",
+                    height: "50px",
                     borderRadius: "14px",
                     background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
                     color: "#ffffff",
@@ -579,7 +689,7 @@ export default function DashboardPage() {
                     flexShrink: 0,
                   }}
                 >
-                  <PlusCircle size={28} strokeWidth={2.4} />
+                  <PlusCircle size={26} strokeWidth={2.4} />
                 </div>
                 <div>
                   <div
@@ -592,7 +702,7 @@ export default function DashboardPage() {
                       color: "#34d399",
                       textTransform: "uppercase",
                       letterSpacing: "0.04em",
-                      marginBottom: "4px",
+                      marginBottom: "3px",
                     }}
                   >
                     <Sparkles size={12} />
@@ -600,7 +710,7 @@ export default function DashboardPage() {
                   </div>
                   <h2
                     style={{
-                      fontSize: "1.2rem",
+                      fontSize: "1.15rem",
                       fontWeight: 800,
                       color: "#f8fafc",
                       margin: "0 0 2px 0",
@@ -611,7 +721,7 @@ export default function DashboardPage() {
                   </h2>
                   <p
                     style={{
-                      fontSize: "0.84rem",
+                      fontSize: "0.825rem",
                       color: "#94a3b8",
                       margin: 0,
                     }}
@@ -623,8 +733,8 @@ export default function DashboardPage() {
               <div
                 className="dash-hero-arrow"
                 style={{
-                  width: "40px",
-                  height: "40px",
+                  width: "38px",
+                  height: "38px",
                   borderRadius: "50%",
                   background: "rgba(255, 255, 255, 0.08)",
                   border: "1px solid rgba(255, 255, 255, 0.12)",
@@ -635,13 +745,13 @@ export default function DashboardPage() {
                   flexShrink: 0,
                 }}
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={18} />
               </div>
             </NextLink>
 
-            {/* 4-Column KPI Counters */}
+            {/* Desktop 4-Column KPI Counters */}
             <div
-              className="dash-kpi-grid"
+              className="dash-kpi-grid dash-desktop-only"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(4, 1fr)",
@@ -663,66 +773,19 @@ export default function DashboardPage() {
                   overflow: "hidden",
                 }}
               >
-                <div
-                  className="dash-kpi-header"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    className="dash-kpi-label"
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#94a3b8",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span className="dash-kpi-label" style={{ fontSize: "0.775rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase" }}>
                     Total Filed
                   </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(56, 189, 248, 0.1)",
-                      color: "#38bdf8",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                  <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: "rgba(56, 189, 248, 0.1)", color: "#38bdf8", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Layers size={16} />
                   </div>
                 </div>
-                <div
-                  className="dash-kpi-val"
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#f8fafc",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
+                <div className="dash-kpi-val" style={{ fontSize: "2rem", fontWeight: 800, color: "#f8fafc", lineHeight: 1 }}>
                   {totalCount}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  All logged reports
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#38bdf8",
-                  }}
-                />
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>All logged reports</div>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", backgroundColor: "#38bdf8" }} />
               </div>
 
               {/* Pending Review */}
@@ -740,66 +803,19 @@ export default function DashboardPage() {
                   overflow: "hidden",
                 }}
               >
-                <div
-                  className="dash-kpi-header"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    className="dash-kpi-label"
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#f59e0b",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span className="dash-kpi-label" style={{ fontSize: "0.775rem", fontWeight: 700, color: "#f59e0b", textTransform: "uppercase" }}>
                     Pending Review
                   </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(245, 158, 11, 0.1)",
-                      color: "#f59e0b",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                  <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Clock size={16} />
                   </div>
                 </div>
-                <div
-                  className="dash-kpi-val"
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#f59e0b",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
+                <div className="dash-kpi-val" style={{ fontSize: "2rem", fontWeight: 800, color: "#f59e0b", lineHeight: 1 }}>
                   {pendingCount}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  Awaiting review
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#f59e0b",
-                  }}
-                />
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>Awaiting review</div>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", backgroundColor: "#f59e0b" }} />
               </div>
 
               {/* In Progress */}
@@ -817,66 +833,19 @@ export default function DashboardPage() {
                   overflow: "hidden",
                 }}
               >
-                <div
-                  className="dash-kpi-header"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    className="dash-kpi-label"
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#c084fc",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span className="dash-kpi-label" style={{ fontSize: "0.775rem", fontWeight: 700, color: "#c084fc", textTransform: "uppercase" }}>
                     In Progress
                   </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(192, 132, 252, 0.1)",
-                      color: "#c084fc",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                  <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: "rgba(192, 132, 252, 0.1)", color: "#c084fc", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Activity size={16} />
                   </div>
                 </div>
-                <div
-                  className="dash-kpi-val"
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#c084fc",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
+                <div className="dash-kpi-val" style={{ fontSize: "2rem", fontWeight: 800, color: "#c084fc", lineHeight: 1 }}>
                   {inProgressCount}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  Field work active
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#c084fc",
-                  }}
-                />
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>Field work active</div>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", backgroundColor: "#c084fc" }} />
               </div>
 
               {/* Verified & Resolved */}
@@ -894,72 +863,25 @@ export default function DashboardPage() {
                   overflow: "hidden",
                 }}
               >
-                <div
-                  className="dash-kpi-header"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    className="dash-kpi-label"
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#34d399",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span className="dash-kpi-label" style={{ fontSize: "0.775rem", fontWeight: 700, color: "#34d399", textTransform: "uppercase" }}>
                     Resolved
                   </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(52, 211, 153, 0.1)",
-                      color: "#34d399",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                  <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: "rgba(52, 211, 153, 0.1)", color: "#34d399", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <CheckCircle2 size={16} />
                   </div>
                 </div>
-                <div
-                  className="dash-kpi-val"
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#34d399",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
+                <div className="dash-kpi-val" style={{ fontSize: "2rem", fontWeight: 800, color: "#34d399", lineHeight: 1 }}>
                   {resolvedCount}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  Fixed & confirmed
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#34d399",
-                  }}
-                />
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>Fixed & confirmed</div>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", backgroundColor: "#34d399" }} />
               </div>
             </div>
 
-            {/* Quick Access Navigation Grid */}
+            {/* Desktop Quick Access Grid (Kept on desktop, hidden on mobile) */}
             <div
-              className="dash-quick-grid"
+              className="dash-quick-grid dash-desktop-only"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(4, 1fr)",
@@ -980,40 +902,12 @@ export default function DashboardPage() {
                   textDecoration: "none",
                 }}
               >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(56, 189, 248, 0.1)",
-                    color: "#38bdf8",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
+                <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "rgba(56, 189, 248, 0.1)", color: "#38bdf8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <FileText size={20} />
                 </div>
                 <div>
-                  <div
-                    className="dash-quick-title"
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    My Reports
-                  </div>
-                  <div
-                    className="dash-quick-sub"
-                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
-                  >
-                    {totalCount} filed cases
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc", lineHeight: 1.2 }}>My Reports</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>{totalCount} filed cases</div>
                 </div>
               </NextLink>
 
@@ -1031,40 +925,12 @@ export default function DashboardPage() {
                   textDecoration: "none",
                 }}
               >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(52, 211, 153, 0.1)",
-                    color: "#34d399",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
+                <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "rgba(52, 211, 153, 0.1)", color: "#34d399", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <div
-                    className="dash-quick-title"
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    Community Map
-                  </div>
-                  <div
-                    className="dash-quick-sub"
-                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
-                  >
-                    Live Pinpoint GPS
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc", lineHeight: 1.2 }}>Community Map</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>Live Pinpoint GPS</div>
                 </div>
               </NextLink>
 
@@ -1082,40 +948,12 @@ export default function DashboardPage() {
                   textDecoration: "none",
                 }}
               >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(245, 158, 11, 0.1)",
-                    color: "#f59e0b",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
+                <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Bell size={20} />
                 </div>
                 <div>
-                  <div
-                    className="dash-quick-title"
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    Official Alerts
-                  </div>
-                  <div
-                    className="dash-quick-sub"
-                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
-                  >
-                    Barangay Updates
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc", lineHeight: 1.2 }}>Official Alerts</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>Barangay Updates</div>
                 </div>
               </NextLink>
 
@@ -1133,40 +971,12 @@ export default function DashboardPage() {
                   textDecoration: "none",
                 }}
               >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(192, 132, 252, 0.1)",
-                    color: "#c084fc",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
+                <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: "rgba(192, 132, 252, 0.1)", color: "#c084fc", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <User size={20} />
                 </div>
                 <div>
-                  <div
-                    className="dash-quick-title"
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    Citizen Profile
-                  </div>
-                  <div
-                    className="dash-quick-sub"
-                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
-                  >
-                    Account Settings
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc", lineHeight: 1.2 }}>Citizen Profile</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>Account Settings</div>
                 </div>
               </NextLink>
             </div>
@@ -1174,10 +984,10 @@ export default function DashboardPage() {
         )}
 
         {/* ===============================================================
-            STAFF VIEW: Incident Control & Active Shift Triage
+            5. DESKTOP-ONLY STAFF & ADMIN KPIS & HUB
            =============================================================== */}
         {isStaff && (
-          <>
+          <div className="dash-desktop-only">
             <div
               className="dash-kpi-grid"
               style={{
@@ -1186,723 +996,28 @@ export default function DashboardPage() {
                 gap: "16px",
               }}
             >
-              {/* Needs Attention */}
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#f59e0b",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    Needs Attention
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(245, 158, 11, 0.1)",
-                      color: "#f59e0b",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <AlertTriangle size={16} />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#f59e0b",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {staffNeedsAttention.length}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  Action or verification required
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#f59e0b",
-                  }}
-                />
+              <div className="dash-kpi-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.94)", border: "1.5px solid rgba(255, 255, 255, 0.08)", borderRadius: "16px", padding: "18px 20px" }}>
+                <span style={{ fontSize: "0.775rem", fontWeight: 700, color: "#f59e0b", textTransform: "uppercase" }}>Needs Attention</span>
+                <div style={{ fontSize: "2rem", fontWeight: 800, color: "#f59e0b" }}>{staffNeedsAttention.length}</div>
               </div>
-
-              {/* Critical Threats */}
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#ef4444",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    Critical Threats
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(239, 68, 68, 0.1)",
-                      color: "#ef4444",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Flame size={16} />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#ef4444",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {staffCritical.length}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  High-risk hazards
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#ef4444",
-                  }}
-                />
+              <div className="dash-kpi-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.94)", border: "1.5px solid rgba(255, 255, 255, 0.08)", borderRadius: "16px", padding: "18px 20px" }}>
+                <span style={{ fontSize: "0.775rem", fontWeight: 700, color: "#ef4444", textTransform: "uppercase" }}>Critical Threats</span>
+                <div style={{ fontSize: "2rem", fontWeight: 800, color: "#ef4444" }}>{staffCritical.length}</div>
               </div>
-
-              {/* New Submissions */}
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#38bdf8",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    New Submissions
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(56, 189, 248, 0.1)",
-                      color: "#38bdf8",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <FileText size={16} />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#38bdf8",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {staffNewReports.length}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  Pending triage review
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#38bdf8",
-                  }}
-                />
+              <div className="dash-kpi-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.94)", border: "1.5px solid rgba(255, 255, 255, 0.08)", borderRadius: "16px", padding: "18px 20px" }}>
+                <span style={{ fontSize: "0.775rem", fontWeight: 700, color: "#38bdf8", textTransform: "uppercase" }}>New Submissions</span>
+                <div style={{ fontSize: "2rem", fontWeight: 800, color: "#38bdf8" }}>{staffNewReports.length}</div>
               </div>
-
-              {/* Overdue SLA */}
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#fb7185",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    Overdue SLA
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(251, 113, 133, 0.1)",
-                      color: "#fb7185",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Clock size={16} />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#fb7185",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {staffOverdue.length}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  Exceeded response window
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#fb7185",
-                  }}
-                />
+              <div className="dash-kpi-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.94)", border: "1.5px solid rgba(255, 255, 255, 0.08)", borderRadius: "16px", padding: "18px 20px" }}>
+                <span style={{ fontSize: "0.775rem", fontWeight: 700, color: "#fb7185", textTransform: "uppercase" }}>Overdue SLA</span>
+                <div style={{ fontSize: "2rem", fontWeight: 800, color: "#fb7185" }}>{staffOverdue.length}</div>
               </div>
             </div>
-
-            {/* Quick Operational Links */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "14px",
-              }}
-            >
-              <NextLink
-                href="/reports?status=UNDER_REVIEW"
-                className="dash-quick-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.85)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
-                  borderRadius: "16px",
-                  padding: "16px 18px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  textDecoration: "none",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div
-                    className="dash-quick-icon"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "12px",
-                      background: "rgba(245, 158, 11, 0.1)",
-                      color: "#f59e0b",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Clock size={20} />
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "0.885rem",
-                        fontWeight: 700,
-                        color: "#f8fafc",
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      Review Pending Tickets
-                    </div>
-                    <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
-                      {staffNeedsAttention.length} pending assessment
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight size={18} color="#94a3b8" />
-              </NextLink>
-
-              <NextLink
-                href="/map"
-                className="dash-quick-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.85)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
-                  borderRadius: "16px",
-                  padding: "16px 18px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  textDecoration: "none",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div
-                    className="dash-quick-icon"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "12px",
-                      background: "rgba(52, 211, 153, 0.1)",
-                      color: "#34d399",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <MapPin size={20} />
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "0.885rem",
-                        fontWeight: 700,
-                        color: "#f8fafc",
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      Field Inspection Map
-                    </div>
-                    <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
-                      View live hazard coordinates
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight size={18} color="#94a3b8" />
-              </NextLink>
-            </div>
-          </>
+          </div>
         )}
 
-        {/* ===============================================================
-            ADMIN & SUPER ADMIN VIEW: Executive Governance & RBAC
-           =============================================================== */}
         {(isAdmin || isSuperAdmin) && (
-          <>
-            <div
-              className="dash-kpi-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: "16px",
-              }}
-            >
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#38bdf8",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    {isSuperAdmin ? "Platform Health" : "Total Reports"}
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(56, 189, 248, 0.1)",
-                      color: "#38bdf8",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {isSuperAdmin ? <Server size={16} /> : <BarChart3 size={16} />}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#38bdf8",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {isSuperAdmin ? "100%" : analytics?.metrics?.totalReports || totalCount}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  {isSuperAdmin ? "All systems active" : "Barangay total volume"}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#38bdf8",
-                  }}
-                />
-              </div>
-
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#34d399",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    {isSuperAdmin ? "Civic Accounts" : "Resolution Rate"}
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(52, 211, 153, 0.1)",
-                      color: "#34d399",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {isSuperAdmin ? <Users size={16} /> : <CheckCircle2 size={16} />}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#34d399",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {isSuperAdmin
-                    ? analytics?.metrics?.totalUsers || "1,420"
-                    : `${analytics?.metrics?.resolutionRate || 85}%`}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  {isSuperAdmin ? "Verified residents & staff" : "Closed & verified fixes"}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#34d399",
-                  }}
-                />
-              </div>
-
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#c084fc",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    {isSuperAdmin ? "Incident Intake" : "Avg SLA Time"}
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(192, 132, 252, 0.1)",
-                      color: "#c084fc",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {isSuperAdmin ? <Layers size={16} /> : <Clock size={16} />}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#c084fc",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {isSuperAdmin
-                    ? analytics?.metrics?.totalReports || totalCount
-                    : `${analytics?.metrics?.avgResolutionHours || "18.5"}h`}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  {isSuperAdmin ? "Cross-municipal total" : "Submission to fix"}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#c084fc",
-                  }}
-                />
-              </div>
-
-              <div
-                className="dash-kpi-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.94)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
-                  borderRadius: "16px",
-                  padding: "18px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "0.775rem",
-                      fontWeight: 700,
-                      color: "#f59e0b",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    {isSuperAdmin ? "AI Moderation" : "Active Hotspots"}
-                  </span>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "9px",
-                      background: "rgba(245, 158, 11, 0.1)",
-                      color: "#f59e0b",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {isSuperAdmin ? <Cpu size={16} /> : <Flame size={16} />}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "#f59e0b",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {isSuperAdmin ? "99.4%" : analytics?.hotspots?.length || 0}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  {isSuperAdmin ? "Triage accuracy" : "Clustered hazards"}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    backgroundColor: "#f59e0b",
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Admin Command Hub */}
+          <div className="dash-desktop-only">
             <div
               className="dash-quick-grid"
               style={{
@@ -1911,199 +1026,40 @@ export default function DashboardPage() {
                 gap: "14px",
               }}
             >
-              <NextLink
-                href="/admin"
-                className="dash-quick-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.85)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
-                  borderRadius: "16px",
-                  padding: "16px 18px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                  textDecoration: "none",
-                }}
-              >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(56, 189, 248, 0.1)",
-                    color: "#38bdf8",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Building2 size={20} />
-                </div>
+              <NextLink href="/admin" className="dash-quick-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.85)", border: "1.5px solid rgba(255, 255, 255, 0.07)", borderRadius: "16px", padding: "16px 18px", display: "flex", alignItems: "center", gap: "14px", textDecoration: "none" }}>
+                <Building2 size={20} color="#38bdf8" />
                 <div>
-                  <div
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    Municipal Agencies
-                  </div>
-                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
-                    Engineering & Health
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc" }}>Agencies</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>Public Works & Safety</div>
                 </div>
               </NextLink>
-
-              <NextLink
-                href="/admin"
-                className="dash-quick-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.85)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
-                  borderRadius: "16px",
-                  padding: "16px 18px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                  textDecoration: "none",
-                }}
-              >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(52, 211, 153, 0.1)",
-                    color: "#34d399",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Users size={20} />
-                </div>
+              <NextLink href="/admin" className="dash-quick-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.85)", border: "1.5px solid rgba(255, 255, 255, 0.07)", borderRadius: "16px", padding: "16px 18px", display: "flex", alignItems: "center", gap: "14px", textDecoration: "none" }}>
+                <Users size={20} color="#34d399" />
                 <div>
-                  <div
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    User Directory
-                  </div>
-                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
-                    Staff Permissions
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc" }}>User Directory</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>Staff Permissions</div>
                 </div>
               </NextLink>
-
-              <NextLink
-                href="/admin/analytics"
-                className="dash-quick-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.85)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
-                  borderRadius: "16px",
-                  padding: "16px 18px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                  textDecoration: "none",
-                }}
-              >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(192, 132, 252, 0.1)",
-                    color: "#c084fc",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <BarChart3 size={20} />
-                </div>
+              <NextLink href="/admin/analytics" className="dash-quick-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.85)", border: "1.5px solid rgba(255, 255, 255, 0.07)", borderRadius: "16px", padding: "16px 18px", display: "flex", alignItems: "center", gap: "14px", textDecoration: "none" }}>
+                <BarChart3 size={20} color="#c084fc" />
                 <div>
-                  <div
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    SLA Analytics
-                  </div>
-                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
-                    Response Times
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc" }}>SLA Analytics</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>Response Trends</div>
                 </div>
               </NextLink>
-
-              <NextLink
-                href="/admin"
-                className="dash-quick-card"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.85)",
-                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
-                  borderRadius: "16px",
-                  padding: "16px 18px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                  textDecoration: "none",
-                }}
-              >
-                <div
-                  className="dash-quick-icon"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "rgba(245, 158, 11, 0.1)",
-                    color: "#f59e0b",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <ScrollText size={20} />
-                </div>
+              <NextLink href="/admin" className="dash-quick-card" style={{ backgroundColor: "rgba(15, 23, 42, 0.85)", border: "1.5px solid rgba(255, 255, 255, 0.07)", borderRadius: "16px", padding: "16px 18px", display: "flex", alignItems: "center", gap: "14px", textDecoration: "none" }}>
+                <ScrollText size={20} color="#f59e0b" />
                 <div>
-                  <div
-                    style={{
-                      fontSize: "0.885rem",
-                      fontWeight: 700,
-                      color: "#f8fafc",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    Audit Trail
-                  </div>
-                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
-                    System Security Logs
-                  </div>
+                  <div style={{ fontSize: "0.885rem", fontWeight: 700, color: "#f8fafc" }}>Audit Trail</div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>System Security</div>
                 </div>
               </NextLink>
             </div>
-          </>
+          </div>
         )}
 
         {/* ===============================================================
-            SHARED INCIDENTS & REPORTS FEED
+            6. RECENT INCIDENTS / REPORTS FEED (Primary Content)
            =============================================================== */}
         <section
           className="dash-feed-card"
@@ -2114,10 +1070,10 @@ export default function DashboardPage() {
             border: "1.5px solid rgba(255, 255, 255, 0.08)",
             borderRadius: "20px",
             boxShadow: "0 20px 50px -10px rgba(0, 0, 0, 0.7)",
-            padding: "24px 28px",
+            padding: "20px 24px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "14px",
           }}
           aria-label="Incident Reports Feed"
         >
@@ -2128,27 +1084,22 @@ export default function DashboardPage() {
               alignItems: "center",
               justifyContent: "space-between",
               borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
-              paddingBottom: "14px",
+              paddingBottom: "12px",
             }}
           >
             <div>
               <h3
                 className="dash-feed-title"
                 style={{
-                  fontSize: "1.15rem",
+                  fontSize: "1.1rem",
                   fontWeight: 800,
                   color: "#f8fafc",
                   letterSpacing: "-0.02em",
-                  margin: "0 0 2px 0",
+                  margin: 0,
                 }}
               >
-                {isResident ? "My Recent Reports" : "Active Incident Queue"}
+                {isResident ? "Recent Reports" : "Active Incident Queue"}
               </h3>
-              <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: 0 }}>
-                {isResident
-                  ? "Track live status updates and confirmation requests on your reports."
-                  : "Latest submitted community hazards awaiting triage, dispatch, or resolution."}
-              </p>
             </div>
             <NextLink
               href="/reports"
@@ -2164,7 +1115,7 @@ export default function DashboardPage() {
               }}
             >
               <span>View All</span>
-              <ChevronRight size={16} />
+              <ChevronRight size={15} />
             </NextLink>
           </div>
 
@@ -2175,46 +1126,46 @@ export default function DashboardPage() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "48px 20px",
+                padding: "36px 16px",
                 textAlign: "center",
               }}
             >
               <div
                 style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "16px",
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "14px",
                   background: "rgba(255, 255, 255, 0.04)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   color: "#64748b",
-                  marginBottom: "14px",
+                  marginBottom: "12px",
                 }}
               >
-                <FileText size={28} />
+                <FileText size={24} />
               </div>
               <h4
                 style={{
-                  fontSize: "1rem",
+                  fontSize: "0.95rem",
                   fontWeight: 700,
                   color: "#f8fafc",
-                  margin: "0 0 6px 0",
+                  margin: "0 0 4px 0",
                 }}
               >
                 No reports logged yet
               </h4>
               <p
                 style={{
-                  fontSize: "0.825rem",
+                  fontSize: "0.8rem",
                   color: "#94a3b8",
-                  maxWidth: "380px",
-                  margin: "0 0 16px 0",
+                  maxWidth: "340px",
+                  margin: "0 0 14px 0",
                   lineHeight: 1.4,
                 }}
               >
                 {isResident
-                  ? "Help keep our community safe. If you spot broken public infrastructure, file a report."
+                  ? "Spot public hazard or broken infrastructure? Tap below to report."
                   : "There are currently no active reports in the municipal queue."}
               </p>
               {isResident && (
@@ -2224,12 +1175,12 @@ export default function DashboardPage() {
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: "8px",
-                    padding: "10px 18px",
-                    borderRadius: "12px",
+                    gap: "6px",
+                    padding: "9px 16px",
+                    borderRadius: "10px",
                     background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
                     color: "#ffffff",
-                    fontSize: "0.875rem",
+                    fontSize: "0.85rem",
                     fontWeight: 700,
                     textDecoration: "none",
                   }}
@@ -2240,7 +1191,7 @@ export default function DashboardPage() {
               )}
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
               {reports.slice(0, 5).map((report) => {
                 const photoUrl = report.photos && report.photos[0]?.photoUrl;
                 const formattedDate = new Date(report.createdAt).toLocaleDateString(
@@ -2248,7 +1199,6 @@ export default function DashboardPage() {
                   {
                     month: "short",
                     day: "numeric",
-                    year: "numeric",
                   }
                 );
 
@@ -2261,19 +1211,20 @@ export default function DashboardPage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      padding: "14px 16px",
+                      padding: "12px 14px",
                       borderRadius: "12px",
                       backgroundColor: "rgba(255, 255, 255, 0.03)",
                       border: "1px solid rgba(255, 255, 255, 0.06)",
                       textDecoration: "none",
-                      gap: "14px",
+                      gap: "12px",
                     }}
                   >
-                    {/* Thumbnail Image */}
+                    {/* Thumbnail */}
                     <div
+                      className="dash-report-thumb"
                       style={{
-                        width: "48px",
-                        height: "48px",
+                        width: "44px",
+                        height: "44px",
                         borderRadius: "10px",
                         overflow: "hidden",
                         backgroundColor: "rgba(255, 255, 255, 0.05)",
@@ -2294,7 +1245,7 @@ export default function DashboardPage() {
                           }}
                         />
                       ) : (
-                        <Camera size={20} color="#64748b" />
+                        <Camera size={18} color="#64748b" />
                       )}
                     </div>
 
@@ -2304,7 +1255,7 @@ export default function DashboardPage() {
                       style={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: "4px",
+                        gap: "3px",
                         flex: 1,
                         minWidth: 0,
                       }}
@@ -2313,17 +1264,16 @@ export default function DashboardPage() {
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "8px",
+                          gap: "6px",
                           flexWrap: "wrap",
                         }}
                       >
                         <span
                           style={{
                             fontFamily: "monospace",
-                            fontSize: "0.75rem",
+                            fontSize: "0.725rem",
                             fontWeight: 700,
                             color: "#38bdf8",
-                            letterSpacing: "0.02em",
                           }}
                         >
                           {report.referenceNo}
@@ -2335,7 +1285,7 @@ export default function DashboardPage() {
                       <strong
                         className="dash-report-title"
                         style={{
-                          fontSize: "0.925rem",
+                          fontSize: "0.9rem",
                           fontWeight: 700,
                           color: "#f8fafc",
                           whiteSpace: "nowrap",
@@ -2351,8 +1301,8 @@ export default function DashboardPage() {
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "12px",
-                          fontSize: "0.75rem",
+                          gap: "10px",
+                          fontSize: "0.725rem",
                           color: "#94a3b8",
                           flexWrap: "wrap",
                         }}
@@ -2361,10 +1311,10 @@ export default function DashboardPage() {
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "4px",
+                            gap: "3px",
                           }}
                         >
-                          <MapPin size={12} color="#64748b" />
+                          <MapPin size={11} color="#64748b" />
                           <span>{report.address.split(",")[0]}</span>
                         </span>
                         <span>•</span>
@@ -2372,16 +1322,16 @@ export default function DashboardPage() {
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "4px",
+                            gap: "3px",
                           }}
                         >
-                          <Clock size={12} color="#64748b" />
+                          <Clock size={11} color="#64748b" />
                           <span>{formattedDate}</span>
                         </span>
                       </div>
                     </div>
 
-                    <ChevronRight size={18} color="#64748b" />
+                    <ChevronRight size={16} color="#64748b" style={{ flexShrink: 0 }} />
                   </NextLink>
                 );
               })}
@@ -2389,8 +1339,11 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* Bottom Civic Security & Compliance Seal */}
+        {/* ===============================================================
+            7. DESKTOP BOTTOM COMPLIANCE SEAL (Hidden on Mobile)
+           =============================================================== */}
         <footer
+          className="dash-bottom-seal dash-desktop-only"
           style={{
             display: "flex",
             alignItems: "center",
