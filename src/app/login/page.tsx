@@ -22,7 +22,27 @@ import {
   Activity,
   Bell,
   Check,
+  PhoneCall,
 } from "lucide-react";
+
+function PhilippineFlagIcon() {
+  return (
+    <svg
+      width="20"
+      height="14"
+      viewBox="0 0 20 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ borderRadius: "2px", flexShrink: 0, boxShadow: "0 0 1px rgba(0,0,0,0.3)" }}
+      aria-label="Philippine flag"
+    >
+      <rect width="20" height="7" fill="#0038A8" />
+      <rect y="7" width="20" height="7" fill="#CE1126" />
+      <polygon points="0,0 11.5,7 0,14" fill="#FFFFFF" />
+      <circle cx="3.8" cy="7" r="1.7" fill="#FCD116" />
+    </svg>
+  );
+}
 
 export default function LoginPage() {
   const { login, user, logout } = useAuth();
@@ -32,6 +52,7 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [identifierError, setIdentifierError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -41,9 +62,13 @@ export default function LoginPage() {
   // Focus states
   const [isIdentifierFocused, setIsIdentifierFocused] = useState(false);
   const [isPassFocused, setIsPassFocused] = useState(false);
+  const [isMobileIdentifierFocused, setIsMobileIdentifierFocused] = useState(false);
+  const [isMobilePassFocused, setIsMobilePassFocused] = useState(false);
 
   const identifierInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
+  const mobileIdentifierInputRef = useRef<HTMLInputElement>(null);
+  const mobilePasswordInputRef = useRef<HTMLInputElement>(null);
 
   const navigateToDashboard = (roleName?: string) => {
     if (typeof window === "undefined") return;
@@ -174,7 +199,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-portal-shell" id="login-viewport">
+    <>
+      {/* =====================================================================
+          DESKTOP CIVIC PORTAL LAYOUT (VIEWPORT > 768px)
+          ===================================================================== */}
+      <div className="login-portal-shell login-desktop-only" id="login-viewport">
       {/* Background ambient lighting */}
       <div className="login-portal-glow" aria-hidden="true" />
 
@@ -410,7 +439,7 @@ export default function LoginPage() {
                 }`}
               >
                 <div className="login-portal-prefix" title="Philippine Country Code (+63)">
-                  <span style={{ fontSize: "0.95rem" }}>🇵🇭</span>
+                  <PhilippineFlagIcon />
                   <span style={{ color: "#38bdf8", fontWeight: 700 }}>+63</span>
                 </div>
 
@@ -607,5 +636,388 @@ export default function LoginPage() {
         </section>
       </main>
     </div>
-  );
+
+    {/* =====================================================================
+        DEDICATED MOBILE CIVIC INTERFACE (VIEWPORT <= 768px, MATCHING IMAGE)
+        ===================================================================== */}
+    <div className="login-mobile-screen login-mobile-only" id="login-mobile-viewport">
+      {/* 1. Header with Masbate City Seal & Hotline */}
+      <header className="login-mobile-header">
+        <NextLink href="/" className="login-mobile-header-brand" title="BantayBarangay Home">
+          <img
+            src="/logo.png"
+            alt="BantayBarangay Emblem"
+            width={36}
+            height={36}
+            className="login-mobile-header-logo"
+          />
+          <div className="login-mobile-header-text">
+            <span className="login-mobile-header-title">BantayBarangay</span>
+            <span className="login-mobile-header-sub">MASBATE CITY CIVIC NETWORK</span>
+          </div>
+        </NextLink>
+
+        <a
+          href="tel:0286431111"
+          className="login-mobile-header-hotline"
+          title="Emergency Hotline"
+        >
+          <PhoneCall size={12} style={{ color: "#e879f9" }} />
+          <span>Hotline</span>
+        </a>
+      </header>
+
+      {/* 2. Mobile Body Area */}
+      <main className="login-mobile-body">
+        {/* Resident Access Tag */}
+        <div className="login-mobile-tag">
+          <span className="login-mobile-tag-bar" aria-hidden="true" />
+          <span className="login-mobile-tag-text">RESIDENT ACCESS</span>
+        </div>
+
+        {/* Hero Title */}
+        <h1 className="login-mobile-title">
+          Welcome back to<br />your barangay.
+        </h1>
+
+        {/* Hero Description */}
+        <p className="login-mobile-desc">
+          Sign in to report concerns, follow requests, and receive local safety updates.
+        </p>
+
+        {/* Active Session Notification */}
+        {user && (
+          <div
+            style={{
+              background: "rgba(56, 189, 248, 0.08)",
+              border: "1px solid rgba(56, 189, 248, 0.3)",
+              borderRadius: "14px",
+              padding: "12px 14px",
+              marginBottom: "16px",
+            }}
+          >
+            <div style={{ fontSize: "0.8rem", color: "#334155", marginBottom: "8px" }}>
+              Currently signed in as <strong style={{ color: "#0284c7" }}>{user.name}</strong> ({user.role})
+            </div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => navigateToDashboard(user.role)}
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  height: "36px",
+                  background: "linear-gradient(135deg, #0284c7, #0ea5e9)",
+                  color: "#ffffff",
+                  borderRadius: "8px",
+                  fontSize: "0.775rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  border: "none",
+                }}
+              >
+                <span>Go to Dashboard</span>
+                <ArrowRight size={13} />
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await logout();
+                  router.refresh();
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "5px",
+                  height: "36px",
+                  padding: "0 12px",
+                  background: "#ffffff",
+                  border: "1px solid #cbd5e1",
+                  color: "#334155",
+                  borderRadius: "8px",
+                  fontSize: "0.775rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                <LogOut size={13} />
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Offline Alert */}
+        {isOffline && (
+          <div
+            role="alert"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 14px",
+              borderRadius: "12px",
+              fontSize: "0.8rem",
+              marginBottom: "16px",
+              backgroundColor: "#fef3c7",
+              border: "1px solid #fde68a",
+              color: "#b45309",
+            }}
+          >
+            <WifiOff size={16} style={{ flexShrink: 0 }} />
+            <span>You are currently offline. Please check your connection.</span>
+          </div>
+        )}
+
+        {/* Error Alert */}
+        {error && (
+          <div
+            role="alert"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 14px",
+              borderRadius: "12px",
+              fontSize: "0.8rem",
+              marginBottom: "16px",
+              backgroundColor: "#fef2f2",
+              border: "1px solid #fecaca",
+              color: "#b91c1c",
+            }}
+          >
+            <AlertCircle size={16} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* 3. White Civic Login Card */}
+        <section className="login-mobile-card" aria-label="Sign In Form">
+          {/* Card Left Accent Bar */}
+          <div className="login-mobile-card-tab" aria-hidden="true" />
+
+          <form onSubmit={handleSubmit} noValidate className="login-mobile-form">
+            {/* Field: Mobile number */}
+            <div className="login-mobile-field">
+              <label htmlFor="mobile-identifier" className="login-mobile-label">
+                Mobile number
+              </label>
+
+              <div
+                className={`login-mobile-input-box ${isMobileIdentifierFocused ? "focus" : ""} ${
+                  identifierError ? "error" : ""
+                }`}
+              >
+                <div className="login-mobile-phone-prefix" title="Philippine Country Code (+63)">
+                  <PhilippineFlagIcon />
+                  <span>+63</span>
+                </div>
+
+                <input
+                  ref={mobileIdentifierInputRef}
+                  id="mobile-identifier"
+                  name="identifier"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="username"
+                  className="login-mobile-input"
+                  placeholder="9XX XXX XXXX"
+                  value={identifier}
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    if (identifierError) setIdentifierError(null);
+                    if (error) setError(null);
+                    if (status === "error") setStatus("idle");
+                  }}
+                  onFocus={() => setIsMobileIdentifierFocused(true)}
+                  onBlur={() => setIsMobileIdentifierFocused(false)}
+                  disabled={status === "loading" || status === "success"}
+                  aria-required="true"
+                  aria-invalid={!!identifierError}
+                />
+              </div>
+
+              {identifierError && (
+                <p
+                  role="alert"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    color: "#dc2626",
+                    fontSize: "0.74rem",
+                    fontWeight: 600,
+                    margin: "4px 0 0 0",
+                  }}
+                >
+                  <AlertCircle size={12} />
+                  <span>{identifierError}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Field: Password */}
+            <div className="login-mobile-field">
+              <div className="login-mobile-pass-head">
+                <label htmlFor="mobile-password" className="login-mobile-label" style={{ margin: 0 }}>
+                  Password
+                </label>
+                <NextLink href="/forgot-password" className="login-mobile-forgot">
+                  Forgot password?
+                </NextLink>
+              </div>
+
+              <div
+                className={`login-mobile-input-box ${isMobilePassFocused ? "focus" : ""} ${
+                  passwordError ? "error" : ""
+                }`}
+              >
+                <div className="login-mobile-lock-icon">
+                  <Lock size={16} />
+                </div>
+
+                <input
+                  ref={mobilePasswordInputRef}
+                  id="mobile-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  className="login-mobile-input"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (passwordError) setPasswordError(null);
+                    if (error) setError(null);
+                    if (status === "error") setStatus("idle");
+                  }}
+                  onFocus={() => setIsMobilePassFocused(true)}
+                  onBlur={() => setIsMobilePassFocused(false)}
+                  disabled={status === "loading" || status === "success"}
+                  aria-required="true"
+                  aria-invalid={!!passwordError}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={status === "loading" || status === "success"}
+                  className="login-mobile-eye-btn"
+                >
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+              </div>
+
+              {passwordError && (
+                <p
+                  role="alert"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    color: "#dc2626",
+                    fontSize: "0.74rem",
+                    fontWeight: 600,
+                    margin: "4px 0 0 0",
+                  }}
+                >
+                  <AlertCircle size={12} />
+                  <span>{passwordError}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Options Row: Remember this device & Encrypted */}
+            <div className="login-mobile-options">
+              <button
+                type="button"
+                onClick={() => setRememberMe(!rememberMe)}
+                className="login-mobile-remember-btn"
+                aria-pressed={rememberMe}
+              >
+                <div className={`login-mobile-checkbox ${rememberMe ? "checked" : "unchecked"}`}>
+                  {rememberMe && <Check size={12} color="#ffffff" strokeWidth={3} />}
+                </div>
+                <span className="login-mobile-remember-label">Remember this device</span>
+              </button>
+
+              <div className="login-mobile-encrypted">
+                <Shield size={14} color="#0d9488" />
+                <span>Encrypted</span>
+              </div>
+            </div>
+
+            {/* Primary Submit Button */}
+            <button
+              type="submit"
+              disabled={status === "loading" || status === "success"}
+              className="login-mobile-submit"
+            >
+              {status === "loading" && (
+                <>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Loader2 size={16} className="spin" />
+                    <span>Signing in securely...</span>
+                  </span>
+                  <div className="login-mobile-submit-arrow">
+                    <ArrowRight size={14} color="#ffffff" strokeWidth={2.5} />
+                  </div>
+                </>
+              )}
+
+              {status === "success" && (
+                <>
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <CheckCircle2 size={16} />
+                    <span>Redirecting...</span>
+                  </span>
+                  <div className="login-mobile-submit-arrow">
+                    <ArrowRight size={14} color="#ffffff" strokeWidth={2.5} />
+                  </div>
+                </>
+              )}
+
+              {status !== "loading" && status !== "success" && (
+                <>
+                  <span>Sign in securely</span>
+                  <div className="login-mobile-submit-arrow">
+                    <ArrowRight size={14} color="#ffffff" strokeWidth={2.5} />
+                  </div>
+                </>
+              )}
+            </button>
+
+            {/* Create Resident Account */}
+            <div className="login-mobile-register">
+              <span>New to BantayBarangay?</span>
+              <NextLink href="/register" className="login-mobile-register-link">
+                Create resident account
+              </NextLink>
+            </div>
+          </form>
+        </section>
+
+        {/* 4. Callout Notification Box */}
+        <div className="login-mobile-callout" role="note">
+          <AlertCircle size={18} className="login-mobile-callout-icon" />
+          <p className="login-mobile-callout-text" style={{ margin: 0 }}>
+            Your account connects you with verified services from Masbate City and your local barangay.
+          </p>
+        </div>
+
+        {/* 5. Footer */}
+        <footer className="login-mobile-footer">
+          <span>Official civic platform</span>
+          <span>•</span>
+          <span>Privacy protected</span>
+        </footer>
+      </main>
+    </div>
+  </>
+);
 }

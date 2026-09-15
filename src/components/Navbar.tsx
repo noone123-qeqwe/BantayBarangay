@@ -60,6 +60,7 @@ export default function Navbar() {
 
   return (
     <header
+      className={`site-header ${isAuthPage ? "login-header" : ""}`}
       style={{
         position: "sticky",
         top: 0,
