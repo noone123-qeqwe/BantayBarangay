@@ -25,12 +25,10 @@ import {
   ShieldCheck,
   Shield,
   Building2,
-  AlertCircle,
   Camera,
   User,
   Wrench,
   Crown,
-  Radio,
   BarChart3,
   Server,
   Settings,
@@ -40,7 +38,6 @@ import {
   Check,
   Cpu,
   Globe,
-  ExternalLink,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -111,7 +108,7 @@ export default function DashboardPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#080c15",
+          backgroundColor: "#080d1a",
         }}
       >
         <div
@@ -165,61 +162,239 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="dashboard-root">
-      {/* Ambient Lighting Spheres */}
-      <div className="ambient-glow glow-emerald" aria-hidden="true" />
-      <div className="ambient-glow glow-blue" aria-hidden="true" />
+    <div
+      className="dash-page-canvas"
+      style={{
+        width: "100%",
+        minHeight: "calc(100vh - var(--header-height, 60px))",
+        backgroundColor: "#080d1a",
+        color: "#f8fafc",
+        padding: "24px 20px 48px 20px",
+        position: "relative",
+        overflowX: "hidden",
+      }}
+    >
+      {/* Subtle Ambient Radial Glow */}
+      <div
+        className="dash-ambient-glow"
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "30%",
+          width: "800px",
+          height: "500px",
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(2, 132, 199, 0.12) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 75%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
 
-      <div className="dashboard-container">
-        
+      <div
+        className="dash-container"
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          width: "100%",
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "24px",
+        }}
+      >
         {/* ===============================================================
-            ROLE-BASED HEADER SECTION
+            HEADER CARD: Greeting, Role Badge & Primary CTAs
            =============================================================== */}
-        <header className="dashboard-header-block">
-          <div className="header-meta-row">
+        <header
+          className="dash-header-card"
+          style={{
+            width: "100%",
+            backgroundColor: "rgba(15, 23, 42, 0.94)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1.5px solid rgba(56, 189, 248, 0.18)",
+            borderRadius: "20px",
+            padding: "24px 28px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            boxShadow:
+              "0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.12)",
+          }}
+        >
+          <div
+            className="dash-header-meta"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "10px",
+            }}
+          >
             {/* Role Badge */}
-            {isResident && (
-              <div className="role-pill pill-resident">
-                <Shield size={12} />
-                <span>verified resident</span>
-              </div>
-            )}
-            {isStaff && (
-              <div className="role-pill pill-staff">
-                <Wrench size={12} />
-                <span>barangay operations staff</span>
-              </div>
-            )}
-            {isAdmin && (
-              <div className="role-pill pill-admin">
-                <Building2 size={12} />
-                <span>barangay administrator</span>
-              </div>
-            )}
-            {isSuperAdmin && (
-              <div className="role-pill pill-super">
-                <Crown size={12} />
-                <span>super administrator · platform authority</span>
-              </div>
-            )}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {isResident && (
+                <div
+                  className="dash-role-badge"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "4px 11px",
+                    borderRadius: "9999px",
+                    fontSize: "0.725rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    background: "rgba(56, 189, 248, 0.1)",
+                    border: "1px solid rgba(56, 189, 248, 0.25)",
+                    color: "#38bdf8",
+                  }}
+                >
+                  <Shield size={13} />
+                  <span>Verified Resident</span>
+                </div>
+              )}
+              {isStaff && (
+                <div
+                  className="dash-role-badge dash-role-staff"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "4px 11px",
+                    borderRadius: "9999px",
+                    fontSize: "0.725rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    background: "rgba(16, 185, 129, 0.1)",
+                    border: "1px solid rgba(16, 185, 129, 0.25)",
+                    color: "#34d399",
+                  }}
+                >
+                  <Wrench size={13} />
+                  <span>Operations Staff</span>
+                </div>
+              )}
+              {isAdmin && (
+                <div
+                  className="dash-role-badge dash-role-admin"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "4px 11px",
+                    borderRadius: "9999px",
+                    fontSize: "0.725rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    background: "rgba(129, 140, 248, 0.1)",
+                    border: "1px solid rgba(129, 140, 248, 0.25)",
+                    color: "#818cf8",
+                  }}
+                >
+                  <Building2 size={13} />
+                  <span>Barangay Administrator</span>
+                </div>
+              )}
+              {isSuperAdmin && (
+                <div
+                  className="dash-role-badge dash-role-super"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "4px 11px",
+                    borderRadius: "9999px",
+                    fontSize: "0.725rem",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    background: "rgba(251, 191, 36, 0.1)",
+                    border: "1px solid rgba(251, 191, 36, 0.25)",
+                    color: "#fbbf24",
+                  }}
+                >
+                  <Crown size={13} />
+                  <span>Super Administrator</span>
+                </div>
+              )}
+            </div>
 
-            {/* Live Operational Status Indicator */}
-            <div className="status-live-indicator">
-              <span className="pulse-dot" />
+            {/* Live Operational Dot */}
+            <div
+              className="dash-live-status"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "0.75rem",
+                color: "#94a3b8",
+                fontWeight: 600,
+              }}
+            >
+              <span
+                className="dash-live-dot"
+                style={{
+                  width: "7px",
+                  height: "7px",
+                  borderRadius: "50%",
+                  backgroundColor: "#34d399",
+                  boxShadow: "0 0 8px #34d399",
+                }}
+              />
               <span>System Operational · 100% Online</span>
             </div>
           </div>
 
-          <div className="header-greeting-row">
+          <div
+            className="dash-header-main"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "16px",
+            }}
+          >
             <div>
-              <h1 className="greeting-heading">
+              <h1
+                className="dash-greeting-title"
+                style={{
+                  fontSize: "1.65rem",
+                  fontWeight: 800,
+                  color: "#f8fafc",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.2,
+                  margin: "0 0 4px 0",
+                }}
+              >
                 {getGreeting()},{" "}
-                <span className="greeting-name-highlight">
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #38bdf8 0%, #34d399 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
                   {user.name.split(" ")[0]}
                 </span>
                 !
               </h1>
-              <p className="greeting-subtext">
+              <p
+                className="dash-greeting-sub"
+                style={{
+                  fontSize: "0.875rem",
+                  color: "#94a3b8",
+                  lineHeight: 1.4,
+                  margin: 0,
+                }}
+              >
                 {isResident &&
                   "Report community issues, track emergency fixes, and verify completed resolutions."}
                 {isStaff &&
@@ -231,21 +406,71 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick Primary Header Actions */}
-            <div className="header-actions-group">
+            {/* Quick Action Buttons */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               {isResident ? (
-                <NextLink href="/reports/new" className="emerald-action-btn resident-header-btn">
+                <NextLink
+                  href="/reports/new"
+                  className="dash-action-btn-primary"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "10px 20px",
+                    borderRadius: "12px",
+                    background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
+                    color: "#ffffff",
+                    fontSize: "0.885rem",
+                    fontWeight: 700,
+                    textDecoration: "none",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    boxShadow: "0 4px 16px rgba(2, 132, 199, 0.35)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   <PlusCircle size={18} />
                   <span>+ Report Issue</span>
                 </NextLink>
               ) : (
-                <div className="staff-header-actions">
-                  <NextLink href="/reports/new" className="emerald-action-btn">
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <NextLink
+                    href="/reports/new"
+                    className="dash-action-btn-primary"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "10px 18px",
+                      borderRadius: "12px",
+                      background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
+                      color: "#ffffff",
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      textDecoration: "none",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                    }}
+                  >
                     <PlusCircle size={17} />
                     <span>Log Incident</span>
                   </NextLink>
                   {(isAdmin || isSuperAdmin) && (
-                    <NextLink href="/admin" className="outline-action-btn">
+                    <NextLink
+                      href="/admin"
+                      className="dash-action-btn-outline"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        padding: "10px 16px",
+                        borderRadius: "12px",
+                        background: "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(255, 255, 255, 0.12)",
+                        color: "#cbd5e1",
+                        fontSize: "0.885rem",
+                        fontWeight: 600,
+                        textDecoration: "none",
+                      }}
+                    >
                       <Settings size={16} />
                       <span>Admin Console</span>
                     </NextLink>
@@ -260,20 +485,56 @@ export default function DashboardPage() {
             MUNICIPAL ANNOUNCEMENTS BANNER (IF ACTIVE)
            =============================================================== */}
         {announcements.length > 0 && (
-          <section className="announcements-section" aria-label="Official Announcements">
+          <section aria-label="Official Announcements">
             {announcements.slice(0, 1).map((ann) => (
               <div
                 key={ann.id}
-                className={`announcement-banner ${
-                  ann.priority === "URGENT" ? "ann-urgent" : "ann-standard"
+                className={`dash-announcement ${
+                  ann.priority === "URGENT" ? "dash-announcement-urgent" : ""
                 }`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  padding: "14px 20px",
+                  borderRadius: "14px",
+                  backgroundColor:
+                    ann.priority === "URGENT"
+                      ? "rgba(239, 68, 68, 0.1)"
+                      : "rgba(56, 189, 248, 0.08)",
+                  border:
+                    ann.priority === "URGENT"
+                      ? "1px solid rgba(239, 68, 68, 0.3)"
+                      : "1px solid rgba(56, 189, 248, 0.25)",
+                  color: ann.priority === "URGENT" ? "#fca5a5" : "#e2e8f0",
+                  fontSize: "0.875rem",
+                }}
               >
-                <div className="ann-icon-wrap">
-                  <Megaphone size={18} />
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "10px",
+                    background:
+                      ann.priority === "URGENT"
+                        ? "rgba(239, 68, 68, 0.2)"
+                        : "rgba(56, 189, 248, 0.18)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Megaphone
+                    size={18}
+                    color={ann.priority === "URGENT" ? "#ef4444" : "#38bdf8"}
+                  />
                 </div>
-                <div className="ann-text-wrap">
-                  <strong className="ann-title">{ann.title}</strong>
-                  <span className="ann-body">{ann.content}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <strong style={{ color: "#f8fafc", fontWeight: 700 }}>
+                    {ann.title}
+                  </strong>
+                  <span style={{ color: "#cbd5e1" }}>{ann.content}</span>
                 </div>
               </div>
             ))}
@@ -281,523 +542,1846 @@ export default function DashboardPage() {
         )}
 
         {/* ===============================================================
-            1. RESIDENT ROLE DASHBOARD VIEW
+            RESIDENT VIEW: Hero CTA + KPI Metrics + Quick Access
            =============================================================== */}
         {isResident && (
-          <div className="role-view-resident">
-            {/* DOMINANT HERO CTA: Report an Issue */}
-            <NextLink href="/reports/new" className="resident-report-hero-card shimmer-effect">
-              <div className="hero-left-content">
-                <div className="hero-icon-container">
-                  <PlusCircle size={28} strokeWidth={2.5} />
+          <>
+            {/* Clean Hero Report CTA */}
+            <NextLink
+              href="/reports/new"
+              className="dash-hero-report"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "22px 28px",
+                borderRadius: "20px",
+                background:
+                  "linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%)",
+                border: "1.5px solid rgba(56, 189, 248, 0.28)",
+                boxShadow: "0 16px 40px -10px rgba(0, 0, 0, 0.6)",
+                textDecoration: "none",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
+                <div
+                  className="dash-hero-icon"
+                  style={{
+                    width: "52px",
+                    height: "52px",
+                    borderRadius: "14px",
+                    background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
+                    color: "#ffffff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
+                    flexShrink: 0,
+                  }}
+                >
+                  <PlusCircle size={28} strokeWidth={2.4} />
                 </div>
                 <div>
-                  <div className="hero-badge">
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "5px",
+                      fontSize: "0.725rem",
+                      fontWeight: 700,
+                      color: "#34d399",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.04em",
+                      marginBottom: "4px",
+                    }}
+                  >
                     <Sparkles size={12} />
                     <span>Smart GPS & Photo Verification</span>
                   </div>
-                  <h2 className="hero-title">📍 Report a Community Issue</h2>
-                  <p className="hero-desc">
+                  <h2
+                    style={{
+                      fontSize: "1.2rem",
+                      fontWeight: 800,
+                      color: "#f8fafc",
+                      margin: "0 0 2px 0",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
+                    Report a Community Issue
+                  </h2>
+                  <p
+                    style={{
+                      fontSize: "0.84rem",
+                      color: "#94a3b8",
+                      margin: 0,
+                    }}
+                  >
                     Potholes, broken streetlights, electrical hazards, or clogged canals.
                   </p>
                 </div>
               </div>
-              <div className="hero-arrow-btn">
-                <ChevronRight size={22} />
+              <div
+                className="dash-hero-arrow"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  color: "#f8fafc",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <ChevronRight size={20} />
               </div>
             </NextLink>
 
-            {/* QUICK ACCESS NAVIGATION CARDS */}
-            <div className="quick-access-section">
-              <h3 className="section-title">Quick Access</h3>
-              <div className="quick-access-grid">
-                <NextLink href="/reports" className="dark-nav-card">
-                  <div className="nav-card-icon icon-blue">
-                    <FileText size={20} />
+            {/* 4-Column KPI Counters */}
+            <div
+              className="dash-kpi-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "16px",
+              }}
+            >
+              {/* Total Filed */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  className="dash-kpi-header"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    className="dash-kpi-label"
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#94a3b8",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    Total Filed
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(56, 189, 248, 0.1)",
+                      color: "#38bdf8",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Layers size={16} />
                   </div>
-                  <strong className="nav-card-title">My Reports</strong>
-                  <span className="nav-card-subtitle">{totalCount} filed cases</span>
-                </NextLink>
+                </div>
+                <div
+                  className="dash-kpi-val"
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#f8fafc",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {totalCount}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  All logged reports
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#38bdf8",
+                  }}
+                />
+              </div>
 
-                <NextLink href="/map" className="dark-nav-card">
-                  <div className="nav-card-icon icon-emerald">
-                    <MapPin size={20} />
+              {/* Pending Review */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  className="dash-kpi-header"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    className="dash-kpi-label"
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#f59e0b",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    Pending Review
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(245, 158, 11, 0.1)",
+                      color: "#f59e0b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Clock size={16} />
                   </div>
-                  <strong className="nav-card-title">Community Map</strong>
-                  <span className="nav-card-subtitle">Live Pinpoint GPS</span>
-                </NextLink>
+                </div>
+                <div
+                  className="dash-kpi-val"
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#f59e0b",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {pendingCount}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  Awaiting review
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#f59e0b",
+                  }}
+                />
+              </div>
 
-                <NextLink href="/notifications" className="dark-nav-card">
-                  <div className="nav-card-icon icon-amber">
-                    <Bell size={20} />
+              {/* In Progress */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  className="dash-kpi-header"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    className="dash-kpi-label"
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#c084fc",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    In Progress
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(192, 132, 252, 0.1)",
+                      color: "#c084fc",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Activity size={16} />
                   </div>
-                  <strong className="nav-card-title">Official Alerts</strong>
-                  <span className="nav-card-subtitle">Barangay Updates</span>
-                </NextLink>
+                </div>
+                <div
+                  className="dash-kpi-val"
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#c084fc",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {inProgressCount}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  Field work active
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#c084fc",
+                  }}
+                />
+              </div>
 
-                <NextLink href="/profile" className="dark-nav-card">
-                  <div className="nav-card-icon icon-purple">
-                    <User size={20} />
+              {/* Verified & Resolved */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  className="dash-kpi-header"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    className="dash-kpi-label"
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#34d399",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    Resolved
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(52, 211, 153, 0.1)",
+                      color: "#34d399",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CheckCircle2 size={16} />
                   </div>
-                  <strong className="nav-card-title">Citizen Profile</strong>
-                  <span className="nav-card-subtitle">Account Settings</span>
-                </NextLink>
+                </div>
+                <div
+                  className="dash-kpi-val"
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#34d399",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {resolvedCount}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  Fixed & confirmed
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#34d399",
+                  }}
+                />
               </div>
             </div>
 
-            {/* CIVIC CASE STATUS COUNTERS */}
-            <div className="kpi-metrics-section">
-              <h3 className="section-title">Report Overview</h3>
-              <div className="kpi-grid">
-                <div className="kpi-card border-blue">
-                  <div className="kpi-header">
-                    <span className="kpi-label">Total Filed</span>
-                    <Layers size={16} className="kpi-icon icon-blue" />
-                  </div>
-                  <div className="kpi-number">{totalCount}</div>
-                  <div className="kpi-caption">All logged reports</div>
-                </div>
-
-                <div className="kpi-card border-amber">
-                  <div className="kpi-header">
-                    <span className="kpi-label">Pending Review</span>
-                    <Clock size={16} className="kpi-icon icon-amber" />
-                  </div>
-                  <div className="kpi-number text-amber">{pendingCount}</div>
-                  <div className="kpi-caption">Awaiting review</div>
-                </div>
-
-                <div className="kpi-card border-purple">
-                  <div className="kpi-header">
-                    <span className="kpi-label">In Progress</span>
-                    <Activity size={16} className="kpi-icon icon-purple" />
-                  </div>
-                  <div className="kpi-number text-purple">{inProgressCount}</div>
-                  <div className="kpi-caption">Field work active</div>
-                </div>
-
-                <div className="kpi-card border-emerald">
-                  <div className="kpi-header">
-                    <span className="kpi-label">Verified & Resolved</span>
-                    <CheckCircle2 size={16} className="kpi-icon icon-emerald" />
-                  </div>
-                  <div className="kpi-number text-emerald">{resolvedCount}</div>
-                  <div className="kpi-caption">Fixed & confirmed</div>
-                </div>
-              </div>
-            </div>
-
-            {/* LIVE MUNICIPAL DISPATCH CARD */}
-            <div className="dispatch-live-widget">
-              <div className="dispatch-top-row">
-                <div className="dispatch-tag">
-                  <Radio size={13} className="radio-icon" />
-                  <span>live municipal dispatch feed</span>
-                </div>
-                <div className="dispatch-resolved-pill">
-                  <Check size={12} strokeWidth={3} />
-                  <span>resolved</span>
-                </div>
-              </div>
-              <h4 className="dispatch-ticket-title">Streetlight Cable Hazard Repaired</h4>
-              <p className="dispatch-ticket-meta">
-                Barangay Engineering & Electrical Safety Team · Verified resolution
-              </p>
-              <div className="dispatch-divider" />
-              <div className="dispatch-resident-loop">
-                <CheckCircle2 size={14} className="verified-check" />
-                <span>Confirmed & Verified by Resident with photo proof</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ===============================================================
-            2. STAFF ROLE DASHBOARD VIEW
-           =============================================================== */}
-        {isStaff && (
-          <div className="role-view-staff">
-            {/* INCIDENT CONTROL TRIAGE KPIS */}
-            <div className="kpi-metrics-section">
-              <div className="section-header-bar">
-                <h3 className="section-title">Operational Incident Control</h3>
-                <span className="section-badge-pill">Active Shift Triage</span>
-              </div>
-
-              <div className="kpi-grid">
-                {/* Needs Attention */}
-                <div className="kpi-card border-amber">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-amber">Needs Attention</span>
-                    <AlertTriangle size={16} className="text-amber" />
-                  </div>
-                  <div className="kpi-number text-amber">{staffNeedsAttention.length}</div>
-                  <div className="kpi-caption">Action or verification required</div>
-                </div>
-
-                {/* Critical Issues */}
-                <div className="kpi-card border-crimson">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-crimson">Critical Threats</span>
-                    <Flame size={16} className="text-crimson" />
-                  </div>
-                  <div className="kpi-number text-crimson">{staffCritical.length}</div>
-                  <div className="kpi-caption">High-risk hazards requiring dispatch</div>
-                </div>
-
-                {/* New Reports */}
-                <div className="kpi-card border-blue">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-blue">New Submissions</span>
-                    <FileText size={16} className="text-blue" />
-                  </div>
-                  <div className="kpi-number text-blue">{staffNewReports.length}</div>
-                  <div className="kpi-caption">Pending triage review</div>
-                </div>
-
-                {/* Overdue SLA */}
-                <div className="kpi-card border-rose">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-rose">Overdue SLA</span>
-                    <Clock size={16} className="text-rose" />
-                  </div>
-                  <div className="kpi-number text-rose">{staffOverdue.length}</div>
-                  <div className="kpi-caption">Exceeded targeted response deadline</div>
-                </div>
-              </div>
-            </div>
-
-            {/* QUICK OPERATIONAL TOOLS */}
-            <div className="staff-tools-row">
-              <NextLink href="/reports?status=UNDER_REVIEW" className="tool-quick-card">
-                <div className="tool-icon icon-amber">
-                  <Clock size={20} />
+            {/* Quick Access Navigation Grid */}
+            <div
+              className="dash-quick-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "14px",
+              }}
+            >
+              <NextLink
+                href="/reports"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(56, 189, 248, 0.1)",
+                    color: "#38bdf8",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <FileText size={20} />
                 </div>
                 <div>
-                  <strong className="tool-title">Review Pending Tickets</strong>
-                  <span className="tool-desc">{staffNeedsAttention.length} pending assessment</span>
+                  <div
+                    className="dash-quick-title"
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    My Reports
+                  </div>
+                  <div
+                    className="dash-quick-sub"
+                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
+                  >
+                    {totalCount} filed cases
+                  </div>
                 </div>
-                <ChevronRight size={18} className="tool-arrow" />
               </NextLink>
 
-              <NextLink href="/map" className="tool-quick-card">
-                <div className="tool-icon icon-emerald">
+              <NextLink
+                href="/map"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(52, 211, 153, 0.1)",
+                    color: "#34d399",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <strong className="tool-title">Field Inspection Map</strong>
-                  <span className="tool-desc">View live hazard pins & coordinates</span>
+                  <div
+                    className="dash-quick-title"
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    Community Map
+                  </div>
+                  <div
+                    className="dash-quick-sub"
+                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
+                  >
+                    Live Pinpoint GPS
+                  </div>
                 </div>
-                <ChevronRight size={18} className="tool-arrow" />
+              </NextLink>
+
+              <NextLink
+                href="/notifications"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(245, 158, 11, 0.1)",
+                    color: "#f59e0b",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Bell size={20} />
+                </div>
+                <div>
+                  <div
+                    className="dash-quick-title"
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    Official Alerts
+                  </div>
+                  <div
+                    className="dash-quick-sub"
+                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
+                  >
+                    Barangay Updates
+                  </div>
+                </div>
+              </NextLink>
+
+              <NextLink
+                href="/profile"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(192, 132, 252, 0.1)",
+                    color: "#c084fc",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <User size={20} />
+                </div>
+                <div>
+                  <div
+                    className="dash-quick-title"
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    Citizen Profile
+                  </div>
+                  <div
+                    className="dash-quick-sub"
+                    style={{ fontSize: "0.725rem", color: "#94a3b8" }}
+                  >
+                    Account Settings
+                  </div>
+                </div>
               </NextLink>
             </div>
-          </div>
+          </>
         )}
 
         {/* ===============================================================
-            3. ADMIN ROLE DASHBOARD VIEW
+            STAFF VIEW: Incident Control & Active Shift Triage
            =============================================================== */}
-        {isAdmin && (
-          <div className="role-view-admin">
-            {/* EXECUTIVE PERFORMANCE KPIS */}
-            <div className="kpi-metrics-section">
-              <div className="section-header-bar">
-                <h3 className="section-title">Municipal Performance & SLA Compliance</h3>
-                <span className="section-badge-pill">Executive Oversight</span>
+        {isStaff && (
+          <>
+            <div
+              className="dash-kpi-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "16px",
+              }}
+            >
+              {/* Needs Attention */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#f59e0b",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    Needs Attention
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(245, 158, 11, 0.1)",
+                      color: "#f59e0b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <AlertTriangle size={16} />
+                  </div>
+                </div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#f59e0b",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {staffNeedsAttention.length}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  Action or verification required
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#f59e0b",
+                  }}
+                />
               </div>
 
-              <div className="kpi-grid">
-                <div className="kpi-card border-blue">
-                  <div className="kpi-header">
-                    <span className="kpi-label">Total Reports</span>
-                    <BarChart3 size={16} className="text-blue" />
+              {/* Critical Threats */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#ef4444",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    Critical Threats
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(239, 68, 68, 0.1)",
+                      color: "#ef4444",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Flame size={16} />
                   </div>
-                  <div className="kpi-number">{analytics?.metrics?.totalReports || totalCount}</div>
-                  <div className="kpi-caption">Barangay total volume</div>
                 </div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#ef4444",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {staffCritical.length}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  High-risk hazards
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#ef4444",
+                  }}
+                />
+              </div>
 
-                <div className="kpi-card border-emerald">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-emerald">Resolution Rate</span>
-                    <CheckCircle2 size={16} className="text-emerald" />
+              {/* New Submissions */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#38bdf8",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    New Submissions
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(56, 189, 248, 0.1)",
+                      color: "#38bdf8",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <FileText size={16} />
                   </div>
-                  <div className="kpi-number text-emerald">
-                    {analytics?.metrics?.resolutionRate || 85}%
-                  </div>
-                  <div className="kpi-caption">Closed & verified fixes</div>
                 </div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#38bdf8",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {staffNewReports.length}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  Pending triage review
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#38bdf8",
+                  }}
+                />
+              </div>
 
-                <div className="kpi-card border-purple">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-purple">Average SLA Time</span>
-                    <Clock size={16} className="text-purple" />
+              {/* Overdue SLA */}
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#fb7185",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    Overdue SLA
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(251, 113, 133, 0.1)",
+                      color: "#fb7185",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Clock size={16} />
                   </div>
-                  <div className="kpi-number text-purple">
-                    {analytics?.metrics?.avgResolutionHours || "18.5"} hrs
-                  </div>
-                  <div className="kpi-caption">Submission to resolution</div>
                 </div>
-
-                <div className="kpi-card border-amber">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-amber">Active Hotspots</span>
-                    <Flame size={16} className="text-amber" />
-                  </div>
-                  <div className="kpi-number text-amber">
-                    {analytics?.hotspots?.length || 0}
-                  </div>
-                  <div className="kpi-caption">Clustered spatial hazards</div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#fb7185",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {staffOverdue.length}
                 </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  Exceeded response window
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#fb7185",
+                  }}
+                />
               </div>
             </div>
 
-            {/* ADMINISTRATIVE COMMAND HUB */}
-            <div className="admin-hub-grid">
-              <NextLink href="/admin" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-blue">
-                  <Building2 size={22} />
+            {/* Quick Operational Links */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "14px",
+              }}
+            >
+              <NextLink
+                href="/reports?status=UNDER_REVIEW"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  textDecoration: "none",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div
+                    className="dash-quick-icon"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "12px",
+                      background: "rgba(245, 158, 11, 0.1)",
+                      color: "#f59e0b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Clock size={20} />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "0.885rem",
+                        fontWeight: 700,
+                        color: "#f8fafc",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      Review Pending Tickets
+                    </div>
+                    <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
+                      {staffNeedsAttention.length} pending assessment
+                    </div>
+                  </div>
                 </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">Municipal Agencies</strong>
-                  <p className="hub-desc">Manage Engineering, Sanitation, Health, and Police teams.</p>
-                </div>
-                <ArrowRight size={18} className="hub-arrow" />
+                <ChevronRight size={18} color="#94a3b8" />
               </NextLink>
 
-              <NextLink href="/admin" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-emerald">
-                  <Users size={22} />
+              <NextLink
+                href="/map"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  textDecoration: "none",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div
+                    className="dash-quick-icon"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "12px",
+                      background: "rgba(52, 211, 153, 0.1)",
+                      color: "#34d399",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <MapPin size={20} />
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "0.885rem",
+                        fontWeight: 700,
+                        color: "#f8fafc",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      Field Inspection Map
+                    </div>
+                    <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
+                      View live hazard coordinates
+                    </div>
+                  </div>
                 </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">Staff & Role Directory</strong>
-                  <p className="hub-desc">Manage user permissions and operational access.</p>
-                </div>
-                <ArrowRight size={18} className="hub-arrow" />
-              </NextLink>
-
-              <NextLink href="/admin/analytics" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-purple">
-                  <BarChart3 size={22} />
-                </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">Detailed Analytics & SLA</strong>
-                  <p className="hub-desc">Review resolution trends, department response times, and ratings.</p>
-                </div>
-                <ArrowRight size={18} className="hub-arrow" />
-              </NextLink>
-
-              <NextLink href="/admin" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-amber">
-                  <ScrollText size={22} />
-                </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">System Audit Trail</strong>
-                  <p className="hub-desc">View verified audit logs and administrative actions.</p>
-                </div>
-                <ArrowRight size={18} className="hub-arrow" />
+                <ChevronRight size={18} color="#94a3b8" />
               </NextLink>
             </div>
-          </div>
+          </>
         )}
 
         {/* ===============================================================
-            4. SUPER ADMIN ROLE DASHBOARD VIEW
+            ADMIN & SUPER ADMIN VIEW: Executive Governance & RBAC
            =============================================================== */}
-        {isSuperAdmin && (
-          <div className="role-view-superadmin">
-            {/* PLATFORM INFRASTRUCTURE KPIS */}
-            <div className="kpi-metrics-section">
-              <div className="section-header-bar">
-                <h3 className="section-title">Platform Infrastructure & Technical Authority</h3>
-                <span className="section-badge-pill pill-super">Full System Authority</span>
+        {(isAdmin || isSuperAdmin) && (
+          <>
+            <div
+              className="dash-kpi-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "16px",
+              }}
+            >
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#38bdf8",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    {isSuperAdmin ? "Platform Health" : "Total Reports"}
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(56, 189, 248, 0.1)",
+                      color: "#38bdf8",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {isSuperAdmin ? <Server size={16} /> : <BarChart3 size={16} />}
+                  </div>
+                </div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#38bdf8",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {isSuperAdmin ? "100%" : analytics?.metrics?.totalReports || totalCount}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  {isSuperAdmin ? "All systems active" : "Barangay total volume"}
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#38bdf8",
+                  }}
+                />
               </div>
 
-              <div className="kpi-grid">
-                <div className="kpi-card border-emerald">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-emerald">Platform Health</span>
-                    <Server size={16} className="text-emerald" />
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#34d399",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    {isSuperAdmin ? "Civic Accounts" : "Resolution Rate"}
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(52, 211, 153, 0.1)",
+                      color: "#34d399",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {isSuperAdmin ? <Users size={16} /> : <CheckCircle2 size={16} />}
                   </div>
-                  <div className="kpi-number text-emerald">100%</div>
-                  <div className="kpi-caption">All microservices operational</div>
                 </div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#34d399",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {isSuperAdmin
+                    ? analytics?.metrics?.totalUsers || "1,420"
+                    : `${analytics?.metrics?.resolutionRate || 85}%`}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  {isSuperAdmin ? "Verified residents & staff" : "Closed & verified fixes"}
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#34d399",
+                  }}
+                />
+              </div>
 
-                <div className="kpi-card border-blue">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-blue">Total Civic Accounts</span>
-                    <Users size={16} className="text-blue" />
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#c084fc",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    {isSuperAdmin ? "Incident Intake" : "Avg SLA Time"}
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(192, 132, 252, 0.1)",
+                      color: "#c084fc",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {isSuperAdmin ? <Layers size={16} /> : <Clock size={16} />}
                   </div>
-                  <div className="kpi-number text-blue">
-                    {analytics?.metrics?.totalUsers || "1,420"}
-                  </div>
-                  <div className="kpi-caption">Verified residents & staff</div>
                 </div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#c084fc",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {isSuperAdmin
+                    ? analytics?.metrics?.totalReports || totalCount
+                    : `${analytics?.metrics?.avgResolutionHours || "18.5"}h`}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  {isSuperAdmin ? "Cross-municipal total" : "Submission to fix"}
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#c084fc",
+                  }}
+                />
+              </div>
 
-                <div className="kpi-card border-purple">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-purple">Platform Intake</span>
-                    <Layers size={16} className="text-purple" />
+              <div
+                className="dash-kpi-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.94)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.775rem",
+                      fontWeight: 700,
+                      color: "#f59e0b",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    {isSuperAdmin ? "AI Moderation" : "Active Hotspots"}
+                  </span>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "9px",
+                      background: "rgba(245, 158, 11, 0.1)",
+                      color: "#f59e0b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {isSuperAdmin ? <Cpu size={16} /> : <Flame size={16} />}
                   </div>
-                  <div className="kpi-number text-purple">
-                    {analytics?.metrics?.totalReports || totalCount}
-                  </div>
-                  <div className="kpi-caption">Cross-municipal incident total</div>
                 </div>
-
-                <div className="kpi-card border-amber">
-                  <div className="kpi-header">
-                    <span className="kpi-label text-amber">AI Moderation Engine</span>
-                    <Cpu size={16} className="text-amber" />
-                  </div>
-                  <div className="kpi-number text-amber">99.4%</div>
-                  <div className="kpi-caption">Triage accuracy & language audit</div>
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "#f59e0b",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {isSuperAdmin ? "99.4%" : analytics?.hotspots?.length || 0}
                 </div>
+                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                  {isSuperAdmin ? "Triage accuracy" : "Clustered hazards"}
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: "#f59e0b",
+                  }}
+                />
               </div>
             </div>
 
-            {/* SUPER ADMIN TECHNICAL CONTROLS */}
-            <div className="admin-hub-grid">
-              <NextLink href="/admin" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-purple">
-                  <ScrollText size={22} />
+            {/* Admin Command Hub */}
+            <div
+              className="dash-quick-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "14px",
+              }}
+            >
+              <NextLink
+                href="/admin"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(56, 189, 248, 0.1)",
+                    color: "#38bdf8",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Building2 size={20} />
                 </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">System Audit & Security Logs</strong>
-                  <p className="hub-desc">Tamper-proof audit trails of every database mutation and dispatch.</p>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    Municipal Agencies
+                  </div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
+                    Engineering & Health
+                  </div>
                 </div>
-                <ArrowRight size={18} className="hub-arrow" />
               </NextLink>
 
-              <NextLink href="/admin" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-blue">
-                  <Sliders size={22} />
+              <NextLink
+                href="/admin"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(52, 211, 153, 0.1)",
+                    color: "#34d399",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Users size={20} />
                 </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">Role-Based Access Control (RBAC)</strong>
-                  <p className="hub-desc">Configure granular permissions for Staff, Dispatchers, and Admins.</p>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    User Directory
+                  </div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
+                    Staff Permissions
+                  </div>
                 </div>
-                <ArrowRight size={18} className="hub-arrow" />
               </NextLink>
 
-              <NextLink href="/admin" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-emerald">
-                  <Globe size={22} />
+              <NextLink
+                href="/admin/analytics"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(192, 132, 252, 0.1)",
+                    color: "#c084fc",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <BarChart3 size={20} />
                 </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">Masbateño & Tagalog AI Engine</strong>
-                  <p className="hub-desc">Manage regional civic language glossaries and quality gates.</p>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    SLA Analytics
+                  </div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
+                    Response Times
+                  </div>
                 </div>
-                <ArrowRight size={18} className="hub-arrow" />
               </NextLink>
 
-              <NextLink href="/admin" className="admin-hub-card">
-                <div className="hub-icon-wrap icon-amber">
-                  <Server size={22} />
+              <NextLink
+                href="/admin"
+                className="dash-quick-card"
+                style={{
+                  backgroundColor: "rgba(15, 23, 42, 0.85)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.07)",
+                  borderRadius: "16px",
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  className="dash-quick-icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "rgba(245, 158, 11, 0.1)",
+                    color: "#f59e0b",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <ScrollText size={20} />
                 </div>
-                <div className="hub-text-wrap">
-                  <strong className="hub-title">Database & Backup Archives</strong>
-                  <p className="hub-desc">Live PostgreSQL storage stats and automated replication status.</p>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.885rem",
+                      fontWeight: 700,
+                      color: "#f8fafc",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    Audit Trail
+                  </div>
+                  <div style={{ fontSize: "0.725rem", color: "#94a3b8" }}>
+                    System Security Logs
+                  </div>
                 </div>
-                <ArrowRight size={18} className="hub-arrow" />
               </NextLink>
             </div>
-          </div>
+          </>
         )}
 
         {/* ===============================================================
             SHARED INCIDENTS & REPORTS FEED
            =============================================================== */}
-        <section className="reports-feed-section" aria-label="Incident Reports Feed">
-          <div className="section-header-bar">
+        <section
+          className="dash-feed-card"
+          style={{
+            backgroundColor: "rgba(15, 23, 42, 0.94)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1.5px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "20px",
+            boxShadow: "0 20px 50px -10px rgba(0, 0, 0, 0.7)",
+            padding: "24px 28px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+          aria-label="Incident Reports Feed"
+        >
+          <div
+            className="dash-feed-header"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
+              paddingBottom: "14px",
+            }}
+          >
             <div>
-              <h3 className="section-title">
+              <h3
+                className="dash-feed-title"
+                style={{
+                  fontSize: "1.15rem",
+                  fontWeight: 800,
+                  color: "#f8fafc",
+                  letterSpacing: "-0.02em",
+                  margin: "0 0 2px 0",
+                }}
+              >
                 {isResident ? "My Recent Reports" : "Active Incident Queue"}
               </h3>
-              <p className="section-subtitle">
+              <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: 0 }}>
                 {isResident
                   ? "Track live status updates and confirmation requests on your reports."
-                  : "Latest submitted community hazards awaiting review, dispatch, or resolution."}
+                  : "Latest submitted community hazards awaiting triage, dispatch, or resolution."}
               </p>
             </div>
-            <NextLink href="/reports" className="view-all-link">
+            <NextLink
+              href="/reports"
+              className="dash-feed-viewall"
+              style={{
+                fontSize: "0.813rem",
+                fontWeight: 700,
+                color: "#38bdf8",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
               <span>View All</span>
               <ChevronRight size={16} />
             </NextLink>
           </div>
 
           {reports.length === 0 ? (
-            <div className="empty-state-card">
-              <FileText size={40} className="empty-icon" />
-              <h4 className="empty-title">No reports logged yet</h4>
-              <p className="empty-desc">
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "48px 20px",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "16px",
+                  background: "rgba(255, 255, 255, 0.04)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#64748b",
+                  marginBottom: "14px",
+                }}
+              >
+                <FileText size={28} />
+              </div>
+              <h4
+                style={{
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  color: "#f8fafc",
+                  margin: "0 0 6px 0",
+                }}
+              >
+                No reports logged yet
+              </h4>
+              <p
+                style={{
+                  fontSize: "0.825rem",
+                  color: "#94a3b8",
+                  maxWidth: "380px",
+                  margin: "0 0 16px 0",
+                  lineHeight: 1.4,
+                }}
+              >
                 {isResident
                   ? "Help keep our community safe. If you spot broken public infrastructure, file a report."
                   : "There are currently no active reports in the municipal queue."}
               </p>
               {isResident && (
-                <NextLink href="/reports/new" className="emerald-action-btn">
-                  <PlusCircle size={18} />
+                <NextLink
+                  href="/reports/new"
+                  className="dash-action-btn-primary"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "10px 18px",
+                    borderRadius: "12px",
+                    background: "linear-gradient(135deg, #0284c7 0%, #10b981 100%)",
+                    color: "#ffffff",
+                    fontSize: "0.875rem",
+                    fontWeight: 700,
+                    textDecoration: "none",
+                  }}
+                >
+                  <PlusCircle size={16} />
                   <span>Report First Issue</span>
                 </NextLink>
               )}
             </div>
           ) : (
-            <div className="reports-list-grid">
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               {reports.slice(0, 5).map((report) => {
                 const photoUrl = report.photos && report.photos[0]?.photoUrl;
-                const formattedDate = new Date(report.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                });
+                const formattedDate = new Date(report.createdAt).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }
+                );
 
                 return (
                   <NextLink
                     key={report.id}
                     href={`/reports/${report.referenceNo}`}
-                    className="report-item-card"
+                    className="dash-report-row"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "14px 16px",
+                      borderRadius: "12px",
+                      backgroundColor: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid rgba(255, 255, 255, 0.06)",
+                      textDecoration: "none",
+                      gap: "14px",
+                    }}
                   >
                     {/* Thumbnail Image */}
-                    <div className="report-thumbnail-box">
+                    <div
+                      style={{
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "10px",
+                        overflow: "hidden",
+                        backgroundColor: "rgba(255, 255, 255, 0.05)",
+                        flexShrink: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       {photoUrl ? (
                         <img
                           src={photoUrl}
                           alt={report.title}
-                          className="report-img"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
                         />
                       ) : (
-                        <div className="camera-placeholder">
-                          <Camera size={22} />
-                        </div>
+                        <Camera size={20} color="#64748b" />
                       )}
                     </div>
 
                     {/* Report Information */}
-                    <div className="report-info-col">
-                      <div className="report-meta-header">
-                        <span className="ref-tag">{report.referenceNo}</span>
+                    <div
+                      className="dash-report-main"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "4px",
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: "monospace",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            color: "#38bdf8",
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          {report.referenceNo}
+                        </span>
                         <StatusBadge status={report.status} size="sm" />
                         <PriorityBadge priority={report.priority} size="sm" />
                       </div>
 
-                      <strong className="report-headline">{report.title}</strong>
+                      <strong
+                        className="dash-report-title"
+                        style={{
+                          fontSize: "0.925rem",
+                          fontWeight: 700,
+                          color: "#f8fafc",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {report.title}
+                      </strong>
 
-                      <p className="report-summary">{report.description}</p>
-
-                      <div className="report-meta-footer">
-                        <span className="meta-item">
-                          <MapPin size={12} className="meta-icon" />
+                      <div
+                        className="dash-report-meta"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          fontSize: "0.75rem",
+                          color: "#94a3b8",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <MapPin size={12} color="#64748b" />
                           <span>{report.address.split(",")[0]}</span>
                         </span>
-                        <span className="meta-bullet">•</span>
-                        <span className="meta-item">
-                          <Clock size={12} className="meta-icon" />
+                        <span>•</span>
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <Clock size={12} color="#64748b" />
                           <span>{formattedDate}</span>
                         </span>
                       </div>
                     </div>
 
-                    <ChevronRight size={20} className="report-arrow" />
+                    <ChevronRight size={18} color="#64748b" />
                   </NextLink>
                 );
               })}
@@ -805,1365 +2389,25 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {/* ===============================================================
-            MOBILE FLOATING QUICK ACTION BUTTON
-           =============================================================== */}
-        {isResident && (
-          <NextLink
-            href="/reports/new"
-            className="mobile-fab-btn"
-            aria-label="Report Issue Quickly"
-          >
-            <PlusCircle size={20} strokeWidth={2.5} />
-            <span>+ Report</span>
-          </NextLink>
-        )}
-
-        {/* ===============================================================
-            BOTTOM CIVIC SECURITY & COMPLIANCE SEAL
-           =============================================================== */}
-        <footer className="dashboard-bottom-seal">
-          <ShieldCheck size={16} className="seal-shield" />
+        {/* Bottom Civic Security & Compliance Seal */}
+        <footer
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            fontSize: "0.75rem",
+            color: "#64748b",
+            padding: "8px 0 16px 0",
+            textAlign: "center",
+          }}
+        >
+          <ShieldCheck size={15} color="#34d399" />
           <span>
             BantayBarangay Official Civic Platform · 256-Bit SSL Encrypted · Philippine Data Privacy Compliant
           </span>
         </footer>
-
       </div>
-
-      {/* ===============================================================
-          STYLES: Unified Luminous Civic-Tech Theme
-         =============================================================== */}
-      <style jsx>{`
-        /* Root Canvas */
-        .dashboard-root {
-          min-height: calc(100vh - var(--header-height, 60px));
-          background-color: #080c15;
-          background-image: 
-            radial-gradient(circle at 10% 12%, rgba(56, 189, 248, 0.1) 0%, transparent 45%),
-            radial-gradient(circle at 90% 88%, rgba(16, 185, 129, 0.08) 0%, transparent 45%);
-          color: #f8fafc;
-          padding: 32px 20px 60px 20px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        /* Ambient Glow Spheres */
-        .ambient-glow {
-          position: absolute;
-          border-radius: 9999px;
-          filter: blur(140px);
-          pointer-events: none;
-          z-index: 0;
-          opacity: 0.6;
-        }
-
-        .glow-emerald {
-          width: 520px;
-          height: 520px;
-          background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
-          top: -80px;
-          left: -80px;
-        }
-
-        .glow-blue {
-          width: 500px;
-          height: 500px;
-          background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
-          bottom: -60px;
-          right: -60px;
-        }
-
-        /* Main Container */
-        .dashboard-container {
-          max-width: 1180px;
-          margin: 0 auto;
-          position: relative;
-          z-index: 1;
-        }
-
-        /* Loading State */
-        .loading-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 120px 20px;
-          text-align: center;
-        }
-
-        .brand-logo-emblem {
-          width: 56px;
-          height: 56px;
-          border-radius: 14px;
-          background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #ffffff;
-          box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
-          margin-bottom: 16px;
-        }
-
-        .loading-text {
-          font-size: 1.05rem;
-          font-weight: 600;
-          color: #94a3b8;
-        }
-
-        /* Dashboard Header */
-        .dashboard-header-block {
-          margin-bottom: 28px;
-        }
-
-        .header-meta-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 12px;
-          margin-bottom: 12px;
-        }
-
-        .role-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 12px;
-          border-radius: 9999px;
-          font-size: 0.725rem;
-          font-weight: 800;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-        }
-
-        .pill-resident {
-          background: rgba(56, 189, 248, 0.15);
-          color: #38bdf8;
-          border: 1px solid rgba(56, 189, 248, 0.3);
-        }
-
-        .pill-staff {
-          background: rgba(16, 185, 129, 0.15);
-          color: #34d399;
-          border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .pill-admin {
-          background: rgba(129, 140, 248, 0.15);
-          color: #818cf8;
-          border: 1px solid rgba(129, 140, 248, 0.3);
-        }
-
-        .pill-super {
-          background: rgba(251, 191, 36, 0.15);
-          color: #fbbf24;
-          border: 1px solid rgba(251, 191, 36, 0.3);
-        }
-
-        .status-live-indicator {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #34d399;
-          background: rgba(16, 185, 129, 0.15);
-          border: 1px solid rgba(16, 185, 129, 0.3);
-          padding: 4px 12px;
-          border-radius: 9999px;
-        }
-
-        .pulse-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #34d399;
-          box-shadow: 0 0 8px #34d399;
-          animation: pulseGreen 1.8s infinite;
-        }
-
-        @keyframes pulseGreen {
-          0% { transform: scale(0.95); opacity: 0.8; }
-          50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 10px #34d399; }
-          100% { transform: scale(0.95); opacity: 0.8; }
-        }
-
-        .header-greeting-row {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 16px;
-        }
-
-        .greeting-heading {
-          font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
-          font-size: clamp(1.65rem, 3.5vw, 2.25rem);
-          font-weight: 800;
-          color: #f8fafc;
-          margin: 0 0 6px 0;
-          letter-spacing: -0.03em;
-          line-height: 1.2;
-        }
-
-        .greeting-name-highlight {
-          background: linear-gradient(135deg, #38bdf8 0%, #34d399 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .greeting-subtext {
-          font-size: 0.95rem;
-          color: #94a3b8;
-          margin: 0;
-          line-height: 1.5;
-          max-width: 680px;
-        }
-
-        .header-actions-group {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
-        .staff-header-actions {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .emerald-action-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 10px 20px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-          color: #ffffff;
-          font-size: 0.875rem;
-          font-weight: 700;
-          text-decoration: none;
-          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .emerald-action-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
-        }
-
-        .outline-action-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 10px 18px;
-          border-radius: 12px;
-          background: #121c32;
-          border: 1.5px solid rgba(255, 255, 255, 0.12);
-          color: #f8fafc;
-          font-size: 0.875rem;
-          font-weight: 700;
-          text-decoration: none;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-          transition: all 0.2s ease;
-        }
-
-        .outline-action-btn:hover {
-          background: #17233e;
-          border-color: #38bdf8;
-          color: #38bdf8;
-        }
-
-        /* Announcements */
-        .announcements-section {
-          margin-bottom: 24px;
-        }
-
-        .announcement-banner {
-          display: flex;
-          align-items: flex-start;
-          gap: 14px;
-          padding: 14px 18px;
-          border-radius: 14px;
-        }
-
-        .ann-urgent {
-          background: rgba(239, 68, 68, 0.15);
-          border: 1.5px solid rgba(239, 68, 68, 0.3);
-          color: #fca5a5;
-        }
-
-        .ann-standard {
-          background: rgba(56, 189, 248, 0.12);
-          border: 1.5px solid rgba(56, 189, 248, 0.25);
-          color: #7dd3fc;
-        }
-
-        .ann-icon-wrap {
-          margin-top: 2px;
-          flex-shrink: 0;
-        }
-
-        .ann-text-wrap {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-
-        .ann-title {
-          font-size: 0.9rem;
-          font-weight: 700;
-        }
-
-        .ann-content {
-          font-size: 0.813rem;
-          line-height: 1.4;
-          opacity: 0.95;
-        }
-
-        /* Section Titles */
-        .section-header-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 14px;
-        }
-
-        .section-title {
-          font-size: 1.25rem;
-          font-weight: 800;
-          color: #f8fafc;
-          letter-spacing: -0.02em;
-          margin: 0;
-        }
-
-        .section-subtitle {
-          font-size: 0.85rem;
-          color: #94a3b8;
-          margin: 4px 0 0 0;
-        }
-
-        .section-badge-pill {
-          font-size: 0.725rem;
-          font-weight: 700;
-          color: #38bdf8;
-          background: rgba(56, 189, 248, 0.15);
-          border: 1px solid rgba(56, 189, 248, 0.3);
-          padding: 3px 10px;
-          border-radius: 9999px;
-        }
-
-        /* Resident Hero Card */
-        .resident-report-hero-card {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 24px 28px;
-          border-radius: 20px;
-          background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
-          color: #ffffff;
-          text-decoration: none;
-          margin-bottom: 28px;
-          box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.35);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .resident-report-hero-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 14px 38px -5px rgba(2, 132, 199, 0.5);
-        }
-
-        .hero-left-content {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-        }
-
-        .hero-icon-container {
-          width: 56px;
-          height: 56px;
-          border-radius: 16px;
-          background: rgba(255, 255, 255, 0.2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #ffffff;
-          flex-shrink: 0;
-        }
-
-        .hero-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 3px 10px;
-          border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.18);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          font-size: 0.725rem;
-          font-weight: 700;
-          margin-bottom: 6px;
-        }
-
-        .hero-title {
-          font-size: 1.35rem;
-          font-weight: 800;
-          color: #ffffff;
-          margin: 0 0 4px 0;
-          letter-spacing: -0.02em;
-        }
-
-        .hero-desc {
-          font-size: 0.875rem;
-          color: rgba(255, 255, 255, 0.9);
-          margin: 0;
-          line-height: 1.4;
-        }
-
-        .hero-arrow-btn {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #ffffff;
-          flex-shrink: 0;
-          transition: transform 0.2s ease;
-        }
-
-        .resident-report-hero-card:hover .hero-arrow-btn {
-          transform: translateX(4px);
-        }
-
-        /* Quick Access Section */
-        .quick-access-section {
-          margin-bottom: 28px;
-        }
-
-        .quick-access-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 14px;
-          margin-top: 14px;
-        }
-
-        .dark-nav-card {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          padding: 18px;
-          border-radius: 16px;
-          background: #121c32;
-          border: 1.5px solid rgba(255, 255, 255, 0.08);
-          text-decoration: none;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .dark-nav-card:hover {
-          transform: translateY(-2px);
-          border-color: #38bdf8;
-          box-shadow: 0 8px 24px -4px rgba(56, 189, 248, 0.25);
-        }
-
-        .nav-card-icon {
-          width: 42px;
-          height: 42px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 4px;
-        }
-
-        .icon-blue {
-          background: rgba(56, 189, 248, 0.15);
-          color: #38bdf8;
-        }
-
-        .icon-emerald {
-          background: rgba(16, 185, 129, 0.15);
-          color: #34d399;
-        }
-
-        .icon-amber {
-          background: rgba(251, 191, 36, 0.15);
-          color: #fbbf24;
-        }
-
-        .icon-purple {
-          background: rgba(129, 140, 248, 0.15);
-          color: #818cf8;
-        }
-
-        .nav-card-title {
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: #f8fafc;
-        }
-
-        .nav-card-subtitle {
-          font-size: 0.775rem;
-          color: #94a3b8;
-        }
-
-        /* KPI Section */
-        .kpi-metrics-section {
-          margin-bottom: 28px;
-        }
-
-        .kpi-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 14px;
-          margin-top: 14px;
-        }
-
-        .kpi-card {
-          padding: 20px;
-          border-radius: 16px;
-          background: #121c32;
-          border: 1.5px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-          transition: all 0.2s ease;
-        }
-
-        .kpi-card:hover {
-          box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
-          border-color: rgba(255, 255, 255, 0.15);
-          transform: translateY(-1px);
-        }
-
-        .kpi-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 10px;
-        }
-
-        .kpi-label {
-          font-size: 0.813rem;
-          font-weight: 700;
-          color: #94a3b8;
-        }
-
-        .kpi-number {
-          font-size: 2.1rem;
-          font-weight: 800;
-          color: #f8fafc;
-          line-height: 1.1;
-          margin-bottom: 4px;
-          letter-spacing: -0.03em;
-        }
-
-        .kpi-caption {
-          font-size: 0.75rem;
-          color: #64748b;
-        }
-
-        .text-blue { color: #38bdf8 !important; }
-        .text-amber { color: #fbbf24 !important; }
-        .text-purple { color: #818cf8 !important; }
-        .text-emerald { color: #34d399 !important; }
-        .text-crimson { color: #f87171 !important; }
-        .text-rose { color: #fb7185 !important; }
-
-        /* Live Municipal Dispatch Widget */
-        .dispatch-live-widget {
-          background: #121c32;
-          border: 1.5px solid rgba(255, 255, 255, 0.08);
-          border-radius: 18px;
-          padding: 20px 22px;
-          margin-bottom: 28px;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-        }
-
-        .dispatch-top-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 8px;
-        }
-
-        .dispatch-tag {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.7rem;
-          font-weight: 800;
-          color: #38bdf8;
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-        }
-
-        .radio-icon {
-          color: #38bdf8;
-        }
-
-        .dispatch-resolved-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          padding: 3px 8px;
-          border-radius: 9999px;
-          background: rgba(16, 185, 129, 0.15);
-          border: 1px solid rgba(16, 185, 129, 0.3);
-          color: #34d399;
-          font-size: 0.7rem;
-          font-weight: 800;
-          text-transform: uppercase;
-        }
-
-        .dispatch-ticket-title {
-          font-size: 1.05rem;
-          font-weight: 700;
-          color: #f8fafc;
-          margin: 0 0 4px 0;
-        }
-
-        .dispatch-ticket-meta {
-          font-size: 0.813rem;
-          color: #94a3b8;
-          margin: 0 0 14px 0;
-        }
-
-        .dispatch-divider {
-          height: 1px;
-          background-color: rgba(255, 255, 255, 0.08);
-          margin-bottom: 12px;
-        }
-
-        .dispatch-resident-loop {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.785rem;
-          font-weight: 600;
-          color: #34d399;
-        }
-
-        .verified-check {
-          color: #10b981;
-        }
-
-        /* Staff Tools */
-        .staff-tools-row {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
-          margin-bottom: 28px;
-        }
-
-        .tool-quick-card {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          padding: 18px 20px;
-          border-radius: 16px;
-          background: #121c32;
-          border: 1.5px solid rgba(255, 255, 255, 0.08);
-          text-decoration: none;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-          transition: all 0.2s ease;
-        }
-
-        .tool-quick-card:hover {
-          border-color: #38bdf8;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px -4px rgba(56, 189, 248, 0.2);
-        }
-
-        .tool-icon {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .tool-title {
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: #f8fafc;
-          display: block;
-        }
-
-        .tool-desc {
-          font-size: 0.785rem;
-          color: #94a3b8;
-        }
-
-        .tool-arrow {
-          margin-left: auto;
-          color: #94a3b8;
-          transition: transform 0.2s ease;
-        }
-
-        .tool-quick-card:hover .tool-arrow {
-          transform: translateX(3px);
-          color: #38bdf8;
-        }
-
-        /* Admin Hub */
-        .admin-hub-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
-          margin-bottom: 28px;
-        }
-
-        .admin-hub-card {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          padding: 18px 20px;
-          border-radius: 16px;
-          background: #121c32;
-          border: 1.5px solid rgba(255, 255, 255, 0.08);
-          text-decoration: none;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-          transition: all 0.2s ease;
-        }
-
-        .admin-hub-card:hover {
-          border-color: #38bdf8;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px -4px rgba(56, 189, 248, 0.2);
-        }
-
-        .hub-icon-wrap {
-          width: 48px;
-          height: 48px;
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .hub-text-wrap {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          flex: 1;
-        }
-
-        .hub-title {
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: #f8fafc;
-        }
-
-        .hub-desc {
-          font-size: 0.785rem;
-          color: #94a3b8;
-          margin: 0;
-          line-height: 1.35;
-        }
-
-        .hub-arrow {
-          color: #94a3b8;
-          transition: transform 0.2s ease;
-        }
-
-        .admin-hub-card:hover .hub-arrow {
-          transform: translateX(3px);
-          color: #38bdf8;
-        }
-
-        /* Reports Feed Section */
-        .reports-feed-section {
-          margin-bottom: 32px;
-        }
-
-        .view-all-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 0.813rem;
-          font-weight: 700;
-          color: #38bdf8;
-          text-decoration: none;
-          transition: color 0.15s ease;
-        }
-
-        .view-all-link:hover {
-          color: #7dd3fc;
-          text-decoration: underline;
-        }
-
-        .empty-state-card {
-          padding: 48px 20px;
-          text-align: center;
-          background: #121c32;
-          border: 1.5px dashed rgba(255, 255, 255, 0.12);
-          border-radius: 18px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .empty-icon {
-          color: #94a3b8;
-          margin-bottom: 12px;
-        }
-
-        .empty-title {
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: #f8fafc;
-          margin: 0 0 6px 0;
-        }
-
-        .empty-desc {
-          font-size: 0.85rem;
-          color: #94a3b8;
-          max-width: 460px;
-          margin: 0 0 20px 0;
-          line-height: 1.5;
-        }
-
-        .reports-list-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .report-item-card {
-          display: flex;
-          align-items: center;
-          gap: 18px;
-          padding: 16px 20px;
-          border-radius: 14px;
-          background: #121c32;
-          border: 1.5px solid rgba(255, 255, 255, 0.08);
-          text-decoration: none;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .report-item-card:hover {
-          border-color: #38bdf8;
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px -3px rgba(56, 189, 248, 0.2);
-        }
-
-        .report-thumbnail-box {
-          width: 72px;
-          height: 72px;
-          border-radius: 12px;
-          overflow: hidden;
-          background-color: #1a2438;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .report-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .camera-placeholder {
-          color: #94a3b8;
-        }
-
-        .report-info-col {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          flex: 1;
-          min-width: 0;
-        }
-
-        .report-meta-header {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .ref-tag {
-          font-family: var(--font-mono, monospace);
-          font-size: 0.725rem;
-          font-weight: 700;
-          color: #94a3b8;
-          background: #1a2438;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          padding: 2px 8px;
-          border-radius: 6px;
-        }
-
-        .report-headline {
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: #f8fafc;
-          margin-top: 2px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .report-summary {
-          font-size: 0.813rem;
-          color: #94a3b8;
-          margin: 0;
-          line-height: 1.4;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .report-meta-footer {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-top: 4px;
-        }
-
-        .meta-item {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 0.75rem;
-          color: #94a3b8;
-        }
-
-        .meta-icon {
-          color: #64748b;
-        }
-
-        .meta-bullet {
-          color: #475569;
-          font-size: 0.75rem;
-        }
-
-        .report-arrow {
-          color: #64748b;
-          transition: transform 0.2s ease;
-        }
-
-        .report-item-card:hover .report-arrow {
-          transform: translateX(3px);
-          color: #38bdf8;
-        }
-
-        /* Bottom Seal */
-        .dashboard-bottom-seal {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          font-size: 0.75rem;
-          color: #64748b;
-          padding-top: 24px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .seal-shield {
-          color: #38bdf8;
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 1024px) {
-          .dashboard-root {
-            padding: 24px 16px calc(var(--bottom-nav-height, 64px) + 24px) 16px;
-          }
-          .quick-access-grid, .kpi-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .admin-hub-grid, .staff-tools-row {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .dashboard-root {
-            padding: 16px 12px calc(var(--bottom-nav-height, 64px) + 28px) 12px;
-          }
-
-          /* Header Area */
-          .dashboard-header-block {
-            margin-bottom: 18px;
-          }
-          .header-meta-row {
-            gap: 8px;
-            margin-bottom: 10px;
-          }
-          .role-pill {
-            font-size: 0.688rem;
-            padding: 3px 9px;
-          }
-          .status-live-indicator {
-            font-size: 0.688rem;
-            padding: 3px 9px;
-          }
-          .greeting-heading {
-            font-size: 1.45rem;
-            margin-bottom: 4px;
-            line-height: 1.25;
-          }
-          .greeting-subtext {
-            font-size: 0.813rem;
-            line-height: 1.4;
-          }
-          .resident-header-btn {
-            display: none !important;
-          }
-          .staff-header-actions {
-            width: 100%;
-            margin-top: 10px;
-            display: flex;
-            gap: 8px;
-          }
-          .staff-header-actions .emerald-action-btn,
-          .staff-header-actions .outline-action-btn {
-            flex: 1;
-            justify-content: center;
-            padding: 9px 12px;
-            font-size: 0.813rem;
-          }
-
-          /* Announcements */
-          .announcements-section {
-            margin-bottom: 18px;
-          }
-          .announcement-banner {
-            padding: 12px 14px;
-            gap: 10px;
-            border-radius: 14px;
-          }
-          .ann-title {
-            font-size: 0.85rem;
-          }
-          .ann-body {
-            font-size: 0.775rem;
-          }
-
-          /* Resident Hero CTA */
-          .resident-report-hero-card {
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            gap: 12px;
-          }
-          .hero-left-content {
-            gap: 12px;
-            min-width: 0;
-          }
-          .hero-icon-container {
-            width: 44px;
-            height: 44px;
-            min-width: 44px;
-            border-radius: 12px;
-          }
-          .hero-badge {
-            font-size: 0.675rem;
-            padding: 2px 7px;
-            margin-bottom: 3px;
-          }
-          .hero-title {
-            font-size: 1.05rem;
-            font-weight: 800;
-            margin: 0 0 2px 0;
-          }
-          .hero-desc {
-            font-size: 0.75rem;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-          .hero-arrow-btn {
-            display: flex !important;
-            width: 32px;
-            height: 32px;
-            min-width: 32px;
-          }
-
-          /* Section Titles */
-          .section-header-row, .section-header-bar {
-            margin-bottom: 10px;
-          }
-          .section-title {
-            font-size: 1.1rem;
-          }
-          .section-subtitle {
-            font-size: 0.775rem;
-            margin-top: 2px;
-          }
-          .section-badge-pill {
-            font-size: 0.688rem;
-            padding: 2px 8px;
-          }
-
-          /* Quick Access 2x2 Grid */
-          .quick-access-section {
-            margin-bottom: 20px;
-          }
-          .quick-access-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
-            margin-top: 10px;
-          }
-          .dark-nav-card {
-            padding: 12px;
-            border-radius: 14px;
-            gap: 4px;
-          }
-          .nav-card-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            margin-bottom: 4px;
-          }
-          .nav-card-title {
-            font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          .nav-card-subtitle {
-            font-size: 0.72rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          /* KPI Metrics 2x2 Grid */
-          .kpi-metrics-section {
-            margin-bottom: 20px;
-          }
-          .kpi-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
-            margin-top: 10px;
-          }
-          .kpi-card {
-            padding: 12px 14px;
-            border-radius: 14px;
-          }
-          .kpi-header {
-            margin-bottom: 6px;
-          }
-          .kpi-label {
-            font-size: 0.725rem;
-          }
-          .kpi-number {
-            font-size: 1.55rem;
-            margin-bottom: 2px;
-          }
-          .kpi-caption {
-            font-size: 0.688rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          /* Live Municipal Dispatch Widget */
-          .dispatch-live-widget {
-            padding: 14px 16px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-          }
-          .dispatch-ticket-title {
-            font-size: 0.95rem;
-          }
-          .dispatch-ticket-meta {
-            font-size: 0.775rem;
-            margin-bottom: 10px;
-          }
-          .dispatch-resident-loop {
-            font-size: 0.75rem;
-          }
-
-          /* Staff Tools & Admin Hub */
-          .staff-tools-row, .admin-hub-grid {
-            grid-template-columns: 1fr !important;
-            gap: 10px !important;
-            margin-bottom: 20px;
-          }
-          .tool-quick-card, .admin-hub-card {
-            padding: 12px 14px;
-            border-radius: 14px;
-            gap: 12px;
-          }
-          .tool-icon, .hub-icon-wrap {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            border-radius: 11px;
-          }
-          .tool-title, .hub-title {
-            font-size: 0.875rem;
-          }
-          .tool-desc, .hub-desc {
-            font-size: 0.75rem;
-            line-height: 1.3;
-          }
-
-          /* Incident Reports Feed */
-          .reports-feed-section {
-            margin-bottom: 20px;
-          }
-          .report-item-card {
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 12px;
-            padding: 12px 14px;
-            border-radius: 14px;
-          }
-          .report-thumbnail-box {
-            width: 58px !important;
-            height: 58px !important;
-            min-width: 58px !important;
-            border-radius: 10px;
-          }
-          .report-info-col {
-            gap: 2px;
-            min-width: 0;
-          }
-          .report-meta-header {
-            gap: 6px;
-          }
-          .ref-tag {
-            font-size: 0.688rem;
-            padding: 2px 6px;
-          }
-          .report-headline {
-            font-size: 0.875rem;
-            margin-top: 1px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          .report-summary {
-            font-size: 0.75rem;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-          .report-meta-footer {
-            gap: 6px;
-            margin-top: 2px;
-          }
-          .meta-item {
-            font-size: 0.7rem;
-          }
-          .report-arrow {
-            display: flex !important;
-            color: #64748b;
-            flex-shrink: 0;
-          }
-
-          /* Bottom Civic Seal */
-          .dashboard-bottom-seal {
-            font-size: 0.688rem;
-            padding-top: 18px;
-            flex-direction: column;
-            text-align: center;
-            gap: 6px;
-            line-height: 1.4;
-          }
-
-          /* Staggered Animations for Mobile Elements */
-          .dashboard-header-block {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-          }
-          .resident-report-hero-card {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
-          }
-          .quick-access-section {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
-          }
-          .kpi-metrics-section {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.20s both;
-          }
-          .dispatch-live-widget {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both;
-          }
-          .reports-feed-section {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
-          }
-
-          /* Mobile Floating Action Button */
-          .mobile-fab-btn {
-            display: flex !important;
-            align-items: center;
-            gap: 7px;
-            position: fixed;
-            bottom: calc(var(--bottom-nav-height, 64px) + 16px);
-            right: 16px;
-            z-index: 40;
-            padding: 11px 18px;
-            border-radius: 9999px;
-            background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
-            color: #ffffff;
-            font-size: 0.813rem;
-            font-weight: 800;
-            text-decoration: none;
-            box-shadow: 0 8px 24px rgba(2, 132, 199, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
-          }
-          .mobile-fab-btn:active {
-            transform: scale(0.92);
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
-          }
-        }
-
-        .mobile-fab-btn {
-          display: none;
-        }
-
-        @media (max-width: 380px) {
-          .dashboard-root {
-            padding-left: 8px;
-            padding-right: 8px;
-          }
-          .quick-access-grid, .kpi-grid {
-            gap: 8px !important;
-          }
-          .dark-nav-card, .kpi-card {
-            padding: 10px 8px;
-          }
-          .kpi-number {
-            font-size: 1.35rem;
-          }
-          .hero-title {
-            font-size: 0.95rem;
-          }
-          .report-thumbnail-box {
-            width: 50px !important;
-            height: 50px !important;
-            min-width: 50px !important;
-          }
-          .mobile-fab-btn {
-            right: 12px;
-            bottom: calc(var(--bottom-nav-height, 64px) + 12px);
-            padding: 9px 14px;
-            font-size: 0.75rem;
-          }
-        }
-      `}</style>
     </div>
   );
 }
