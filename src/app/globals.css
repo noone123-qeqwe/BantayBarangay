@@ -1957,4 +1957,288 @@ html, body {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   BANTAYBARANGAY CIVIC REGISTRATION INTERFACE (CLEAN, MINIMAL, MODERN)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.register-page-canvas {
+  width: 100%;
+  min-height: calc(100vh - var(--header-height, 60px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 16px;
+  position: relative;
+  background-color: #080d1a;
+  overflow-x: hidden;
+}
+
+.register-ambient-glow {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 700px;
+  height: 700px;
+  margin-top: -350px;
+  margin-left: -350px;
+  background: radial-gradient(
+    circle,
+    rgba(2, 132, 199, 0.14) 0%,
+    rgba(16, 185, 129, 0.08) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.register-card-container {
+  width: 100%;
+  max-width: 470px;
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+}
+
+.register-modern-card {
+  width: 100%;
+  background-color: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1.5px solid rgba(56, 189, 248, 0.22);
+  border-radius: 20px;
+  box-shadow:
+    0 24px 60px -12px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  padding: 28px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Minimal Step Tracker */
+.register-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+
+.register-step-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.register-step-active {
+  color: #38bdf8 !important;
+}
+
+.register-step-num {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+}
+
+.register-step-active .register-step-num {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.register-step-done .register-step-num {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.register-step-divider {
+  width: 16px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Form Groups & Inputs */
+.register-form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-bottom: 16px;
+}
+
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.register-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.register-label {
+  font-size: 0.813rem;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.register-age-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  padding: 1px 7px;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.register-input-container {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  background-color: rgba(7, 12, 23, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.register-input-focused {
+  border-color: #38bdf8 !important;
+  background-color: rgba(10, 18, 36, 0.95) !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+}
+
+.register-input-error {
+  border-color: #ef4444 !important;
+  background-color: rgba(26, 12, 18, 0.95) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+.register-input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  color: #64748b;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.register-input-focused .register-input-icon {
+  color: #38bdf8;
+}
+
+.register-prefix-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 100%;
+  padding: 0 11px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 0.813rem;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.register-core-input {
+  flex: 1;
+  height: 100%;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 12px;
+  font-size: 0.885rem;
+  color: #f8fafc !important;
+  font-weight: 500;
+  min-width: 0;
+}
+
+.register-core-input::placeholder {
+  color: #64748b;
+  font-size: 0.813rem;
+}
+
+.register-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  color: #ffffff;
+  font-size: 0.938rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+  margin-top: 4px;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.register-submit-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
+}
+
+.register-submit-btn:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+.register-submit-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* OTP Minimal Banner */
+.register-otp-phone-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.register-demo-sms-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px dashed rgba(16, 185, 129, 0.4);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+@media (max-width: 440px) {
+  .register-modern-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+}
+
+
 
