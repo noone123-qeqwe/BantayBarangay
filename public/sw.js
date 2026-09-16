@@ -1,6 +1,6 @@
-// BantayBarangay PWA Service Worker - v7 (Fullscreen Release)
-// Build Timestamp: 2026-09-16T08:30:00+08:00
-const CACHE_NAME = "bantay-app-v7-20260916";
+// BantayBarangay PWA Service Worker - v8 (Live Update Sync Release)
+// Build Timestamp: 2026-09-16T08:35:00+08:00
+const CACHE_NAME = "bantay-app-v8-20260916";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
