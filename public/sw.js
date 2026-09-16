@@ -1,13 +1,13 @@
-// BantayBarangay PWA Service Worker - v10 (Scenic Coastal Background Update)
-// Build Timestamp: 2026-09-16T09:20:00+08:00
-const CACHE_NAME = "bantay-app-v10-20260916";
+// BantayBarangay PWA Service Worker - v11 (Responsive Masbate Harbor V3 Release)
+// Build Timestamp: 2026-09-16T09:30:00+08:00
+const CACHE_NAME = "bantay-app-v11-20260916";
 const STATIC_ASSETS = [
   "/",
   "/login",
   "/manifest.json",
   "/globals.css",
-  "/masbate-aerial.jpg?v=2",
-  "/masbate-aerial.jpg",
+  "/masbate-harbor-v3.jpg",
+  "/masbate-harbor-v3.png",
   "/logo.png",
   "/icon-192x192.png?v=2",
   "/icon-512x512.png?v=2",
@@ -128,9 +128,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 3. Un-hashed dynamic style & manifest assets (globals.css, manifest.json)
-  // Use Network-First so design updates arrive on the phone instantly!
-  if (url.pathname === "/globals.css" || url.pathname === "/manifest.json") {
+  // 3. Un-hashed dynamic style, manifest, and scenic background assets
+  // Use Network-First so design & background updates arrive on the phone instantly!
+  if (
+    url.pathname === "/globals.css" ||
+    url.pathname === "/manifest.json" ||
+    url.pathname.includes("masbate")
+  ) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {

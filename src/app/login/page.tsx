@@ -223,7 +223,14 @@ export default function LoginPage() {
   return (
     <div className="login-scenic-root" id="login-viewport">
       {/* 1. Fullscreen Aerial Background Layer (Fixed & Hardware Accelerated) */}
-      <div className="login-scenic-bg" aria-hidden="true" />
+      <div className="login-scenic-bg" aria-hidden="true">
+        <img
+          src="/masbate-harbor-v3.jpg"
+          alt="Masbate Harbor Background"
+          className="login-scenic-bg-img"
+          loading="eager"
+        />
+      </div>
 
       {/* 2. Fullscreen Subtle Dark/Blue Gradient Overlay */}
       <div className="login-scenic-overlay" aria-hidden="true" />

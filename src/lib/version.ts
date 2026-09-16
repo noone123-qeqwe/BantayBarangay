@@ -1,9 +1,9 @@
 // Application Semantic Version and Build Information
-export const APP_LATEST_VERSION = "2.8.1";
-export const CURRENT_CLIENT_VERSION = "2.8.0";
-export const APP_BUILD_IDENTIFIER = "20260916-v2.8.1-custom-aerial-background";
+export const APP_LATEST_VERSION = "2.9.0";
+export const CURRENT_CLIENT_VERSION = "2.8.1";
+export const APP_BUILD_IDENTIFIER = "20260916-v2.9.0-masbate-harbor-v3";
 export const APP_RELEASE_NOTES =
-  "Updated scenic harbor background with verified Masbate coastal aerial photography.";
+  "New Masbate harbor aerial photography with responsive ferry alignment and visual enhancements.";
 
 /**
  * Compares two semantic version strings.
