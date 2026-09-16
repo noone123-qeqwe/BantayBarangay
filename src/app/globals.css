@@ -3913,8 +3913,39 @@ html, body {
    SCENIC CIVIC LOGIN INTERFACE (MATCHING EXACT REFERENCE IMAGE)
    ========================================================================== */
 
+body:has(#login-viewport) {
+  overflow-x: hidden;
+  background-color: #080c15;
+}
+
+body:has(#login-viewport) .app-container {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 body:has(#login-viewport) .main-content {
   padding-bottom: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Fullscreen Aerial Background Layer (Fixed, covers 100% screen on all devices) */
+.login-scenic-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background-image: url('/masbate-aerial.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
 }
 
 .login-scenic-root {
@@ -3924,19 +3955,21 @@ body:has(#login-viewport) .main-content {
   position: relative;
   display: flex;
   flex-direction: column;
-  background-image: url('/masbate-aerial.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   overflow-x: hidden;
   color: #f8fafc;
+  z-index: 2;
 }
 
 /* Subtle dark/blue vignette overlay to keep text crisp while revealing the vibrant coastal photo */
 .login-scenic-overlay {
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   background: linear-gradient(
     90deg,
     rgba(10, 20, 38, 0.74) 0%,
@@ -3952,21 +3985,21 @@ body:has(#login-viewport) .main-content {
   .login-scenic-overlay {
     background: linear-gradient(
       180deg,
-      rgba(10, 20, 38, 0.80) 0%,
-      rgba(10, 20, 38, 0.58) 45%,
+      rgba(10, 20, 38, 0.76) 0%,
+      rgba(10, 20, 38, 0.52) 35%,
       rgba(10, 20, 38, 0.74) 100%
     );
   }
 }
 
-/* 1. Header (Logo + Hotline) */
+/* 1. Header (Logo + Fullscreen Toggle + Hotline) */
 .login-scenic-header {
   position: relative;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 44px 12px;
+  padding: max(24px, env(safe-area-inset-top, 24px)) max(44px, env(safe-area-inset-right, 44px)) 12px max(44px, env(safe-area-inset-left, 44px));
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
@@ -3974,7 +4007,7 @@ body:has(#login-viewport) .main-content {
 
 @media (max-width: 768px) {
   .login-scenic-header {
-    padding: 16px 20px 10px;
+    padding: max(16px, env(safe-area-inset-top, 16px)) max(20px, env(safe-area-inset-right, 20px)) 10px max(20px, env(safe-area-inset-left, 20px));
   }
 }
 
@@ -4041,6 +4074,35 @@ body:has(#login-viewport) .main-content {
   .login-scenic-brand-sub {
     font-size: 0.55rem;
   }
+}
+
+.login-scenic-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-scenic-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.32);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.login-scenic-fullscreen-btn:hover {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(255, 255, 255, 0.55);
+  transform: translateY(-1px);
 }
 
 .login-scenic-hotline {

@@ -1,9 +1,9 @@
 // Application Semantic Version and Build Information
-export const APP_LATEST_VERSION = "2.7.1";
-export const CURRENT_CLIENT_VERSION = "2.7.0";
-export const APP_BUILD_IDENTIFIER = "20260916-v2.7.1-auto-update-sync";
+export const APP_LATEST_VERSION = "2.8.0";
+export const CURRENT_CLIENT_VERSION = "2.7.1";
+export const APP_BUILD_IDENTIFIER = "20260916-v2.8.0-fullscreen-scenic";
 export const APP_RELEASE_NOTES =
-  "Immersive fullscreen PWA experience, automatic update detection sync, and post-update confirmation.";
+  "True edge-to-edge full-screen scenic aerial civic portal, native fullscreen mode, and immediate update synchronization.";
 
 /**
  * Compares two semantic version strings.

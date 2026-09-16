@@ -23,6 +23,8 @@ import {
   LogOut,
   Check,
   PhoneCall,
+  Maximize,
+  Minimize,
 } from "lucide-react";
 
 function PhilippineFlagIcon() {
@@ -82,6 +84,43 @@ export default function LoginPage() {
         window.location.replace(targetUrl);
       }
     }, 150);
+  };
+
+  // Fullscreen state and handler for immersive full-screen display
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handleFsChange);
+
+    // Trigger proactive PWA cache & update check so mobile devices sync immediately
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("check-app-update"));
+    }
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFsChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else if ((document.documentElement as any).webkitRequestFullscreen) {
+          await (document.documentElement as any).webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.warn("Fullscreen toggle failed:", err);
+    }
   };
 
   // Network connection listener
@@ -183,10 +222,13 @@ export default function LoginPage() {
 
   return (
     <div className="login-scenic-root" id="login-viewport">
-      {/* 1. Fullscreen Subtle Dark/Blue Gradient Overlay */}
+      {/* 1. Fullscreen Aerial Background Layer (Fixed & Hardware Accelerated) */}
+      <div className="login-scenic-bg" aria-hidden="true" />
+
+      {/* 2. Fullscreen Subtle Dark/Blue Gradient Overlay */}
       <div className="login-scenic-overlay" aria-hidden="true" />
 
-      {/* 2. Top Header (Branding + Hotline) */}
+      {/* 3. Top Header (Branding + Fullscreen Toggle + Hotline) */}
       <header className="login-scenic-header">
         <NextLink href="/" className="login-scenic-brand" title="BantayBarangay Home">
           <img
@@ -205,14 +247,26 @@ export default function LoginPage() {
           </div>
         </NextLink>
 
-        <a
-          href="tel:0286431111"
-          className="login-scenic-hotline"
-          title="Emergency Hotline: (02) 8643-1111"
-        >
-          <PhoneCall size={14} className="login-scenic-hotline-icon" />
-          <span>Hotline</span>
-        </a>
+        <div className="login-scenic-header-actions">
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="login-scenic-fullscreen-btn"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen Mode"}
+            aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen Mode"}
+          >
+            {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+          </button>
+
+          <a
+            href="tel:0286431111"
+            className="login-scenic-hotline"
+            title="Emergency Hotline: (02) 8643-1111"
+          >
+            <PhoneCall size={14} className="login-scenic-hotline-icon" />
+            <span>Hotline</span>
+          </a>
+        </div>
       </header>
 
       {/* 3. Main Content Container */}

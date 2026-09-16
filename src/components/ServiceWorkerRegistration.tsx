@@ -8,7 +8,7 @@ import {
   APP_BUILD_IDENTIFIER,
 } from "@/lib/version";
 
-const CURRENT_EXPECTED_CACHE = "bantay-app-v8-20260916";
+const CURRENT_EXPECTED_CACHE = "bantay-app-v9-20260916";
 
 export default function ServiceWorkerRegistration() {
   const pathname = usePathname();
