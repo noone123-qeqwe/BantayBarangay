@@ -3939,7 +3939,7 @@ body:has(#login-viewport) .main-content {
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  background-image: url('/masbate-aerial.jpg');
+  background-image: url('/masbate-aerial.jpg?v=2');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

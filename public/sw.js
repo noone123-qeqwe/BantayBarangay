@@ -1,11 +1,12 @@
-// BantayBarangay PWA Service Worker - v9 (Fullscreen Scenic Civic Release)
-// Build Timestamp: 2026-09-16T08:45:00+08:00
-const CACHE_NAME = "bantay-app-v9-20260916";
+// BantayBarangay PWA Service Worker - v10 (Scenic Coastal Background Update)
+// Build Timestamp: 2026-09-16T09:20:00+08:00
+const CACHE_NAME = "bantay-app-v10-20260916";
 const STATIC_ASSETS = [
   "/",
   "/login",
   "/manifest.json",
   "/globals.css",
+  "/masbate-aerial.jpg?v=2",
   "/masbate-aerial.jpg",
   "/logo.png",
   "/icon-192x192.png?v=2",
