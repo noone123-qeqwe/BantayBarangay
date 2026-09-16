@@ -131,6 +131,7 @@ html, body {
   background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100vh;
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
@@ -1109,7 +1110,7 @@ textarea.form-control {
 }
 
 /* ─── PWA Standalone Mode & Native App Experience ───────────────────────────── */
-@media (display-mode: standalone) {
+@media (display-mode: standalone), (display-mode: fullscreen) {
   /* In standalone app mode, hide redundant web navbar in favor of native AppHeader */
   .navbar {
     display: none !important;

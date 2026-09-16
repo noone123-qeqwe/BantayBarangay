@@ -17,9 +17,11 @@ export default function AppInstallPrompt() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Check if running as installed standalone app
+    // Check if running as installed standalone / fullscreen app
     const checkStandalone = () => {
-      const isStandaloneMedia = window.matchMedia("(display-mode: standalone)").matches;
+      const isStandaloneMedia =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.matchMedia("(display-mode: fullscreen)").matches;
       const isIosStandalone = (window.navigator as any).standalone === true;
       return isStandaloneMedia || isIosStandalone;
     };

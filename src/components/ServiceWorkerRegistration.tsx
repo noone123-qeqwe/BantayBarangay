@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { isNewerVersion, CURRENT_CLIENT_VERSION } from "@/lib/version";
 
-const CURRENT_EXPECTED_CACHE = "bantay-app-v6-20260916";
+const CURRENT_EXPECTED_CACHE = "bantay-app-v7-20260916";
 
 export default function ServiceWorkerRegistration() {
   const pathname = usePathname();

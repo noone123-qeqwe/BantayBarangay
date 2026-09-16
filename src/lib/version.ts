@@ -1,9 +1,9 @@
 // Application Semantic Version and Build Information
-export const APP_LATEST_VERSION = "2.6.0";
-export const CURRENT_CLIENT_VERSION = "2.5.0";
-export const APP_BUILD_IDENTIFIER = "20260916-v2.6.0-scenic-civic-update";
+export const APP_LATEST_VERSION = "2.7.0";
+export const CURRENT_CLIENT_VERSION = "2.6.0";
+export const APP_BUILD_IDENTIFIER = "20260916-v2.7.0-fullscreen-pwa";
 export const APP_RELEASE_NOTES =
-  "Scenic Masbate aerial desktop login interface, refined mobile civic UI, and real-time PWA update delivery.";
+  "Immersive fullscreen PWA experience, native display overrides, and edge-to-edge safe area integration.";
 
 /**
  * Compares two semantic version strings.

@@ -5,10 +5,15 @@
   "description": "Citizen infrastructure reporting and municipal dispatch platform for Pasig City.",
   "start_url": "/dashboard?source=pwa",
   "scope": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0f172a",
-  "theme_color": "#0284c7",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone",
+    "window-controls-overlay"
+  ],
+  "orientation": "any",
+  "background_color": "#080c15",
+  "theme_color": "#080c15",
   "categories": [
     "government",
     "utilities",

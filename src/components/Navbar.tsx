@@ -19,6 +19,8 @@ import {
   User,
   ExternalLink,
   PhoneCall,
+  Maximize,
+  Minimize,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -26,6 +28,33 @@ export default function Navbar() {
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else if ((document.documentElement as any).webkitRequestFullscreen) {
+          await (document.documentElement as any).webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.warn("Fullscreen toggle failed:", err);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -216,6 +245,29 @@ export default function Navbar() {
 
         {/* Desktop User Right Section */}
         <div className="desktop-header-right" style={{ display: "none", alignItems: "center", gap: "10px" }}>
+          {/* Fullscreen Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="btn-icon btn-secondary"
+            title={isFullscreen ? "Exit Full Screen" : "Enter Full Screen"}
+            aria-label={isFullscreen ? "Exit Full Screen" : "Enter Full Screen"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "50%",
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid var(--border-subtle)",
+              color: isFullscreen ? "var(--primary)" : "var(--text-secondary)",
+              cursor: "pointer",
+              width: "36px",
+              height: "36px",
+            }}
+          >
+            {isFullscreen ? <Minimize size={17} /> : <Maximize size={17} />}
+          </button>
+
           {user ? (
             <>
               {/* Notification Bell with Badge */}
@@ -383,6 +435,27 @@ export default function Navbar() {
 
         {/* Mobile Header Actions */}
         <div className="mobile-header-actions" style={{ display: "none", alignItems: "center", gap: "8px" }}>
+          {/* Fullscreen Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "34px",
+              height: "34px",
+              borderRadius: "50%",
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid var(--border-subtle)",
+              color: isFullscreen ? "var(--primary)" : "var(--text-secondary)",
+              cursor: "pointer",
+            }}
+          >
+            {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+          </button>
           {/* Emergency Hotline is accessible on mobile */}
           <a
             href="tel:0286431111"

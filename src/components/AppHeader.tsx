@@ -3,19 +3,22 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import NextLink from "next/link";
-import { ArrowLeft, WifiOff, PhoneCall, Shield } from "lucide-react";
+import { ArrowLeft, WifiOff, PhoneCall, Shield, Maximize, Minimize } from "lucide-react";
 
 export default function AppHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const [isStandalone, setIsStandalone] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const checkStandalone = () => {
-      const isMedia = window.matchMedia("(display-mode: standalone)").matches;
+      const isMedia =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.matchMedia("(display-mode: fullscreen)").matches;
       const isIos = (window.navigator as any).standalone === true;
       return isMedia || isIos;
     };
@@ -25,15 +28,38 @@ export default function AppHeader() {
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
+    document.addEventListener("fullscreenchange", handleFsChange);
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      document.removeEventListener("fullscreenchange", handleFsChange);
     };
   }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else if ((document.documentElement as any).webkitRequestFullscreen) {
+          await (document.documentElement as any).webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.warn("Fullscreen toggle failed:", err);
+    }
+  };
 
   // Determine screen title
   const getScreenTitle = () => {
@@ -151,6 +177,28 @@ export default function AppHeader() {
               <span>Offline</span>
             </span>
           )}
+
+          {/* Fullscreen Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
+              color: isFullscreen ? "var(--primary, #38bdf8)" : "#cbd5e1",
+              borderRadius: "50%",
+              width: "32px",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+          </button>
 
           <a
             href="tel:0286431111"
