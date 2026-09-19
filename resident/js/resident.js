@@ -1353,7 +1353,7 @@ function initApp() {
       document.getElementById('modalOtpErrorBanner')?.classList.add('hidden');
       setTimeout(() => mBoxes[0]?.focus(), 150);
 
-      UI.toast(`SMS code sent to ${validation.intlFormatted}. Use demo code: 1234`, 'info');
+      UI.toast(`SMS verification code sent to ${validation.intlFormatted}. Check your phone's SMS inbox.`, 'info');
     });
   }
 
@@ -1523,7 +1523,7 @@ function initApp() {
     setTimeout(() => mregOtpBoxes[0]?.focus(), 150);
 
     startModalCountdown(60);
-    UI.toast(`SMS code sent to ${stageRes.pending.phoneData.intlFormatted}. Use demo code: 1234`, 'info');
+    UI.toast(`SMS verification code sent to ${stageRes.pending.phoneData.intlFormatted}. Check your phone's SMS inbox.`, 'info');
   });
 
   // Modal Countdown Timer

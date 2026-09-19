@@ -4,6 +4,7 @@
 // ==========================================================
 
 const http = require('node:http');
+const https = require('node:https');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -11,11 +12,112 @@ const url = require('node:url');
 
 const db = require('./database/db.js');
 
+// ── .env loader (zero dependencies) ─────────────────────────
+(function loadEnv() {
+    const envPath = path.join(__dirname, '.env');
+    if (!fs.existsSync(envPath)) return;
+    const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const eqIdx = trimmed.indexOf('=');
+        if (eqIdx === -1) continue;
+        const key = trimmed.slice(0, eqIdx).trim();
+        const val = trimmed.slice(eqIdx + 1).trim();
+        if (key && !(key in process.env)) {
+            process.env[key] = val;
+        }
+    }
+})();
+
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const sessions = new Map();
+
+// ── TextBee.dev SMS Gateway ─────────────────────────────────
+const TEXTBEE_API_KEY = process.env.TEXTBEE_API_KEY || '';
+const TEXTBEE_DEVICE_ID = process.env.TEXTBEE_DEVICE_ID || '';
+const SMS_ENABLED = (process.env.SMS_ENABLED || 'false').toLowerCase() === 'true';
+
+/**
+ * Send an SMS via TextBee.dev REST API
+ * @param {string} recipient - E.164 formatted number (e.g. "+639171234567")
+ * @param {string} message   - The SMS body text
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+function sendSmsViaTextBee(recipient, message) {
+    return new Promise((resolve) => {
+        if (!TEXTBEE_API_KEY || TEXTBEE_API_KEY === 'your_api_key_here') {
+            console.warn('[SMS] TextBee API key not configured. SMS not sent.');
+            return resolve({ success: false, error: 'SMS gateway not configured.' });
+        }
+
+        const payload = JSON.stringify({
+            recipients: [recipient],
+            message: message,
+            ...(TEXTBEE_DEVICE_ID ? { deviceId: TEXTBEE_DEVICE_ID } : {})
+        });
+
+        const options = {
+            hostname: 'api.textbee.dev',
+            port: 443,
+            path: '/api/v1/gateway/send-sms',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': TEXTBEE_API_KEY,
+                'Content-Length': Buffer.byteLength(payload)
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', (chunk) => { body += chunk; });
+            res.on('end', () => {
+                try {
+                    const data = JSON.parse(body);
+                    if (res.statusCode >= 200 && res.statusCode < 300) {
+                        console.log(`[SMS] ✅ Sent to ${recipient}`);
+                        resolve({ success: true, data });
+                    } else {
+                        console.error(`[SMS] ❌ TextBee error ${res.statusCode}:`, body);
+                        resolve({ success: false, error: data.message || `TextBee returned ${res.statusCode}` });
+                    }
+                } catch {
+                    console.error('[SMS] ❌ Failed to parse TextBee response:', body);
+                    resolve({ success: false, error: 'Invalid response from SMS gateway.' });
+                }
+            });
+        });
+
+        req.on('error', (err) => {
+            console.error('[SMS] ❌ Network error:', err.message);
+            resolve({ success: false, error: `SMS network error: ${err.message}` });
+        });
+
+        req.setTimeout(10000, () => {
+            req.destroy();
+            resolve({ success: false, error: 'SMS gateway request timed out.' });
+        });
+
+        req.write(payload);
+        req.end();
+    });
+}
+
+/**
+ * Convert a Philippine mobile number to E.164 format for TextBee
+ * Input: "09171234567" → Output: "+639171234567"
+ */
+function toE164(mobile) {
+    const digits = String(mobile || '').replace(/\D/g, '');
+    if (digits.startsWith('0')) return '+63' + digits.slice(1);
+    if (digits.startsWith('63')) return '+' + digits;
+    if (digits.startsWith('9') && digits.length === 10) return '+63' + digits;
+    return '+63' + digits;
+}
 
 // MIME types for static asset serving
 const MIME_TYPES = {
@@ -164,12 +266,24 @@ const server = http.createServer(async (req, res) => {
         // REST API ROUTES (/api/*)
         // ==========================================
         if (pathname.startsWith('/api/')) {
+            // App version check endpoint for auto-update detection
+            if (pathname === '/api/version' && req.method === 'GET') {
+                return sendJson(res, 200, {
+                    success: true,
+                    version: '2.0.0',
+                    displayVersion: 'v2.0',
+                    releaseName: 'Version 2.0 (Mobile Fullscreen & SMS Gateway)',
+                    releaseDate: '2026-09-20',
+                    timestamp: new Date().toISOString()
+                });
+            }
+
             // Health check
             if (pathname === '/api/health' && req.method === 'GET') {
                 return sendJson(res, 200, {
                     status: 'online',
                     app: 'BantayBarangay API',
-                    version: '1.0.0',
+                    version: '2.0.0',
                     timestamp: new Date().toISOString()
                 });
             }
@@ -254,8 +368,25 @@ const server = http.createServer(async (req, res) => {
                         mobile: otp.mobile,
                         expires_at: otp.expires_at
                     };
-                    // Demo codes are intentionally available only outside production.
-                    if (!IS_PRODUCTION) response.demo_otp = otp.otp_code;
+
+                    if (SMS_ENABLED && toE164(otp.mobile)) {
+                        // Send real SMS via TextBee.dev
+                        const smsBody = `[BantayBarangay] Your verification code is: ${otp.otp_code}. Valid for 5 minutes. Do not share this code.`;
+                        const smsResult = await sendSmsViaTextBee(toE164(otp.mobile), smsBody);
+                        if (!smsResult.success) {
+                            response.sms_warning = 'Code generated but SMS delivery may be delayed.';
+                            console.warn(`[SMS] Failed for ${otp.mobile}: ${smsResult.error}`);
+                        }
+                        response.sms_sent = smsResult.success;
+                        if (!IS_PRODUCTION) {
+                            response.demo_otp = otp.otp_code;
+                        }
+                    } else {
+                        // Demo / development fallback — log to console
+                        console.log(`[SMS-DEMO] OTP for ${otp.mobile}: ${otp.otp_code}`);
+                        response.demo_otp = otp.otp_code;
+                    }
+
                     return sendJson(res, 200, response);
                 } catch (err) {
                     return sendJson(res, 400, { success: false, error: err.message });

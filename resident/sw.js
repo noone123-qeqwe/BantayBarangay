@@ -3,17 +3,18 @@
    Provides offline caching, fast asset loading, and network resilience.
    ───────────────────────────────────────────────────────────── */
 
-const CACHE_NAME = 'bantay-pwa-v1.3.0';
+const CACHE_NAME = 'bantay-pwa-v2.0.0';
 
 const PRECACHE_ASSETS = [
   './mobile.html',
   './index.html',
   './auth.html',
   './manifest.json',
-  './css/mobile.css?v=5.3',
-  './css/resident.css?v=5.3',
-  './css/auth.css?v=5.3',
-  '../shared/css/common.css?v=5.3',
+  './css/mobile.css?v=2.0',
+  './css/resident.css?v=2.0',
+  './css/auth.css?v=2.0',
+  '../shared/css/common.css?v=2.0',
+  '../shared/js/version-checker.js?v=2.0',
   './js/resident.js',
   './js/chat.js',
   '../shared/js/api.js',

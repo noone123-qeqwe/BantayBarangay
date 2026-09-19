@@ -1,8 +1,8 @@
 {
   "appName": "BantayBarangay",
   "packageName": "ph.gov.masbate.bantaybarangay",
-  "version": "5.2.0",
-  "versionCode": 520,
+  "version": "2.0.0",
+  "versionCode": 200,
   "minSdk": 21,
   "targetSdk": 34,
   "file": "BantayBarangay.apk",

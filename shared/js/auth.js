@@ -312,9 +312,37 @@ const Auth = (() => {
 
   // ── PHONE-NUMBER-BASED CREATE ACCOUNT WITH OTP LIFECYCLE ──
   let pendingRegistration = null;
-  const OTP_EXPIRY_MS = 120 * 1000; // 2 minutes expiry
+  const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes expiry (matches server)
   const OTP_RESEND_COOLDOWN_MS = 60 * 1000; // 60 seconds cooldown
-  const DEMO_OTP_CODE = '1234';
+
+  /** Generate a cryptographically random 6-digit OTP code */
+  function generateOtpCode() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      const arr = new Uint32Array(1);
+      window.crypto.getRandomValues(arr);
+      return String(100000 + (arr[0] % 900000));
+    }
+    return String(100000 + Math.floor(Math.random() * 900000));
+  }
+
+  /**
+   * Send OTP via the server API (which dispatches real SMS via TextBee.dev).
+   * Returns { success, demo_otp? } — demo_otp is only present when SMS is disabled.
+   */
+  async function sendOtpViaServer(mobile, purpose = 'registration') {
+    if (typeof API !== 'undefined') {
+      try {
+        const serverUp = await API.isServerAvailable();
+        if (serverUp) {
+          const result = await API.sendOtp(mobile, purpose);
+          return result;
+        }
+      } catch (e) {
+        console.warn('Server OTP request failed, using client-side fallback:', e);
+      }
+    }
+    return { success: false, offline: true };
+  }
 
   function stageRegistration({ name, mobile, purok, password, confirmPassword }) {
     init();
@@ -357,6 +385,7 @@ const Auth = (() => {
     }
 
     const now = Date.now();
+    const otpCode = generateOtpCode();
     pendingRegistration = {
       name: cleanName,
       mobile: phoneVal.normalized,
@@ -364,7 +393,7 @@ const Auth = (() => {
       purok: purok || 'Purok 1, Brgy. Espinosa, Masbate City',
       password: password,
       role: 'resident',
-      code: DEMO_OTP_CODE,
+      code: otpCode,
       createdAt: now,
       expiresAt: now + OTP_EXPIRY_MS,
       canResendAt: now + OTP_RESEND_COOLDOWN_MS
@@ -701,6 +730,7 @@ const Auth = (() => {
     cancelRegistration,
     verifyRegistrationOtp,
     resendRegistrationOtp,
+    sendOtpViaServer,
     register,
     updateProfile,
     changePassword,

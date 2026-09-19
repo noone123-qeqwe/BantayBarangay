@@ -80,6 +80,14 @@
         <span class="nav-label">Sign out</span>
       </button>
     </nav>
+
+    <div class="sidebar-version-footer">
+      <div class="version-badge-container">
+        <span class="version-dot"></span>
+        <span class="version-text">BantayBarangay v2.0</span>
+      </div>
+      <span class="version-sub">Build 2026.09 • Stable</span>
+    </div>
   </aside>
 
   <!-- ── MOBILE NAV TOGGLE ─────────────────────────────── -->
@@ -97,6 +105,7 @@
       <div class="mobile-brand-meta">
         <div class="mobile-brand-title">
           <span>Bantay</span><span class="mobile-accent">Barangay</span>
+          <span class="mobile-version-tag">v2.0</span>
         </div>
         <span class="mobile-brand-sub">Masbate Civic Portal</span>
       </div>
@@ -943,13 +952,9 @@
             <input type="text" maxlength="1" class="otp-box modal-otp-box" id="motp4" inputmode="numeric" />
           </div>
 
-          <div class="otp-auto-fill-hint" id="modalAutoFillOtpBtn">
-            ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
-          </div>
-
           <div class="ph-error-banner hidden" id="modalOtpErrorBanner" style="margin-bottom:16px;">
             <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span id="modalOtpErrorMessage">Invalid code. Enter 1234.</span>
+            <span id="modalOtpErrorMessage">Invalid verification code.</span>
           </div>
 
           <button type="submit" class="btn btn-primary btn-large btn-block">
@@ -1037,16 +1042,7 @@
       <div id="modalRegisterOtpStepView" class="otp-step-container hidden">
         <h3 class="auth-heading" style="font-size:20px;margin-top:8px">Verify Mobile Number</h3>
         <p class="auth-subheading" style="margin-bottom:6px">We sent a 4-digit code to:</p>
-        <div class="otp-phone-display" id="mregOtpTargetPhone">+63 918 222 3333</div>
-
-        <!-- Simulated SMS Alert -->
-        <div class="sms-simulation-banner" style="margin-bottom:14px;padding:10px 12px;">
-          <span class="sms-sim-icon">💬</span>
-          <div class="sms-sim-content">
-            <div class="sms-sim-sender">BantayBarangay SMS Gateway</div>
-            <div>Code: <span class="sms-sim-code" id="mregSimCode">1234</span> (Expires in 2m)</div>
-          </div>
-        </div>
+        <div class="otp-phone-display" id="mregOtpTargetPhone" style="margin-bottom:20px;">+63 918 222 3333</div>
 
         <form id="modalRegisterOtpForm">
           <div class="otp-input-boxes">
@@ -1054,10 +1050,6 @@
             <input type="text" maxlength="1" class="otp-box mreg-otp-box" id="mrotp2" inputmode="numeric" />
             <input type="text" maxlength="1" class="otp-box mreg-otp-box" id="mrotp3" inputmode="numeric" />
             <input type="text" maxlength="1" class="otp-box mreg-otp-box" id="mrotp4" inputmode="numeric" />
-          </div>
-
-          <div class="otp-auto-fill-hint" id="mregAutoFillOtpBtn">
-            ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
           </div>
 
           <!-- COUNTDOWN & RESEND -->
@@ -1218,5 +1210,6 @@
   <script src="../shared/js/ui.js"></script>
   <script src="../shared/js/locations.js"></script>
   <script src="js/resident.js"></script>
+  <script src="../shared/js/version-checker.js?v=2.0"></script>
 </body>
 </html>

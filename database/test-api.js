@@ -56,6 +56,10 @@ server.listen(PORT, async () => {
         const health = await request('/api/health');
         assert('GET /api/health returns status online', health.status === 200 && health.data.status === 'online');
 
+        // 1b. Version check (v2.0)
+        const versionRes = await request('/api/version');
+        assert('GET /api/version returns version 2.0.0 and displayVersion v2.0', versionRes.status === 200 && versionRes.data.version === '2.0.0' && versionRes.data.displayVersion === 'v2.0');
+
         // 2. Stats endpoint
         const stats = await request('/api/stats');
         assert('GET /api/stats returns statistics', stats.status === 200 && stats.data.data.total >= 4);

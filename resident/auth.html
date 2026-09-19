@@ -3,19 +3,23 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>BantayBarangay — Masbate Province Citizen Login & Registration</title>
   <meta name="description"
     content="Sign in or register for BantayBarangay using your Philippine mobile phone number to report infrastructure issues and track community repairs across Masbate Province." />
   <link rel="icon" type="image/png" href="images/logo.png" />
   <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="BantayBarangay" />
+  <link rel="apple-touch-icon" href="images/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="../shared/css/common.css?v=5.3" />
-  <link rel="stylesheet" href="css/auth.css?v=5.3" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.5" />
+  <link rel="stylesheet" href="css/auth.css?v=5.5" />
   <link rel="manifest" href="manifest.json" />
 </head>
 
@@ -82,7 +86,10 @@
           <span class="logo-main">Bantay</span><span class="logo-accent">Barangay</span>
         </div>
       </a>
-      <div style="font-size:12px;font-weight:700;color:#0284c7;letter-spacing:0.08em;text-transform:uppercase;margin-top:8px">Province of Masbate</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;">
+        <span style="font-size:12px;font-weight:700;color:#0284c7;letter-spacing:0.08em;text-transform:uppercase;">Province of Masbate</span>
+        <span class="auth-version-badge">v2.0</span>
+      </div>
     </div>
 
     <!-- ════ RIGHT PANEL: AUTHENTICATION CARD ─────────────── -->
@@ -184,6 +191,7 @@
 
           <!-- ── INSTALL APP & DOWNLOAD APK SECTION ───────────── -->
           <div class="auth-app-download-card" id="authAppDownloadCard" style="margin-top:20px;">
+            <button type="button" class="auth-app-dismiss-btn" id="btnDismissDownloadCard" title="Hide download card" aria-label="Hide download card">✕</button>
             <div class="auth-app-card-header">
               <div class="auth-app-badge-box">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="color:#0284c7;">
@@ -194,7 +202,7 @@
               <div class="auth-app-card-text">
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                   <span class="auth-app-title">BantayBarangay App</span>
-                  <span class="auth-app-pill">Android APK • v5.2</span>
+                  <span class="auth-app-pill">Android APK • v2.0</span>
                 </div>
                 <div class="auth-app-subtitle">Install or download APK for faster reporting & offline access</div>
               </div>
@@ -251,30 +259,18 @@
           </div>
 
           <h2 class="auth-panel-heading" style="text-align:center">Verify Mobile Number</h2>
-          <p class="auth-panel-sub" style="text-align:center;margin-bottom:6px">We sent a 4-digit verification code to:
+          <p class="auth-panel-sub" style="text-align:center;margin-bottom:6px">We sent a 6-digit verification code via SMS to:
           </p>
-          <div class="otp-phone-display" id="loginOtpTargetPhone">+63 917 123 4567</div>
-
-          <!-- SIMULATED SMS NOTIFICATION -->
-          <div class="sms-simulation-banner">
-            <span class="sms-sim-icon">💬</span>
-            <div class="sms-sim-content">
-              <div class="sms-sim-sender">BantayBarangay SMS Gateway • Sent Now</div>
-              <div>Your code is <span class="sms-sim-code" id="loginSimCodeDisplay">1234</span> (Valid for 2 mins). Do
-                not share this code.</div>
-            </div>
-          </div>
+          <div class="otp-phone-display" id="loginOtpTargetPhone" style="margin-bottom:24px;">+63 917 123 4567</div>
 
           <form id="loginOtpForm">
-            <div class="otp-input-boxes">
+            <div class="otp-input-boxes otp-6-digit">
               <input type="text" maxlength="1" class="otp-box" id="lotp1" inputmode="numeric" autofocus />
               <input type="text" maxlength="1" class="otp-box" id="lotp2" inputmode="numeric" />
               <input type="text" maxlength="1" class="otp-box" id="lotp3" inputmode="numeric" />
               <input type="text" maxlength="1" class="otp-box" id="lotp4" inputmode="numeric" />
-            </div>
-
-            <div class="otp-auto-fill-hint" id="loginAutoFillOtpBtn">
-              ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
+              <input type="text" maxlength="1" class="otp-box" id="lotp5" inputmode="numeric" />
+              <input type="text" maxlength="1" class="otp-box" id="lotp6" inputmode="numeric" />
             </div>
 
             <div class="ph-error-banner hidden" id="loginOtpErrorBanner" style="margin-bottom:16px">
@@ -283,7 +279,7 @@
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <span id="loginOtpErrorMessage">Invalid verification code. Use demo code 1234.</span>
+              <span id="loginOtpErrorMessage">Invalid verification code. Please check your SMS.</span>
             </div>
 
             <button type="submit" class="btn-auth-primary" id="btnVerifyLoginOtp">
@@ -406,30 +402,18 @@
           </div>
 
           <h2 class="auth-panel-heading" style="text-align:center">Verify Phone Number</h2>
-          <p class="auth-panel-sub" style="text-align:center;margin-bottom:6px">We sent a 4-digit SMS verification code
+          <p class="auth-panel-sub" style="text-align:center;margin-bottom:6px">We sent a 6-digit SMS verification code
             to:</p>
-          <div class="otp-phone-display" id="regOtpTargetPhone">+63 919 444 8888</div>
-
-          <!-- SIMULATED SMS ALERT -->
-          <div class="sms-simulation-banner">
-            <span class="sms-sim-icon">💬</span>
-            <div class="sms-sim-content">
-              <div class="sms-sim-sender">BantayBarangay SMS Gateway • Sent Now</div>
-              <div>Your verification code is <span class="sms-sim-code" id="regSimCodeDisplay">1234</span> (Valid for 2
-                mins).</div>
-            </div>
-          </div>
+          <div class="otp-phone-display" id="regOtpTargetPhone" style="margin-bottom:24px;">+63 919 444 8888</div>
 
           <form id="regOtpForm" novalidate>
-            <div class="otp-input-boxes">
+            <div class="otp-input-boxes otp-6-digit">
               <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp1" inputmode="numeric" autofocus />
               <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp2" inputmode="numeric" />
               <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp3" inputmode="numeric" />
               <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp4" inputmode="numeric" />
-            </div>
-
-            <div class="otp-auto-fill-hint" id="regAutoFillOtpBtn">
-              ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
+              <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp5" inputmode="numeric" />
+              <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp6" inputmode="numeric" />
             </div>
 
             <!-- COUNTDOWN TIMER & RESEND -->
@@ -451,7 +435,7 @@
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <span id="regOtpErrorMessage">Invalid verification code. Please check SMS.</span>
+              <span id="regOtpErrorMessage">Invalid verification code. Please check your SMS.</span>
             </div>
 
             <button type="submit" class="btn-auth-primary" id="btnVerifyRegisterOtp">
@@ -539,6 +523,7 @@
   <script src="../shared/js/auth.js"></script>
   <script src="../shared/js/ui.js"></script>
   <script src="../shared/js/locations.js"></script>
+  <script src="../shared/js/version-checker.js?v=2.0"></script>
   <script>
     // ── SPLASH SCREEN CONTROLLER ─────────────────────────────
     (function() {
@@ -574,7 +559,24 @@
   </script>
 
   <script>
+    // ── MOBILE FULLSCREEN APP DETECTION ──────────────────────
+    function checkMobileMode() {
+      const isMobile = window.innerWidth <= 1024 ||
+                       window.matchMedia('(max-width: 1024px)').matches ||
+                       window.matchMedia('(display-mode: standalone)').matches ||
+                       window.navigator.standalone === true ||
+                       /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+      if (isMobile) {
+        document.body.classList.add('mobile-screen');
+      } else {
+        document.body.classList.remove('mobile-screen');
+      }
+    }
+    checkMobileMode();
+    window.addEventListener('resize', checkMobileMode);
+
     document.addEventListener('DOMContentLoaded', () => {
+      checkMobileMode();
       // ════ AUTO-REDIRECT OR LOGOUT HANDLING ════════════════════
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('logout') === 'true') {
@@ -669,7 +671,9 @@
         document.getElementById('lotp1'),
         document.getElementById('lotp2'),
         document.getElementById('lotp3'),
-        document.getElementById('lotp4')
+        document.getElementById('lotp4'),
+        document.getElementById('lotp5'),
+        document.getElementById('lotp6')
       ];
 
       let currentLoginPhoneValidation = null;
@@ -723,7 +727,7 @@
       }
 
       // SMS OTP Fallback Function
-      function startSmsOtpFlow(promptMessage) {
+      async function startSmsOtpFlow(promptMessage) {
         const inputVal = phoneInput.value.trim();
         const validation = Auth.validatePhilippineMobile(inputVal);
 
@@ -750,11 +754,18 @@
         loginOtpErrorBanner.classList.add('hidden');
         setTimeout(() => loginOtpBoxes[0].focus(), 150);
 
-        UI.toast(promptMessage || `SMS code sent to ${validation.intlFormatted}. Use code: 1234`, 'info');
+        // Send real SMS via server API
+        UI.toast(`Sending SMS code to ${validation.intlFormatted}...`, 'info');
+        const smsResult = await Auth.sendOtpViaServer(validation.normalized, 'login');
+        if (smsResult.success) {
+          UI.toast(`SMS verification code sent to ${validation.intlFormatted}. Check your phone.`, 'success');
+        } else {
+          UI.toast('Could not send SMS. Please check your number and try again.', 'error');
+        }
       }
 
       btnForgotPass?.addEventListener('click', () => {
-        startSmsOtpFlow('Account Recovery: Use SMS OTP code 1234 to verify identity.');
+        startSmsOtpFlow('Sending SMS verification code...');
       });
 
       phLoginForm.addEventListener('submit', e => {
@@ -833,17 +844,22 @@
         });
       });
 
-      document.getElementById('loginAutoFillOtpBtn')?.addEventListener('click', () => {
-        ['1', '2', '3', '4'].forEach((num, i) => loginOtpBoxes[i].value = num);
-        loginOtpForm.dispatchEvent(new Event('submit'));
-      });
-
-      loginOtpForm.addEventListener('submit', e => {
+      loginOtpForm.addEventListener('submit', async e => {
         e.preventDefault();
         const code = loginOtpBoxes.map(b => b.value).join('');
-        if (code !== '1234') {
+        if (!code || code.length < 6) {
           loginOtpErrorBanner.classList.remove('hidden');
-          document.getElementById('loginOtpErrorMessage').textContent = 'Invalid verification code. Use demo code 1234.';
+          document.getElementById('loginOtpErrorMessage').textContent = 'Please enter all 6 digits of the verification code.';
+          return;
+        }
+
+        // Verify OTP via server API
+        const verifyResult = await API.verifyOtp(currentLoginPhoneValidation.normalized, code, 'login');
+        if (!verifyResult.success) {
+          loginOtpErrorBanner.classList.remove('hidden');
+          document.getElementById('loginOtpErrorMessage').textContent = verifyResult.error || 'Invalid verification code. Please check your SMS.';
+          loginOtpBoxes.forEach(b => b.value = '');
+          loginOtpBoxes[0].focus();
           return;
         }
 
@@ -865,8 +881,14 @@
         phoneInput.focus();
       });
 
-      document.getElementById('btnResendLoginOtp')?.addEventListener('click', () => {
-        UI.toast(`New SMS code sent to ${currentLoginPhoneValidation.intlFormatted}. Use code: 1234`, 'info');
+      document.getElementById('btnResendLoginOtp')?.addEventListener('click', async () => {
+        UI.toast(`Sending new SMS code to ${currentLoginPhoneValidation.intlFormatted}...`, 'info');
+        const smsResult = await Auth.sendOtpViaServer(currentLoginPhoneValidation.normalized, 'login');
+        if (smsResult.success) {
+          UI.toast(`New SMS code sent to ${currentLoginPhoneValidation.intlFormatted}. Check your phone.`, 'success');
+        } else {
+          UI.toast('Failed to resend SMS. Please try again.', 'error');
+        }
       });
 
       // ═════════════════════════════════════════════════════════
@@ -885,7 +907,9 @@
         document.getElementById('rotp1'),
         document.getElementById('rotp2'),
         document.getElementById('rotp3'),
-        document.getElementById('rotp4')
+        document.getElementById('rotp4'),
+        document.getElementById('rotp5'),
+        document.getElementById('rotp6')
       ];
       const regOtpForm = document.getElementById('regOtpForm');
       const regOtpErrorBanner = document.getElementById('regOtpErrorBanner');
@@ -933,7 +957,7 @@
         }
       });
 
-      phRegisterForm.addEventListener('submit', e => {
+      phRegisterForm.addEventListener('submit', async e => {
         e.preventDefault();
         const phoneVal = regPhoneInput.value.trim();
         const passVal = regPassword.value;
@@ -983,7 +1007,15 @@
         setTimeout(() => regOtpBoxes[0].focus(), 150);
 
         startCountdown();
-        UI.toast(`One-time verification code sent to ${validation.intlFormatted}. Use code: 1234`, 'info');
+
+        // Send real SMS via server API
+        UI.toast(`Sending SMS code to ${validation.intlFormatted}...`, 'info');
+        const smsResult = await Auth.sendOtpViaServer(validation.normalized, 'registration');
+        if (smsResult.success) {
+          UI.toast(`Verification code sent to ${validation.intlFormatted}. Check your phone's SMS inbox.`, 'success');
+        } else {
+          UI.toast('Could not send SMS. Please check your number and try again.', 'error');
+        }
       });
 
       function showRegError(msg) {
@@ -1026,11 +1058,23 @@
         }
       }
 
-      btnResendRegOtp?.addEventListener('click', () => {
+      btnResendRegOtp?.addEventListener('click', async () => {
+        UI.toast('Sending new SMS code...', 'info');
+        const pending = Auth.getPendingRegistration();
+        if (!pending) {
+          UI.toast('No registration in progress. Please start over.', 'error');
+          return;
+        }
         const resendRes = Auth.resendRegistrationOtp();
         if (resendRes.success) {
           startCountdown();
-          UI.toast(`New SMS code sent. Use code: ${resendRes.otp}`, 'info');
+          // Send new OTP via server SMS
+          const smsResult = await Auth.sendOtpViaServer(pending.mobile, 'registration');
+          if (smsResult.success) {
+            UI.toast('New SMS code sent! Check your phone.', 'success');
+          } else {
+            UI.toast('New code generated but SMS delivery may be delayed.', 'warning');
+          }
         } else {
           UI.toast(resendRes.error || 'Failed to resend code.', 'error');
         }
@@ -1048,20 +1092,32 @@
         });
       });
 
-      document.getElementById('regAutoFillOtpBtn')?.addEventListener('click', () => {
-        ['1', '2', '3', '4'].forEach((num, i) => regOtpBoxes[i].value = num);
-        regOtpForm.dispatchEvent(new Event('submit'));
-      });
-
-      regOtpForm.addEventListener('submit', e => {
+      regOtpForm.addEventListener('submit', async e => {
         e.preventDefault();
         const code = regOtpBoxes.map(b => b.value).join('');
-        if (!code || code.length < 4) {
-          regOtpErrorMessage.textContent = 'Please enter all 4 digits of the verification code.';
+        if (!code || code.length < 6) {
+          regOtpErrorMessage.textContent = 'Please enter all 6 digits of the verification code.';
           regOtpErrorBanner.classList.remove('hidden');
           return;
         }
 
+        // Verify OTP via server API
+        const pending = Auth.getPendingRegistration();
+        if (pending) {
+          const serverVerify = await API.verifyOtp(pending.mobile, code, 'registration');
+          if (!serverVerify.success) {
+            regOtpErrorMessage.textContent = serverVerify.error || 'Invalid verification code. Please check your SMS.';
+            regOtpErrorBanner.classList.remove('hidden');
+            regOtpBoxes.forEach(b => b.value = '');
+            regOtpBoxes[0].focus();
+            return;
+          }
+        }
+
+        // Complete registration via client-side Auth engine
+        // Override the client-side code with what was entered (server already verified)
+        const pendingReg = Auth.getPendingRegistration();
+        if (pendingReg) pendingReg.code = code;
         const verifyRes = Auth.verifyRegistrationOtp(code);
         if (!verifyRes.success) {
           regOtpErrorMessage.textContent = verifyRes.error;
@@ -1094,6 +1150,7 @@
       const authAppDownloadCard = document.getElementById('authAppDownloadCard');
       const reinstallAppNotice = document.getElementById('reinstallAppNotice');
       const btnShowDownloadAgain = document.getElementById('btnShowDownloadAgain');
+      const btnDismissDownloadCard = document.getElementById('btnDismissDownloadCard');
       const apkGuideModal = document.getElementById('apkInstallModalOverlay');
 
       const STORAGE_KEY_DOWNLOADED = 'bb_app_downloaded';
@@ -1101,30 +1158,95 @@
       // Check if running inside installed standalone PWA/WebAPK window
       function isStandaloneMode() {
         return window.matchMedia('(display-mode: standalone)').matches ||
-               window.navigator.standalone === true;
+               window.navigator.standalone === true ||
+               document.referrer.includes('android-app://');
       }
 
-      function showInstallCard() {
-        if (authAppDownloadCard) authAppDownloadCard.classList.remove('hidden');
-        if (reinstallAppNotice) reinstallAppNotice.classList.add('hidden');
+      function isDownloaded() {
+        try {
+          return localStorage.getItem(STORAGE_KEY_DOWNLOADED) === 'true';
+        } catch (e) {
+          return false;
+        }
       }
 
-      function hideInstallCard() {
-        if (authAppDownloadCard) authAppDownloadCard.classList.add('hidden');
+      function markAsDownloaded() {
+        try {
+          localStorage.setItem(STORAGE_KEY_DOWNLOADED, 'true');
+        } catch (e) {}
       }
 
-      // If running inside the installed standalone app, hide the install prompts
-      if (isStandaloneMode()) {
-        hideInstallCard();
-      } else {
-        // In phone browser or desktop browser, always display the Install App & APK card
-        showInstallCard();
+      function clearDownloadedFlag() {
+        try {
+          localStorage.removeItem(STORAGE_KEY_DOWNLOADED);
+        } catch (e) {}
       }
+
+      // Update UI according to app & download state:
+      // 1. In standalone app: hide everything install-related (user is currently inside installed app)
+      // 2. In browser AND already downloaded: hide large download card, show subtle "Deleted the app? Download again"
+      // 3. In browser AND not downloaded: show large download card, hide reinstall notice
+      function updateInstallUIState() {
+        if (isStandaloneMode()) {
+          if (authAppDownloadCard) authAppDownloadCard.classList.add('hidden');
+          if (reinstallAppNotice) reinstallAppNotice.classList.add('hidden');
+          return;
+        }
+
+        if (isDownloaded()) {
+          if (authAppDownloadCard) authAppDownloadCard.classList.add('hidden');
+          if (reinstallAppNotice) reinstallAppNotice.classList.remove('hidden');
+        } else {
+          if (authAppDownloadCard) authAppDownloadCard.classList.remove('hidden');
+          if (reinstallAppNotice) reinstallAppNotice.classList.add('hidden');
+        }
+      }
+
+      // Initial check on load
+      updateInstallUIState();
+
+      // "Deleted the app? Download again" button:
+      // Clears the downloaded flag and reveals the full download card
+      btnShowDownloadAgain?.addEventListener('click', () => {
+        clearDownloadedFlag();
+        updateInstallUIState();
+        if (typeof UI !== 'undefined' && UI.toast) {
+          UI.toast('App download & install options restored.', 'info');
+        }
+        authAppDownloadCard?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+
+      // Dismiss button on download card (user can re-hide the card without downloading)
+      btnDismissDownloadCard?.addEventListener('click', () => {
+        markAsDownloaded();
+        updateInstallUIState();
+      });
+
+      // Track APK download clicks
+      btnDownloadApk?.addEventListener('click', () => {
+        markAsDownloaded();
+        if (typeof UI !== 'undefined' && UI.toast) {
+          UI.toast('Downloading BantayBarangay APK (5.8 MB)...', 'info');
+        }
+        setTimeout(() => {
+          updateInstallUIState();
+        }, 1800);
+      });
+
+      btnModalDownloadApk?.addEventListener('click', () => {
+        markAsDownloaded();
+        closeApkGuideModal();
+        if (typeof UI !== 'undefined' && UI.toast) {
+          UI.toast('Downloading BantayBarangay APK (5.8 MB)...', 'info');
+        }
+        setTimeout(() => {
+          updateInstallUIState();
+        }, 1800);
+      });
 
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
-        // When beforeinstallprompt fires, Chrome has confirmed the PWA is NOT installed on this device.
         if (btnInstallApp) {
           btnInstallApp.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16">
@@ -1139,10 +1261,10 @@
 
       window.addEventListener('appinstalled', () => {
         deferredInstallPrompt = null;
-        localStorage.setItem(STORAGE_KEY_DOWNLOADED, 'true');
-        hideInstallUI(false);
+        markAsDownloaded();
+        updateInstallUIState();
         if (typeof UI !== 'undefined' && UI.toast) {
-          UI.toast('BantayBarangay installed to your home screen!', 'success');
+          UI.toast('BantayBarangay installed to your device!', 'success');
         }
       });
 
@@ -1151,10 +1273,10 @@
           deferredInstallPrompt.prompt();
           const { outcome } = await deferredInstallPrompt.userChoice;
           if (outcome === 'accepted') {
-            localStorage.setItem(STORAGE_KEY_DOWNLOADED, 'true');
-            hideInstallUI(false);
+            markAsDownloaded();
+            updateInstallUIState();
             if (typeof UI !== 'undefined' && UI.toast) {
-              UI.toast('Installing BantayBarangay...', 'info');
+              UI.toast('Installing BantayBarangay to your home screen...', 'info');
             }
           }
           deferredInstallPrompt = null;

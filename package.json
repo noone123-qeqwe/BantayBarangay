@@ -1,6 +1,6 @@
 {
   "name": "bantaybarangay",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Barangay Infrastructure Incident Reporting & Civic Action System (Philippines)",
   "main": "server.js",
   "scripts": {
