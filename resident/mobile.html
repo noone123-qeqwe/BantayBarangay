@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="BantayBarangay Mobile" />
+  <title>BantayBarangay Mobile — Masbate Civic Portal</title>
+  <meta name="description" content="Mobile app for Masbate Province residents to report civic infrastructure issues." />
+  <link rel="icon" type="image/png" href="images/icon-192.png" />
+  <link rel="apple-touch-icon" href="images/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="images/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="images/icon-512.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.2" />
+  <link rel="stylesheet" href="css/mobile.css?v=5.2" />
+  <script>
+    (function() {
+      try {
+        var user = localStorage.getItem('bantay_current_user');
+        if (!user) {
+          window.location.replace('auth.html' + window.location.search + window.location.hash);
+          return;
+        }
+        var parsed = JSON.parse(user);
+        if (parsed.role === 'admin') {
+          window.location.replace('../admin/index.html');
+        }
+      } catch(e) {
+        window.location.replace('auth.html');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ── MOBILE APP SHELL CONTAINER ────────────────────────── -->
+  <div class="mobile-app-shell">
+
+    <!-- ── 1. MOBILE TOP APP BAR ─────────────────────────── -->
+    <header class="mobile-header" id="mobileTopBar">
+      <div class="mobile-header-brand" onclick="window.BantayResident ? window.BantayResident.showView('report') : null">
+        <img src="images/logo.png" alt="BantayBarangay" class="mobile-seal-img" />
+        <div class="mobile-title-block">
+          <span class="mobile-app-title">Bantay<span class="accent-cyan">Barangay</span></span>
+          <span class="mobile-app-sub">Masbate Civic Portal</span>
+        </div>
+      </div>
+      <div class="mobile-header-actions">
+        <div class="mobile-live-pill" title="Grid Services Operational">
+          <span class="mobile-live-dot"></span>
+          <span>Online</span>
+        </div>
+        <button type="button" class="mobile-header-avatar-btn" id="mobileAvatarBtn" title="Account Settings" onclick="window.BantayResident ? window.BantayResident.showView('profile') : null">
+          <span id="mobileAvatarLetter">👤</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── 2. SCROLLABLE CONTENT VIEW ────────────────────── -->
+    <main class="mobile-main-scroll" id="mainContent">
+
+      <!-- OFFLINE ALERT STRIP -->
+      <div class="offline-strip hidden" id="offlineIndicatorStrip" role="status" aria-live="polite">
+        <span class="offline-dot"></span>
+        <span>Offline Mode: Reports will be saved locally &amp; synced when connected</span>
+      </div>
+
+      <!-- PWA INSTALL PROMPT CARD -->
+      <div class="pwa-install-card hidden" id="pwaInstallBanner">
+        <div class="pwa-install-left">
+          <img src="images/icon-192.png" alt="BantayBarangay" class="pwa-app-badge-img" />
+          <div>
+            <div class="pwa-install-title">Install BantayBarangay</div>
+            <div class="pwa-install-sub">Add to home screen for fast offline reporting</div>
+          </div>
+        </div>
+        <div class="pwa-install-btns">
+          <button type="button" class="btn-pwa-install" id="pwaInstallBtn">Install</button>
+          <button type="button" class="btn-pwa-close" id="pwaDismissBtn" aria-label="Dismiss">✕</button>
+        </div>
+      </div>
+
+      <!-- ── EMERGENCY CITIZEN ADVISORY BANNER (ADMIN BROADCAST) ── -->
+      <div id="residentEmergencyAdvisory" class="emergency-advisory-container" style="padding:0 4px;margin-bottom:12px;"></div>
+
+      <!-- ════ TAB 1: REPORT ISSUE VIEW ═════════════════════ -->
+      <section class="view active" id="view-report">
+        <div class="view-header">
+          <h1 class="view-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Report an Issue
+          </h1>
+          <p class="view-subtitle">Report infrastructure hazards in your area for immediate dispatch to MASELCO.</p>
+        </div>
+
+        <section class="report-hero" aria-label="Community reporting overview">
+          <div class="report-hero-copy">
+            <span class="report-hero-kicker"><span class="report-hero-pulse"></span>Community action desk</span>
+            <h2>See a hazard?<br><em>Let your community know.</em></h2>
+            <p>A few clear details can move a repair forward.</p>
+          </div>
+          <div class="report-hero-stats" aria-label="Reporting benefits">
+            <div><strong>~2 min</strong><span>to submit</span></div>
+            <div><strong>Saved</strong><span>offline too</span></div>
+          </div>
+          <div class="report-hero-orbit orbit-one" aria-hidden="true"></div>
+          <div class="report-hero-orbit orbit-two" aria-hidden="true"></div>
+        </section>
+
+        <form class="report-form-mobile" id="reportForm" novalidate>
+          <!-- 1. CATEGORY & INFRASTRUCTURE TYPE -->
+          <div class="form-group">
+            <label class="form-label" for="categorySelect">
+              <span>Category &amp; Issue Type</span>
+              <span class="required">*</span>
+            </label>
+            <div class="category-select-wrapper">
+              <!-- Hidden select for form compatibility -->
+              <select class="form-select category-dropdown" id="categorySelect" name="category" style="display:none;" tabindex="-1" aria-hidden="true">
+                <option value="" disabled selected>— Select an issue —</option>
+
+                <optgroup label="Category A: Line &amp; Pole Issues">
+                  <option value="Toppled / Leaning Utility Pole" data-group="Category A: Line &amp; Pole Issues" data-desc="Concrete or wooden poles tilted or completely knocked down" data-sev="Critical">Toppled / Leaning Utility Pole</option>
+                  <option value="Snapped / Downed Power Lines" data-group="Category A: Line &amp; Pole Issues" data-desc="Live or dead wires lying on the ground or across roads" data-sev="Critical">Snapped / Downed Power Lines</option>
+                  <option value="Low-Hanging Wires" data-group="Category A: Line &amp; Pole Issues" data-desc="Cables sagging dangerously low near traffic or roofs" data-sev="High">Low-Hanging Wires</option>
+                  <option value="Tangled or Crossed Lines" data-group="Category A: Line &amp; Pole Issues" data-desc="Secondary lines clashing or shorting due to wind" data-sev="High">Tangled or Crossed Lines</option>
+                  <option value="Broken Crossarm / Insulator" data-group="Category A: Line &amp; Pole Issues" data-desc="Damaged hardware holding the wires to the pole" data-sev="Medium">Broken Crossarm / Insulator</option>
+                </optgroup>
+
+                <optgroup label="Category B: Transformer &amp; Substation Issues">
+                  <option value="Blown Transformer" data-group="Category B: Transformer &amp; Substation Issues" data-desc="Loud bang, smoke, or total failure resulting in localized outage" data-sev="Critical">Blown Transformer</option>
+                  <option value="Transformer Oil Leak / Smoking" data-group="Category B: Transformer &amp; Substation Issues" data-desc="Overheated or leaking transformer unit" data-sev="Critical">Transformer Oil Leak / Smoking</option>
+                  <option value="Sparking / Arcing Transformer" data-group="Category B: Transformer &amp; Substation Issues" data-desc="Visible electrical flashes and buzzing coming from the unit" data-sev="Critical">Sparking / Arcing Transformer</option>
+                </optgroup>
+
+                <optgroup label="Category C: Service Drop &amp; Meter Issues">
+                  <option value="Service Drop Disconnection" data-group="Category C: Service Drop &amp; Meter Issues" data-desc="Wires tearing off from the main line to a specific house" data-sev="Medium">Service Drop Disconnection</option>
+                  <option value="Service Wire Sparking / Short Circuit" data-group="Category C: Service Drop &amp; Meter Issues" data-desc="Flashes or burning smell near the weather head" data-sev="Critical">Service Wire Sparking / Short Circuit</option>
+                  <option value="Damaged Electric Meter Box" data-group="Category C: Service Drop &amp; Meter Issues" data-desc="Physical damage, broken seals, or burnt meter base" data-sev="Medium">Damaged Electric Meter Box</option>
+                </optgroup>
+
+                <optgroup label="Category D: Outage Types &amp; Grid Status">
+                  <option value="Total Blackout (Area-wide)" data-group="Category D: Outage Types &amp; Grid Status" data-desc="No power across the entire barangay or zone" data-sev="High">Total Blackout (Area-wide)</option>
+                  <option value="Rotational Brownout / Load Shedding" data-group="Category D: Outage Types &amp; Grid Status" data-desc="Scheduled or sudden grid cuts due to power deficits" data-sev="Medium">Rotational Brownout / Load Shedding</option>
+                  <option value="Low Voltage / Fluctuating Power" data-group="Category D: Outage Types &amp; Grid Status" data-desc="Dim lights, appliances failing to start properly" data-sev="Medium">Low Voltage / "Fluctuating Power"</option>
+                  <option value="Unscheduled Interruption (Cause Unknown)" data-group="Category D: Outage Types &amp; Grid Status" data-desc="Sudden loss of power without prior advisory" data-sev="High">Unscheduled Interruption (Cause Unknown)</option>
+                </optgroup>
+
+                <optgroup label="Category E: Vegetation &amp; Environmental Hazards">
+                  <option value="Tree Branches Entangled in Wires" data-group="Category E: Vegetation &amp; Environmental Hazards" data-desc="Overgrown branches pressing distribution lines" data-sev="High">Tree Branches Entangled in Wires</option>
+                  <option value="Tree Branch Fell on Lines" data-group="Category E: Vegetation &amp; Environmental Hazards" data-desc="Branches breaking and snapping lines during storms" data-sev="Critical">Tree Branch Fell on Lines</option>
+                </optgroup>
+              </select>
+
+              <!-- CUSTOM PICKER TRIGGER -->
+              <div class="custom-cat-picker" id="customCatPicker">
+                <button type="button" class="custom-cat-trigger" id="customCatTrigger" aria-haspopup="listbox" aria-expanded="false">
+                  <div class="cat-trigger-main">
+                    <div class="cat-trigger-icon-box" id="catTriggerIconBox">
+                      <span id="catTriggerIcon">⚡</span>
+                    </div>
+                    <div class="cat-trigger-texts">
+                      <div class="cat-trigger-title" id="catTriggerTitle">Select category &amp; issue…</div>
+                      <div class="cat-trigger-subtitle" id="catTriggerSub">Choose from 17 infrastructure issue types</div>
+                    </div>
+                  </div>
+                  <div class="cat-trigger-aside">
+                    <span class="cat-trigger-urgency-badge hidden" id="catTriggerUrgency"></span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </button>
+
+                <!-- FLOATING POPOVER DRAWER -->
+                <div class="custom-cat-popover hidden" id="customCatPopover">
+                  <div class="cat-popover-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="catSearchInput" placeholder="Search issue (e.g. pole, wire, outage)…" autocomplete="off" />
+                    <button type="button" class="cat-search-clear-btn hidden" id="catSearchClear">✕</button>
+                  </div>
+
+                  <div class="cat-filter-pills" id="catFilterPills">
+                    <button type="button" class="cat-pill-btn active" data-filter="all">All (17)</button>
+                    <button type="button" class="cat-pill-btn" data-filter="Category A">🗼 Line &amp; Pole</button>
+                    <button type="button" class="cat-pill-btn" data-filter="Category B">⚡ Transformer</button>
+                    <button type="button" class="cat-pill-btn" data-filter="Category C">🔌 Service Drop</button>
+                    <button type="button" class="cat-pill-btn" data-filter="Category D">💡 Outages</button>
+                    <button type="button" class="cat-pill-btn" data-filter="Category E">🌳 Vegetation</button>
+                  </div>
+
+                  <div class="cat-options-list" id="catOptionsList" role="listbox">
+                    <!-- Category A -->
+                    <div class="cat-group-header-label" data-group="Category A">🗼 Category A: Line &amp; Pole Issues</div>
+                    <div class="custom-cat-item" data-value="Toppled / Leaning Utility Pole" data-group="Category A" data-desc="Concrete or wooden poles tilted or completely knocked down" data-sev="Critical" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🗼</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category A</span>
+                          <span class="cat-item-urgency-badge urgency-critical">Critical</span>
+                        </div>
+                        <div class="cat-item-title">Toppled / Leaning Utility Pole</div>
+                        <div class="cat-item-desc">Poles tilted or completely knocked down</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Snapped / Downed Power Lines" data-group="Category A" data-desc="Live or dead wires lying on the ground or across roads" data-sev="Critical" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">⚡</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category A</span>
+                          <span class="cat-item-urgency-badge urgency-critical">Critical</span>
+                        </div>
+                        <div class="cat-item-title">Snapped / Downed Power Lines</div>
+                        <div class="cat-item-desc">Wires lying on the ground or across roads</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Low-Hanging Wires" data-group="Category A" data-desc="Cables sagging dangerously low near traffic or roofs" data-sev="High" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">⚠️</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category A</span>
+                          <span class="cat-item-urgency-badge urgency-high">High</span>
+                        </div>
+                        <div class="cat-item-title">Low-Hanging Wires</div>
+                        <div class="cat-item-desc">Cables sagging low near traffic or roofs</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Tangled or Crossed Lines" data-group="Category A" data-desc="Secondary lines clashing or shorting due to wind" data-sev="High" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🔀</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category A</span>
+                          <span class="cat-item-urgency-badge urgency-high">High</span>
+                        </div>
+                        <div class="cat-item-title">Tangled or Crossed Lines</div>
+                        <div class="cat-item-desc">Lines clashing or shorting due to wind</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Broken Crossarm / Insulator" data-group="Category A" data-desc="Damaged hardware holding the wires to the pole" data-sev="Medium" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🔧</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category A</span>
+                          <span class="cat-item-urgency-badge urgency-medium">Medium</span>
+                        </div>
+                        <div class="cat-item-title">Broken Crossarm / Insulator</div>
+                        <div class="cat-item-desc">Damaged hardware holding the wires to pole</div>
+                      </div>
+                    </div>
+
+                    <!-- Category B -->
+                    <div class="cat-group-header-label" data-group="Category B">⚡ Category B: Transformer Issues</div>
+                    <div class="custom-cat-item" data-value="Blown Transformer" data-group="Category B" data-desc="Loud bang, smoke, or total failure resulting in localized outage" data-sev="Critical" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">💥</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category B</span>
+                          <span class="cat-item-urgency-badge urgency-critical">Critical</span>
+                        </div>
+                        <div class="cat-item-title">Blown Transformer</div>
+                        <div class="cat-item-desc">Loud bang, smoke, localized outage</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Transformer Oil Leak / Smoking" data-group="Category B" data-desc="Overheated or leaking transformer unit" data-sev="Critical" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">♨️</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category B</span>
+                          <span class="cat-item-urgency-badge urgency-critical">Critical</span>
+                        </div>
+                        <div class="cat-item-title">Transformer Oil Leak / Smoking</div>
+                        <div class="cat-item-desc">Overheated or leaking transformer unit</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Sparking / Arcing Transformer" data-group="Category B" data-desc="Visible electrical flashes and buzzing coming from the unit" data-sev="Critical" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">⚡</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category B</span>
+                          <span class="cat-item-urgency-badge urgency-critical">Critical</span>
+                        </div>
+                        <div class="cat-item-title">Sparking / Arcing Transformer</div>
+                        <div class="cat-item-desc">Electrical flashes and buzzing from unit</div>
+                      </div>
+                    </div>
+
+                    <!-- Category C -->
+                    <div class="cat-group-header-label" data-group="Category C">🔌 Category C: Service Drop &amp; Meter</div>
+                    <div class="custom-cat-item" data-value="Service Drop Disconnection" data-group="Category C" data-desc="Wires tearing off from the main line to a specific house" data-sev="Medium" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🔌</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category C</span>
+                          <span class="cat-item-urgency-badge urgency-medium">Medium</span>
+                        </div>
+                        <div class="cat-item-title">Service Drop Disconnection</div>
+                        <div class="cat-item-desc">Wires tearing off from main line to house</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Service Wire Sparking / Short Circuit" data-group="Category C" data-desc="Flashes or burning smell near the weather head" data-sev="Critical" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">⚡</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category C</span>
+                          <span class="cat-item-urgency-badge urgency-critical">Critical</span>
+                        </div>
+                        <div class="cat-item-title">Service Wire Sparking / Short Circuit</div>
+                        <div class="cat-item-desc">Flashes or burning smell near weather head</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Damaged Electric Meter Box" data-group="Category C" data-desc="Physical damage, broken seals, or burnt meter base" data-sev="Medium" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🎛️</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category C</span>
+                          <span class="cat-item-urgency-badge urgency-medium">Medium</span>
+                        </div>
+                        <div class="cat-item-title">Damaged Electric Meter Box</div>
+                        <div class="cat-item-desc">Physical damage, broken seals, burnt base</div>
+                      </div>
+                    </div>
+
+                    <!-- Category D -->
+                    <div class="cat-group-header-label" data-group="Category D">💡 Category D: Outages &amp; Grid</div>
+                    <div class="custom-cat-item" data-value="Total Blackout (Area-wide)" data-group="Category D" data-desc="No power across the entire barangay or zone" data-sev="High" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🌑</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category D</span>
+                          <span class="cat-item-urgency-badge urgency-high">High</span>
+                        </div>
+                        <div class="cat-item-title">Total Blackout (Area-wide)</div>
+                        <div class="cat-item-desc">No power across the entire barangay</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Rotational Brownout / Load Shedding" data-group="Category D" data-desc="Scheduled or sudden grid cuts due to power deficits" data-sev="Medium" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🔄</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category D</span>
+                          <span class="cat-item-urgency-badge urgency-medium">Medium</span>
+                        </div>
+                        <div class="cat-item-title">Rotational Brownout / Load Shedding</div>
+                        <div class="cat-item-desc">Scheduled or sudden generation grid cuts</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Low Voltage / Fluctuating Power" data-group="Category D" data-desc="Dim lights, appliances failing to start properly" data-sev="Medium" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">📉</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category D</span>
+                          <span class="cat-item-urgency-badge urgency-medium">Medium</span>
+                        </div>
+                        <div class="cat-item-title">Low Voltage / "Fluctuating Power"</div>
+                        <div class="cat-item-desc">Dim lights, appliances failing to start</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Unscheduled Interruption (Cause Unknown)" data-group="Category D" data-desc="Sudden loss of power without prior advisory" data-sev="High" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">❓</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category D</span>
+                          <span class="cat-item-urgency-badge urgency-high">High</span>
+                        </div>
+                        <div class="cat-item-title">Unscheduled Interruption (Cause Unknown)</div>
+                        <div class="cat-item-desc">Sudden loss of power without prior notice</div>
+                      </div>
+                    </div>
+
+                    <!-- Category E -->
+                    <div class="cat-group-header-label" data-group="Category E">🌳 Category E: Vegetation Hazards</div>
+                    <div class="custom-cat-item" data-value="Tree Branches Entangled in Wires" data-group="Category E" data-desc="Overgrown branches pressing distribution lines" data-sev="High" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🌿</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category E</span>
+                          <span class="cat-item-urgency-badge urgency-high">High</span>
+                        </div>
+                        <div class="cat-item-title">Tree Branches Entangled in Wires</div>
+                        <div class="cat-item-desc">Branches pressing distribution lines</div>
+                      </div>
+                    </div>
+                    <div class="custom-cat-item" data-value="Tree Branch Fell on Lines" data-group="Category E" data-desc="Branches breaking and snapping lines during storms" data-sev="Critical" role="option" tabindex="0">
+                      <div class="cat-item-icon-box">🌳</div>
+                      <div class="cat-item-content">
+                        <div class="cat-item-top">
+                          <span class="cat-item-group-badge">Category E</span>
+                          <span class="cat-item-urgency-badge urgency-critical">Critical</span>
+                        </div>
+                        <div class="cat-item-title">Tree Branch Fell on Lines</div>
+                        <div class="cat-item-desc">Snapping lines during storms or winds</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cat-no-results-msg hidden" id="catNoResultsMsg">
+                    <span>🔍 No matches found</span>
+                    <p>Try searching: pole, wire, spark, outage</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field-error hidden" id="err-category">Please select an issue type.</div>
+
+            <!-- ISSUE SPECIFICATION PREVIEW CARD -->
+            <div class="issue-preview-card hidden" id="issuePreviewCard">
+              <div class="issue-preview-top">
+                <span class="issue-preview-category" id="issuePreviewGroup">Category A</span>
+                <span class="issue-preview-urgency" id="issuePreviewSevBadge">High Urgency</span>
+              </div>
+              <div class="issue-preview-main">
+                <div class="issue-preview-icon" id="issuePreviewIcon">⚡</div>
+                <div>
+                  <h4 class="issue-preview-title" id="issuePreviewTitle">Issue Title</h4>
+                  <p class="issue-preview-desc" id="issuePreviewDesc">Description</p>
+                </div>
+              </div>
+              <div class="issue-preview-routing">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span>Automated Dispatch: <strong id="issuePreviewAgencyText">MASELCO</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. ADDRESS -->
+          <div class="form-group">
+            <label class="form-label" for="reportAddressInput">
+              <span>Incident Address</span>
+              <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-input" 
+              id="reportAddressInput" 
+              name="incidentAddress" 
+              placeholder="e.g. Purok 2, Quezon St., Brgy. Centro, Masbate City" 
+              autocomplete="off" 
+              required 
+            />
+            <span class="field-hint">Purok, Street, Barangay, and Municipality / City</span>
+            <div class="field-error hidden" id="err-address">Please enter the incident address.</div>
+
+            <button type="button" class="btn-teal" id="geolocateBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              Auto-Detect My GPS Coordinates
+            </button>
+
+            <section class="nearby-reports hidden" id="nearbyReports" aria-live="polite" aria-labelledby="nearbyReportsTitle">
+              <div class="nearby-reports-heading">
+                <span aria-hidden="true">📍</span>
+                <div>
+                  <h3 id="nearbyReportsTitle">Possible existing reports nearby</h3>
+                  <p>Support an open report instead of submitting the same issue again.</p>
+                </div>
+              </div>
+              <div id="nearbyReportsList"></div>
+            </section>
+          </div>
+
+          <input type="hidden" id="agencySelect" name="agency" value="MASELCO" />
+          <input type="hidden" id="reportSeverityInput" name="severity" value="Medium" />
+
+          <!-- 3. DESCRIPTION -->
+          <div class="form-group">
+            <label class="form-label" for="description">
+              <span>Description</span>
+              <span class="required">*</span>
+            </label>
+            <textarea class="form-textarea" id="description" name="description" rows="3" placeholder="Describe the hazard in detail (how long it has been there, immediate danger)…" maxlength="500"></textarea>
+            <div class="char-count"><span id="charCount">0</span>/500</div>
+            <div class="field-error hidden" id="err-description">Please provide a description.</div>
+          </div>
+
+          <!-- 4. REPORTER -->
+          <div class="form-group">
+            <label class="form-label" for="reporterName">Your Name <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+            <input class="form-input" type="text" id="reporterName" name="reporter" placeholder="Anonymous" />
+          </div>
+
+          <!-- 5. SUBMIT ACTION -->
+          <div style="margin-top: 18px;">
+            <button type="submit" class="btn-primary" id="submitBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9 22,2"/></svg>
+              Submit Report
+            </button>
+          </div>
+          <p class="draft-status" id="draftStatus" role="status" aria-live="polite">Drafts are saved on this device while you type.</p>
+        </form>
+      </section>
+
+      <!-- ════ TAB 2: SETTINGS VIEW ═════════════════════════ -->
+      <section class="view" id="view-profile">
+        <div class="view-header">
+          <h1 class="view-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings
+          </h1>
+          <p class="view-subtitle">Manage your account credentials and alert notifications.</p>
+        </div>
+
+        <!-- IDENTITY CARD -->
+        <div class="profile-card">
+          <div class="profile-identity-header">
+            <div class="profile-avatar-large" id="profileAvatarLarge">👤</div>
+            <div>
+              <h2 class="profile-name" id="profileDisplayName">Resident Account</h2>
+              <span style="font-size:11px;color:#38bdf8;font-weight:700;">Verified Citizen</span>
+            </div>
+          </div>
+
+          <div class="profile-info-item">
+            <span class="info-label">Mobile Number</span>
+            <span class="info-val" id="profilePhoneVal">+63 917 123 4567</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="info-label">Account ID</span>
+            <span class="info-val" id="profileUserId">usr-001</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="info-label">Registered Since</span>
+            <span class="info-val" id="profileMemberSince">September 2026</span>
+          </div>
+        </div>
+
+        <!-- PASSWORD CARD -->
+        <div class="profile-card">
+          <h3 style="font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Change Password</h3>
+          <form id="changePasswordForm">
+            <div class="form-group">
+              <label class="form-label" for="currPassword">Current Password</label>
+              <input type="password" id="currPassword" class="form-input" placeholder="Enter current password" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="newPassword">New Password</label>
+              <input type="password" id="newPassword" class="form-input" placeholder="At least 6 characters" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword">Confirm New Password</label>
+              <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat new password" required />
+            </div>
+            <div class="field-error hidden" id="err-change-pass"></div>
+            <div class="field-success hidden" id="succ-change-pass" style="font-size:11.5px;color:#34d399;background:rgba(16,185,129,0.1);padding:6px 10px;border-radius:6px;margin-top:6px;"></div>
+            <div style="margin-top:14px;">
+              <button type="submit" class="btn-primary" id="btnSubmitChangePass" style="height:42px;font-size:13px;">Update Password</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- PWA STATUS & APP INSTALL CARD -->
+        <div class="profile-card" id="pwaStatusCard">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:18px;">📲</span>
+              <h3 style="font-size:14px;font-weight:700;color:#fff;margin:0;">Progressive Web App (PWA)</h3>
+            </div>
+            <span class="pwa-mode-badge" id="pwaModeBadge">Web Mode</span>
+          </div>
+          <p style="font-size:11.5px;color:var(--text-secondary);margin-bottom:12px;line-height:1.4;">
+            Install BantayBarangay directly to your home screen for quick offline hazard reporting and faster performance across Masbate.
+          </p>
+          <div style="display:flex;gap:8px;flex-direction:column;">
+            <button type="button" class="btn-primary" id="btnSettingsInstallPwa" style="height:42px;font-size:12.5px;background:linear-gradient(135deg,#0284c7,#026597);display:flex;align-items:center;justify-content:center;gap:7px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Install App to Home Screen</span>
+            </button>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text-muted);padding-top:4px;">
+              <span>Offline Cache: <strong style="color:#34d399;" id="pwaCacheStatus">Active (v1.0.0)</strong></span>
+              <button type="button" id="btnRefreshCache" style="background:none;border:none;color:#38bdf8;cursor:pointer;font-size:11px;text-decoration:underline;">Update Cache</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIONS CARD (DESKTOP SWITCH & LOGOUT) -->
+        <div class="profile-card" style="text-align:center;display:flex;flex-direction:column;gap:10px;">
+          <a href="index.html" class="btn-primary" style="text-decoration:none;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;height:44px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;">
+            🖥️ Switch to Desktop Portal
+          </a>
+          <button type="button" class="btn-primary" style="background:rgba(244,63,94,0.18);border-color:rgba(244,63,94,0.4);color:#fb7185;height:44px;font-size:13px;" onclick="window.BantayResident ? window.BantayResident.logout() : (localStorage.removeItem('bantay_current_user'), window.location.href='auth.html?logout=true')">
+            🚪 Sign Out of Account
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── 3. FIXED MOBILE BOTTOM NAVIGATION BAR ─────────── -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+      <button type="button" class="mob-nav-item active" id="mob-nav-report" data-view="report" onclick="window.BantayResident ? window.BantayResident.showView('report') : null">
+        <div class="mob-nav-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <span class="mob-nav-title">Report</span>
+        <span class="mob-nav-active-pill"></span>
+      </button>
+
+      <button type="button" class="mob-nav-item" id="mob-nav-profile" data-view="profile" onclick="window.BantayResident ? window.BantayResident.showView('profile') : null">
+        <div class="mob-nav-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <span class="mob-nav-title">Settings</span>
+        <span class="mob-nav-active-pill"></span>
+      </button>
+
+      <button type="button" class="mob-nav-item mob-nav-logout" id="mob-nav-logout" title="Sign out" aria-label="Sign out of your account" onclick="window.BantayResident ? window.BantayResident.logout() : (localStorage.removeItem('bantay_current_user'), window.location.href='auth.html?logout=true')">
+        <div class="mob-nav-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+        <span class="mob-nav-title">Sign out</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="../shared/js/api.js"></script>
+  <script src="../shared/js/reports.js"></script>
+  <script src="../shared/js/auth.js"></script>
+  <script src="../shared/js/ui.js"></script>
+  <script src="../shared/js/locations.js"></script>
+  <script src="js/resident.js"></script>
+</body>
+</html>

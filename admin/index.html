@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BantayBarangay — Masbate Province Barangay Operations Command Center</title>
+  <meta name="description" content="Official administrative command center for Masbate Province Barangay staff, responders, and agency liaisons to triage reports, route tasks, and update infrastructure status." />
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.0" />
+  <link rel="stylesheet" href="css/admin.css?v=5.0" />
+</head>
+<body>
+
+  <!-- ── 1. HOLOGRAPHIC PIN AUTH SCREEN ──────────────────── -->
+  <div class="admin-auth-overlay" id="adminAuthOverlay">
+    <div class="admin-auth-card glass-card">
+      <div class="auth-holo-seal">
+        <div class="auth-seal-ring"></div>
+        <img src="images/logo.png" alt="BantayBarangay Seal" class="auth-seal-img" />
+      </div>
+
+      <div class="hud-status-badge" style="margin: 0 auto 12px auto;">
+        <span class="hud-beacon-dot"></span>
+        <span>Masbate Operations Command</span>
+      </div>
+
+      <h2 style="font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Barangay Operations Portal</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px;">
+        Authorized access for Masbate Barangay Officials, Responders, and Agency Liaisons (MASELCO, DPWH, LGU, PNP).
+      </p>
+
+      <form id="authPinForm">
+        <div class="auth-pin-field" style="margin-bottom: 18px; text-align: left;">
+          <label for="adminPinInput" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">
+            Enter Officer Security PIN
+          </label>
+          <input type="password" id="adminPinInput" class="form-input auth-pin-input" maxlength="4" placeholder="••••" autocomplete="off" autofocus />
+        </div>
+
+        <div class="auth-demo-hint" style="display:flex;align-items:center;justify-content:space-between;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);padding:8px 12px;border-radius:8px;margin-bottom:20px;font-size:12px;color:var(--amber-ops);">
+          <span>Officer Demo PIN: <strong style="color:var(--amber-ops);">1234</strong></span>
+          <button type="button" class="demo-fill-btn" id="demoFillBtn" style="background:transparent;border:1px solid rgba(245,158,11,0.4);color:var(--amber-ops);padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;">Auto-Fill &amp; Enter</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large" style="width:100%;height:46px;font-size:14px;font-weight:700;">
+          Access Command Center
+        </button>
+      </form>
+
+      <div style="margin-top: 20px;">
+        <a href="../resident/index.html" class="auth-return-link" style="color:var(--text-muted);font-size:12.5px;text-decoration:none;">← Return to Resident Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. SIDEBAR NAV (ADMIN) ──────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon-wrap">
+        <img src="images/logo.png" alt="BantayBarangay Seal" class="sidebar-seal-img" />
+      </div>
+      <div class="logo-text-block">
+        <div class="logo-text">
+          <span class="logo-main">Bantay</span><span class="logo-accent">Barangay</span>
+        </div>
+        <div class="sidebar-portal-badge">
+          <span>ADMIN</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-admin-view="manage" id="nav-manage">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </span>
+        <span class="nav-label">All Reports</span>
+      </a>
+
+      <a href="#" class="nav-item" data-admin-view="analytics" id="nav-analytics">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </span>
+        <span class="nav-label">Grid Analytics</span>
+      </a>
+
+      <a href="#" class="nav-item" data-admin-view="advisories" id="nav-advisories">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </span>
+        <span class="nav-label">Citizen Advisories</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-action-wrap">
+      <button class="btn btn-ghost btn-sm" id="exportCsvBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Export Reports (CSV)</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">
+          <span class="user-avatar-icon">🏛️</span>
+          <span class="user-status-dot"></span>
+        </div>
+        <div class="user-info">
+          <span class="user-name">Barangay Desk</span>
+          <span class="user-role">Operations Officer</span>
+        </div>
+      </div>
+      <a href="../resident/index.html" class="admin-portal-entry" title="Switch to Public Resident View">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Exit to Resident Portal</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── 3. MOBILE NAV TOGGLE ───────────────────────────── -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ── 4. MAIN CONTENT ────────────────────────────────── -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ════ TOP OPERATIONS COMMAND HUD ═══════════════════ -->
+    <header class="admin-hud-bar">
+      <div class="hud-title-block">
+        <h1 class="hud-main-heading">Barangay Incident Management</h1>
+        <p class="hud-sub-heading">Province of Masbate • Operations Command &amp; Incident Dispatch</p>
+      </div>
+
+      <div class="hud-actions-block">
+        <!-- Live Clock Pill -->
+        <div class="hud-clock-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="currentTime">Loading time…</span>
+        </div>
+
+        <!-- Auto-Refresh Live Toggle -->
+        <div class="hud-live-toggle active" id="autoRefreshToggle" title="Toggle 10-second automatic polling">
+          <span class="hud-live-dot"></span>
+          <span id="autoRefreshText">Live</span>
+        </div>
+
+        <!-- Lock Session Button -->
+        <button class="hud-lock-btn" id="adminLogoutBtn" title="Lock Officer Session">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Lock</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ════ 5. EXECUTIVE KPI METRIC CARDS ═════════════════ -->
+    <div class="dashboard-stats">
+      <!-- 1. Total Incidents -->
+      <div class="dash-stat stat-total">
+        <div class="dash-stat-header">
+          <span class="dash-stat-label">Total Reports</span>
+          <span class="dash-stat-micro">All-Time</span>
+        </div>
+        <div class="dash-stat-val" id="dStatTotal">0</div>
+        <div class="dash-stat-sub">Province-wide incidents</div>
+      </div>
+
+      <!-- 2. Critical Hazards Alert -->
+      <div class="dash-stat stat-critical">
+        <div class="dash-stat-header">
+          <span class="dash-stat-label">Critical Hazards</span>
+          <span class="dash-stat-micro alert">High Priority</span>
+        </div>
+        <div class="dash-stat-val" id="dStatCritical">0</div>
+        <div class="dash-stat-sub">Immediate action needed</div>
+      </div>
+
+      <!-- 3. Pending Triage -->
+      <div class="dash-stat stat-pending">
+        <div class="dash-stat-header">
+          <span class="dash-stat-label">Pending Triage</span>
+          <span class="dash-stat-micro warn">Action Needed</span>
+        </div>
+        <div class="dash-stat-val" id="dStatPending">0</div>
+        <div class="dash-stat-sub">Awaiting desk review</div>
+      </div>
+
+      <!-- 4. Active Dispatch (In Progress) -->
+      <div class="dash-stat stat-progress">
+        <div class="dash-stat-header">
+          <span class="dash-stat-label">In Progress</span>
+          <span class="dash-stat-micro info">Deployed</span>
+        </div>
+        <div class="dash-stat-val" id="dStatProgress">0</div>
+        <div class="dash-stat-sub">Active field response</div>
+      </div>
+
+      <!-- 5. Resolved Incidents & Rate -->
+      <div class="dash-stat stat-resolved">
+        <div class="dash-stat-header">
+          <span class="dash-stat-label">Resolved</span>
+          <span class="dash-stat-micro success" id="dStatRateBadge">0% Rate</span>
+        </div>
+        <div class="dash-stat-val" id="dStatResolved">0</div>
+        <div class="dash-stat-sub">Closed incidents</div>
+      </div>
+    </div>
+
+    <!-- ════ VIEW 1: MANAGE REPORTS ════════════════════════ -->
+    <section class="view active" id="view-manage">
+
+      <!-- QUICK STATUS PILLS (SEGMENTED CONTROL) -->
+      <div class="quick-status-pills">
+        <div class="status-pill-tab active" data-status-filter="all">
+          <span>All Reports</span>
+          <span class="status-pill-count" id="pillCountAll">0</span>
+        </div>
+        <div class="status-pill-tab" data-status-filter="Pending">
+          <span class="tab-dot dot-pending"></span>
+          <span>Pending</span>
+          <span class="status-pill-count" id="pillCountPending">0</span>
+        </div>
+        <div class="status-pill-tab" data-status-filter="Under Review">
+          <span class="tab-dot dot-review"></span>
+          <span>Under Review</span>
+          <span class="status-pill-count" id="pillCountReview">0</span>
+        </div>
+        <div class="status-pill-tab" data-status-filter="In Progress">
+          <span class="tab-dot dot-progress"></span>
+          <span>In Progress</span>
+          <span class="status-pill-count" id="pillCountProgress">0</span>
+        </div>
+        <div class="status-pill-tab" data-status-filter="Resolved">
+          <span class="tab-dot dot-resolved"></span>
+          <span>Resolved</span>
+          <span class="status-pill-count" id="pillCountResolved">0</span>
+        </div>
+      </div>
+
+      <!-- FILTER CONTROL BAR -->
+      <div class="filter-bar">
+        <!-- Search -->
+        <div class="search-input-wrap">
+          <svg class="search-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="form-input search-input" type="search" id="adminSearch" placeholder="Search by ID, keyword, address, or reporter…" />
+          <button type="button" class="search-clear-btn hidden" id="adminSearchClear" aria-label="Clear Search">✕</button>
+        </div>
+
+        <!-- Agency Filter -->
+        <select class="form-select filter-select" id="adminAgencyFilter">
+          <option value="all">All Agencies</option>
+          <option value="MASELCO">⚡ MASELCO</option>
+          <option value="DPWH">🛣️ DPWH</option>
+          <option value="LGU">🏢 LGU / City Eng.</option>
+          <option value="Barangay">🏛️ Barangay Tanod</option>
+          <option value="PNP">🚨 PNP</option>
+        </select>
+
+        <!-- Category Filter -->
+        <select class="form-select filter-select" id="adminCategoryFilter">
+          <option value="all">All Categories</option>
+          <optgroup label="Category A: Line &amp; Pole Issues">
+            <option value="Toppled / Leaning Utility Pole">Toppled / Leaning Utility Pole</option>
+            <option value="Snapped / Downed Power Lines">Snapped / Downed Power Lines</option>
+            <option value="Low-Hanging Wires">Low-Hanging Wires</option>
+            <option value="Tangled or Crossed Lines">Tangled or Crossed Lines</option>
+            <option value="Broken Crossarm / Insulator">Broken Crossarm / Insulator</option>
+          </optgroup>
+          <optgroup label="Category B: Transformer &amp; Substation Issues">
+            <option value="Blown Transformer">Blown Transformer</option>
+            <option value="Transformer Oil Leak / Smoking">Transformer Oil Leak / Smoking</option>
+            <option value="Sparking / Arcing Transformer">Sparking / Arcing Transformer</option>
+          </optgroup>
+          <optgroup label="Category C: Service Drop &amp; Meter Issues">
+            <option value="Service Drop Disconnection">Service Drop Disconnection</option>
+            <option value="Service Wire Sparking / Short Circuit">Service Wire Sparking / Short Circuit</option>
+            <option value="Damaged Electric Meter Box">Damaged Electric Meter Box</option>
+          </optgroup>
+          <optgroup label="Category D: Outage Types &amp; Grid Status">
+            <option value="Total Blackout (Area-wide)">Total Blackout (Area-wide)</option>
+            <option value="Rotational Brownout / Load Shedding">Rotational Brownout / Load Shedding</option>
+            <option value="Low Voltage / Fluctuating Power">Low Voltage / Fluctuating Power</option>
+            <option value="Unscheduled Interruption (Cause Unknown)">Unscheduled Interruption (Cause Unknown)</option>
+          </optgroup>
+          <optgroup label="Category E: Vegetation &amp; Environmental Hazards">
+            <option value="Tree Branches Entangled in Wires">Tree Branches Entangled in Wires</option>
+            <option value="Tree Branch Fell on Lines">Tree Branch Fell on Lines</option>
+          </optgroup>
+        </select>
+
+        <!-- Status Filter (Synced with segmented pills above) -->
+        <select class="form-select filter-select hidden" id="adminStatusFilter">
+          <option value="all">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Under Review">Under Review</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+
+        <button type="button" class="btn btn-ghost filter-reset-btn" id="adminClearBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Reset</span>
+        </button>
+      </div>
+
+      <!-- TRIAGE DATA TABLE -->
+      <div class="table-wrapper">
+        <table class="reports-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Category &amp; Hazard</th>
+              <th>Reporter</th>
+              <th>Assigned Agency</th>
+              <th>Urgency</th>
+              <th>Status</th>
+              <th>Timestamp</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <tr><td colspan="8" class="empty-cell">Loading reports…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+
+    <!-- ════ VIEW 3: GRID & HOTSPOT ANALYTICS ═══════════════ -->
+    <section class="view" id="view-analytics">
+      <div style="margin-bottom:16px;">
+        <h2 style="font-size:18px;font-weight:800;color:var(--text-primary);margin-bottom:4px;">Grid Telemetry &amp; Hotspot Analytics</h2>
+        <p style="font-size:13px;color:var(--text-secondary)">Incident frequency patterns across Masbate municipalities, critical infrastructure sectors, and agency resolution efficiency.</p>
+      </div>
+
+      <div class="analytics-grid">
+        <!-- Municipality Hotspots -->
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <div class="analytics-card-title">
+              <span>📍 Municipality Distribution &amp; Hotspots</span>
+            </div>
+            <span class="dash-stat-badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">Province-wide</span>
+          </div>
+          <div class="analytics-list" id="analyticsMuniList">
+            <!-- Dynamic Municipality Bars -->
+          </div>
+        </div>
+
+        <!-- Hazard Category Breakdown -->
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <div class="analytics-card-title">
+              <span>⚡ Infrastructure Hazard Categories</span>
+            </div>
+            <span class="dash-stat-badge" style="background:rgba(245,158,11,0.15);color:#fbbf24;">Distribution</span>
+          </div>
+          <div class="analytics-list" id="analyticsCategoryList">
+            <!-- Dynamic Category Breakdown Bars -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ VIEW 4: CITIZEN ADVISORIES & SMS BROADCAST ════ -->
+    <section class="view" id="view-advisories">
+      <div style="margin-bottom:16px;">
+        <h2 style="font-size:18px;font-weight:800;color:var(--text-primary);margin-bottom:4px;">Citizen Emergency &amp; Power Advisories</h2>
+        <p style="font-size:13px;color:var(--text-secondary)">Publish live power interruption, hazard advisories, and grid restoration notices directly to resident dashboards.</p>
+      </div>
+
+      <div class="advisories-layout">
+        <!-- Broadcast Form -->
+        <div class="advisory-broadcast-card">
+          <h3>
+            <span>📢 Broadcast Public Advisory</span>
+          </h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Broadcasted advisories immediately appear as high-visibility emergency banners on resident dashboards.</p>
+
+          <form id="advisoryBroadcastForm">
+            <div style="margin-bottom:12px;">
+              <label class="form-label" for="advTitle" style="font-size:11.5px;color:var(--primary);font-weight:700;">Advisory Title / Headline</label>
+              <input class="form-input" id="advTitle" type="text" placeholder="e.g. MASELCO Scheduled Feeder Line Maintenance" required style="font-size:13px;" />
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+              <div>
+                <label class="form-label" for="advCategory" style="font-size:11.5px;color:var(--primary);font-weight:700;">Category</label>
+                <select class="form-select" id="advCategory" style="font-size:12.5px;">
+                  <option value="Power Outage">⚡ Power Outage / Grid</option>
+                  <option value="Public Safety">⚠️ Public Safety Hazard</option>
+                  <option value="Weather Alert">🌧️ Weather / Storm Advisory</option>
+                  <option value="Road Closure">🚧 Road / Post Repair</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label" for="advSeverity" style="font-size:11.5px;color:var(--primary);font-weight:700;">Severity Level</label>
+                <select class="form-select" id="advSeverity" style="font-size:12.5px;">
+                  <option value="Medium">Medium (Scheduled Notice)</option>
+                  <option value="High">High (Immediate Caution)</option>
+                  <option value="Critical">Critical (Emergency / Danger)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <label class="form-label" for="advAreas" style="font-size:11.5px;color:var(--primary);font-weight:700;">Affected Areas / Puroks</label>
+              <input class="form-input" id="advAreas" type="text" placeholder="e.g. Purok 1 to 5, Brgy. Nursery &amp; Mobo Junction" required style="font-size:13px;" />
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label class="form-label" for="advMessage" style="font-size:11.5px;color:var(--primary);font-weight:700;">Broadcast Message Details</label>
+              <textarea class="form-textarea" id="advMessage" rows="3" placeholder="Provide instructions, expected restoration schedule, or safety precautions for residents…" required style="font-size:12.5px;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%;height:42px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              <span>Publish &amp; Broadcast to Resident Portal</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Active Advisories & SMS Logs Column -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="advisory-broadcast-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <h3>
+                <span>📡 Active Public Broadcasts</span>
+              </h3>
+              <span class="agency-count-pill" id="activeAdvisoryCount">0</span>
+            </div>
+            <div id="activeAdvisoriesList" style="max-height:280px;overflow-y:auto;padding-right:4px;">
+              <!-- Dynamic Advisories -->
+            </div>
+          </div>
+
+          <div class="advisory-broadcast-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <h3>
+                <span>📲 Citizen SMS Dispatch Logs</span>
+              </h3>
+              <span class="dash-stat-badge" style="background:rgba(16,185,129,0.15);color:#34d399;">Auto-Dispatched</span>
+            </div>
+            <div id="smsLogsList" style="max-height:220px;overflow-y:auto;padding-right:4px;">
+              <!-- Dynamic SMS Dispatch Logs -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ════ 6. INCIDENT COMMAND DOSSIER & ACTIONS MODAL ═════ -->
+  <div class="modal-overlay hidden" id="adminModalOverlay">
+    <div class="modal glass-card" id="adminModal">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="adminModalTitle">Report Details</h2>
+          <p class="modal-id" id="adminModalId"></p>
+        </div>
+        <button class="modal-close" id="adminModalClose" aria-label="Close Modal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Photo Section -->
+        <div class="modal-photo-wrap">
+          <img id="adminModalPhoto" src="" alt="Report photo" class="modal-photo hidden" />
+          <div id="adminModalNoPhoto" class="modal-no-photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+            <span>No citizen photo attached</span>
+          </div>
+        </div>
+
+        <!-- CITIZEN VERIFICATION & DIRECT CONTACT BLOCK -->
+        <div class="citizen-contact-card">
+          <div class="citizen-contact-item">
+            <span class="citizen-contact-label">Citizen Reporter</span>
+            <div class="citizen-contact-value">
+              <span id="adminModalReporterName">—</span>
+              <span class="citizen-verify-badge">Verified</span>
+            </div>
+          </div>
+          <div class="citizen-contact-item">
+            <span class="citizen-contact-label">Mobile Contact</span>
+            <div class="citizen-contact-value">
+              <a id="adminModalPhoneLink" href="#" class="citizen-phone-link" title="Direct Citizen Contact">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span id="adminModalPhone">—</span>
+              </a>
+            </div>
+          </div>
+          <div class="citizen-contact-item">
+            <span class="citizen-contact-label">Registered Purok</span>
+            <div class="citizen-contact-value">
+              <span id="adminModalPurok">—</span>
+            </div>
+          </div>
+          <div class="citizen-contact-item">
+            <span class="citizen-contact-label">Community Validation</span>
+            <div class="citizen-contact-value">
+              <span class="citizen-confirm-pill" id="adminModalConfirmations">1 Confirmation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="modal-grid">
+          <div class="modal-info-block">
+            <label>Hazard Category</label>
+            <p id="adminModalCategory">—</p>
+          </div>
+          <div class="modal-info-block">
+            <label>Urgency Level</label>
+            <p id="adminModalSeverity">—</p>
+          </div>
+          <div class="modal-info-block">
+            <label>Responsible Agency</label>
+            <p id="adminModalAgency">—</p>
+          </div>
+          <div class="modal-info-block">
+            <label>Incident Reference</label>
+            <p id="adminModalRefCode" class="mono-code">—</p>
+          </div>
+          <div class="modal-info-block col-span-2">
+            <label>Incident Location &amp; Coordinates</label>
+            <p id="adminModalLocation">—</p>
+          </div>
+          <div class="modal-info-block col-span-2">
+            <label>Resident Problem Description</label>
+            <p id="adminModalDescription">—</p>
+          </div>
+        </div>
+
+        <!-- OFFICIAL OPERATIONS ACTION & TRIAGE -->
+        <div class="status-update-bar glass-card">
+          <div class="triage-controls-top">
+            <span class="triage-controls-title">Incident Triage &amp; Dispatch</span>
+            <button class="btn btn-ghost btn-sm btn-delete-report" id="adminDeleteBtn">
+              Delete Report
+            </button>
+          </div>
+
+          <div class="triage-controls-grid">
+            <div>
+              <label class="form-label" for="adminStatusSelect">Change Status</label>
+              <select class="form-select triage-select" id="adminStatusSelect">
+                <option value="Pending">Pending</option>
+                <option value="Under Review">Under Review</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="adminAgencySelect">Route / Reassign Agency</label>
+              <select class="form-select triage-select" id="adminAgencySelect">
+                <option value="MASELCO">⚡ MASELCO</option>
+                <option value="DPWH">🛣️ DPWH</option>
+                <option value="LGU">🏢 LGU / City Eng.</option>
+                <option value="Barangay">🏛️ Barangay Tanod</option>
+                <option value="PNP">🚨 PNP</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Quick Template Chips -->
+          <div class="triage-templates-block">
+            <label class="form-label">Dispatch Templates</label>
+            <div class="template-chips">
+              <button type="button" class="template-chip-btn" data-template="Endorsed to MASELCO lineman crew; scheduled for dispatch.">⚡ MASELCO Dispatched</button>
+              <button type="button" class="template-chip-btn" data-template="Hazard cordoned off by Barangay Tanod responders.">🏛️ Cordoned by Tanod</button>
+              <button type="button" class="template-chip-btn" data-template="Tree pruning team dispatched for line clearance.">🌳 Tree Crew Assigned</button>
+              <button type="button" class="template-chip-btn" data-template="DPWH engineering inspection scheduled for tomorrow.">🛣️ DPWH Inspection</button>
+              <button type="button" class="template-chip-btn" data-template="Repair completed and verified on-site. Problem resolved.">✅ Repair Completed</button>
+            </div>
+          </div>
+
+          <div class="triage-note-block">
+            <label class="form-label" for="adminActionNote">Official Log Note (Citizen-Visible Timeline)</label>
+            <div class="triage-note-input-row">
+              <input class="form-input triage-note-input" type="text" id="adminActionNote" placeholder="e.g. Endorsed to MASELCO lineman crew; scheduled for Friday morning…" />
+              <button class="btn btn-primary triage-save-btn" id="saveAdminActionBtn">
+                Save &amp; Update
+              </button>
+            </div>
+          </div>
+
+          <!-- Auto-SMS Dispatch Notification Toggle -->
+          <div class="sms-dispatch-toggle-wrap">
+            <input type="checkbox" id="adminNotifyCitizenCheck" checked />
+            <label for="adminNotifyCitizenCheck">
+              <span>Citizen SMS Dispatch: Automatically notify resident's mobile number upon status update.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="timeline-section">
+          <h3 class="timeline-title">Official Status Audit Trail</h3>
+          <div class="timeline" id="adminModalTimeline"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 7. TOAST CONTAINER ────────────────────────────── -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../shared/js/api.js"></script>
+  <script src="../shared/js/reports.js"></script>
+  <script src="../shared/js/auth.js"></script>
+  <script src="../shared/js/ui.js"></script>
+  <script src="js/admin.js?v=4.0"></script>
+</body>
+</html>

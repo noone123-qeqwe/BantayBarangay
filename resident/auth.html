@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>BantayBarangay — Masbate Province Citizen Login & Registration</title>
+  <meta name="description"
+    content="Sign in or register for BantayBarangay using your Philippine mobile phone number to report infrastructure issues and track community repairs across Masbate Province." />
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.0" />
+  <link rel="stylesheet" href="css/auth.css?v=5.0" />
+</head>
+
+<body class="auth-body">
+
+  <!-- ── BACKGROUND ANIMATION LAYER ──────────────────────── -->
+  <div class="auth-bg-layer" aria-hidden="true">
+    <!-- Animated grid -->
+    <div class="auth-bg-grid"></div>
+    <!-- Glowing orbs -->
+    <div class="auth-orb auth-orb-1"></div>
+    <div class="auth-orb auth-orb-2"></div>
+    <div class="auth-orb auth-orb-3"></div>
+    <!-- Floating particles -->
+    <div class="auth-particles">
+      <span class="auth-particle" style="--x:8%;--y:20%;--d:5s;--s:3px"></span>
+      <span class="auth-particle" style="--x:18%;--y:65%;--d:7s;--s:2px"></span>
+      <span class="auth-particle" style="--x:30%;--y:40%;--d:6s;--s:4px"></span>
+      <span class="auth-particle" style="--x:42%;--y:80%;--d:8s;--s:2px"></span>
+      <span class="auth-particle" style="--x:55%;--y:15%;--d:5.5s;--s:3px"></span>
+      <span class="auth-particle" style="--x:65%;--y:55%;--d:9s;--s:2px"></span>
+      <span class="auth-particle" style="--x:75%;--y:30%;--d:6.5s;--s:4px"></span>
+      <span class="auth-particle" style="--x:85%;--y:70%;--d:7.5s;--s:3px"></span>
+      <span class="auth-particle" style="--x:92%;--y:45%;--d:5s;--s:2px"></span>
+      <span class="auth-particle" style="--x:22%;--y:90%;--d:8.5s;--s:3px"></span>
+      <span class="auth-particle" style="--x:50%;--y:5%;--d:6s;--s:2px"></span>
+      <span class="auth-particle" style="--x:70%;--y:85%;--d:7s;--s:4px"></span>
+      <span class="auth-particle" style="--x:12%;--y:50%;--d:9.5s;--s:2px"></span>
+      <span class="auth-particle" style="--x:38%;--y:25%;--d:5.5s;--s:3px"></span>
+      <span class="auth-particle" style="--x:80%;--y:10%;--d:8s;--s:2px"></span>
+    </div>
+  </div>
+
+  <!-- ── SPLASH SCREEN OVERLAY ────────────────────────────── -->
+  <div class="auth-splash" id="authSplash" aria-hidden="true">
+    <div class="splash-inner">
+      <div class="splash-logo-wrap">
+        <div class="splash-ring splash-ring-outer"></div>
+        <div class="splash-ring splash-ring-inner"></div>
+        <img src="images/logo.png" alt="BantayBarangay" class="splash-logo-img" />
+      </div>
+      <div class="splash-title">
+        <span class="splash-name-main">Bantay</span><span class="splash-name-accent">Barangay</span>
+      </div>
+      <div class="splash-subtitle">Province of Masbate</div>
+      <div class="splash-bar-wrap">
+        <div class="splash-bar-track">
+          <div class="splash-bar-fill" id="splashBarFill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN GLASS CONTAINER ───────────────────────────── -->
+  <div class="auth-page-container" id="authMainCard" style="opacity:0;transform:translateY(16px)">
+
+    <!-- ════ CARD BRAND HEADER ═════════════════════════════ -->
+    <div class="auth-card-brand-header">
+      <a href="index.html" class="auth-brand-logo" title="BantayBarangay">
+        <div class="logo-icon">
+          <img src="images/logo.png" alt="BantayBarangay Seal" class="brand-logo-img" />
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">Bantay</span><span class="logo-accent">Barangay</span>
+        </div>
+      </a>
+      <div style="font-size:12px;font-weight:700;color:#38bdf8;letter-spacing:0.08em;text-transform:uppercase;margin-top:8px">Province of Masbate</div>
+    </div>
+
+    <!-- ════ RIGHT PANEL: AUTHENTICATION CARD ─────────────── -->
+    <div class="auth-form-panel">
+      <div class="ph-login-card">
+
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- VIEW 1: LOG IN WITH PHILIPPINE MOBILE               -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="loginStepView">
+          <div>
+            <h2 class="auth-panel-heading">Welcome Back</h2>
+            <p class="auth-panel-sub">Sign in with your Philippine mobile phone number.</p>
+          </div>
+
+          <!-- LOGIN FORM -->
+          <form id="phLoginForm" novalidate>
+            <div class="ph-phone-field-wrap">
+              <label class="form-label-styled" for="phPhoneInput">
+                <span>Philippine Mobile Number</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
+
+              <div class="ph-phone-input-box" id="phInputBox">
+                <div class="ph-country-prefix">
+                  <span class="ph-country-flag">🇵🇭</span>
+                  <span class="ph-country-code">+63</span>
+                </div>
+                <input type="tel" id="phPhoneInput" class="ph-phone-input" placeholder="09XXXXXXXXX or 9XXXXXXXXX"
+                  autocomplete="tel" autofocus required />
+              </div>
+
+              <div class="ph-format-guide">
+                <span>Format: <strong>09XXXXXXXXX</strong> (11 digits)</span>
+                <span id="digitCount" style="font-family:monospace;font-size:11px"></span>
+              </div>
+            </div>
+
+            <!-- PASSWORD FIELD -->
+            <div class="ph-phone-field-wrap" style="margin-top:16px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <label class="form-label-styled" for="loginPassword" style="margin:0">
+                  <span>Password</span>
+                  <span class="required" style="color:#ef476f">*</span>
+                </label>
+                <button type="button" class="auth-text-btn" id="btnForgotPass" style="font-size:13px;font-weight:600">Forgot password?</button>
+              </div>
+              <div class="password-input-wrapper">
+                <input type="password" id="loginPassword" class="form-input-styled" placeholder="Enter your password"
+                  autocomplete="current-password" required />
+                <button type="button" class="password-toggle-styled" id="btnToggleLoginPass" title="Toggle password visibility">
+                  <svg id="loginEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+              <div class="ph-format-guide" style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                <span>Demo password: <strong>resident123</strong></span>
+                <button type="button" class="auth-text-btn" id="btnUseSmsOtp" style="font-size:12.5px;font-weight:600">Sign in via SMS Code</button>
+              </div>
+            </div>
+
+            <!-- REMEMBER ME CHECKBOX -->
+            <div class="auth-remember-wrap">
+              <label class="auth-remember-label" for="authRememberMe">
+                <input type="checkbox" id="authRememberMe" class="auth-remember-checkbox" checked />
+                <span class="auth-remember-custom-check">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="13" height="13">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </span>
+                <span class="auth-remember-text">Remember this device</span>
+              </label>
+            </div>
+
+            <!-- LOGIN ERROR BANNER -->
+            <div class="ph-error-banner hidden" id="phErrorBanner" role="alert">
+              <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span id="phErrorMessage">Please enter a valid Philippine mobile number.</span>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" class="btn-auth-primary" id="btnContinueLogin">
+              <span>Log In</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </form>
+
+          <div style="margin-top:30px;text-align:center;border-top:1px solid rgba(82,196,224,0.18);padding-top:22px">
+            <p style="font-size:14.5px;color:#93c5fd;margin:0">
+              Don't have an account yet?
+              <button type="button" class="auth-text-btn" id="linkToRegister" style="font-weight:700;margin-left:4px">
+                Create Account
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- VIEW 2: LOGIN SMS OTP VERIFICATION                  -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="loginOtpStepView" class="otp-step-container hidden">
+          <div class="otp-icon-shield">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+              <line x1="12" y1="18" x2="12.01" y2="18" />
+            </svg>
+          </div>
+
+          <h2 class="auth-panel-heading" style="text-align:center">Verify Mobile Number</h2>
+          <p class="auth-panel-sub" style="text-align:center;margin-bottom:6px">We sent a 4-digit verification code to:
+          </p>
+          <div class="otp-phone-display" id="loginOtpTargetPhone">+63 917 123 4567</div>
+
+          <!-- SIMULATED SMS NOTIFICATION -->
+          <div class="sms-simulation-banner">
+            <span class="sms-sim-icon">💬</span>
+            <div class="sms-sim-content">
+              <div class="sms-sim-sender">BantayBarangay SMS Gateway • Sent Now</div>
+              <div>Your code is <span class="sms-sim-code" id="loginSimCodeDisplay">1234</span> (Valid for 2 mins). Do
+                not share this code.</div>
+            </div>
+          </div>
+
+          <form id="loginOtpForm">
+            <div class="otp-input-boxes">
+              <input type="text" maxlength="1" class="otp-box" id="lotp1" inputmode="numeric" autofocus />
+              <input type="text" maxlength="1" class="otp-box" id="lotp2" inputmode="numeric" />
+              <input type="text" maxlength="1" class="otp-box" id="lotp3" inputmode="numeric" />
+              <input type="text" maxlength="1" class="otp-box" id="lotp4" inputmode="numeric" />
+            </div>
+
+            <div class="otp-auto-fill-hint" id="loginAutoFillOtpBtn">
+              ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
+            </div>
+
+            <div class="ph-error-banner hidden" id="loginOtpErrorBanner" style="margin-bottom:16px">
+              <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span id="loginOtpErrorMessage">Invalid verification code. Use demo code 1234.</span>
+            </div>
+
+            <button type="submit" class="btn-auth-primary" id="btnVerifyLoginOtp">
+              <span>Verify & Complete Log In</span>
+            </button>
+          </form>
+
+          <div style="margin-top:20px;display:flex;align-items:center;justify-content:space-between;font-size:13px">
+            <button type="button" class="auth-text-btn" id="btnEditLoginPhone">← Change Number</button>
+            <button type="button" class="auth-text-btn" id="btnResendLoginOtp">Resend SMS Code</button>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- VIEW 3: CREATE ACCOUNT (REGISTRATION FORM)          -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="registerStepView" class="hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <h2 class="auth-panel-heading" style="margin:0">Create Account</h2>
+            <button type="button" class="auth-text-btn" id="btnQuickFillReg" style="font-size:12px;font-weight:700;color:#38bdf8;display:inline-flex;align-items:center;gap:4px">
+              ⚡ Demo Fill
+            </button>
+          </div>
+          <p class="auth-panel-sub" style="margin-top:2px;margin-bottom:18px">Register your resident profile with Philippine mobile verification.</p>
+
+          <form id="phRegisterForm" novalidate>
+            <!-- PHILIPPINE MOBILE -->
+            <div class="ph-phone-field-wrap" style="margin-bottom:16px">
+              <label class="form-label-styled" for="regPhoneInput">
+                <span>Philippine Mobile Number</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
+              <div class="ph-phone-input-box" id="regPhoneBox">
+                <div class="ph-country-prefix">
+                  <span class="ph-country-flag">🇵🇭</span>
+                  <span class="ph-country-code">+63</span>
+                </div>
+                <input type="tel" id="regPhoneInput" class="ph-phone-input" placeholder="09XXXXXXXXX" autocomplete="tel"
+                  required />
+              </div>
+              <div class="ph-format-guide">
+                <span>Must be an active Philippine mobile number</span>
+                <span id="regDigitCount" style="font-family:monospace;font-size:11px"></span>
+              </div>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="ph-phone-field-wrap" style="margin-bottom:14px">
+              <label class="form-label-styled" for="regPassword">
+                <span>Password (Min. 6 chars)</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input type="password" id="regPassword" class="form-input-styled" placeholder="Create a secure password"
+                  autocomplete="new-password" required />
+                <button type="button" class="password-toggle-styled" id="btnToggleRegPass" title="Toggle visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="ph-phone-field-wrap" style="margin-bottom:18px">
+              <label class="form-label-styled" for="regConfirmPassword">
+                <span>Confirm Password</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input type="password" id="regConfirmPassword" class="form-input-styled"
+                  placeholder="Re-enter your password" autocomplete="new-password" required />
+                <button type="button" class="password-toggle-styled" id="btnToggleRegConfirm" title="Toggle visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- REGISTRATION ERROR BANNER -->
+            <div class="ph-error-banner hidden" id="regErrorBanner">
+              <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span id="regErrorMessage">Please complete all required fields.</span>
+            </div>
+
+            <button type="submit" class="btn-auth-primary" id="btnSubmitRegister">
+              <span>Send SMS Verification Code</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </form>
+
+          <div style="margin-top:28px;text-align:center;border-top:1px solid rgba(82,196,224,0.18);padding-top:20px">
+            <p style="font-size:13px;color:#93c5fd;margin:0">
+              Already registered?
+              <button type="button" class="auth-text-btn" id="linkToLogin" style="font-weight:700;margin-left:4px">
+                Log In Instead
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- VIEW 4: REGISTRATION SMS OTP VERIFICATION           -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="registerOtpStepView" class="otp-step-container hidden">
+          <div class="otp-icon-shield">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <polyline points="9 12 11 14 15 10" />
+            </svg>
+          </div>
+
+          <h2 class="auth-panel-heading" style="text-align:center">Verify Phone Number</h2>
+          <p class="auth-panel-sub" style="text-align:center;margin-bottom:6px">We sent a 4-digit SMS verification code
+            to:</p>
+          <div class="otp-phone-display" id="regOtpTargetPhone">+63 919 444 8888</div>
+
+          <!-- SIMULATED SMS ALERT -->
+          <div class="sms-simulation-banner">
+            <span class="sms-sim-icon">💬</span>
+            <div class="sms-sim-content">
+              <div class="sms-sim-sender">BantayBarangay SMS Gateway • Sent Now</div>
+              <div>Your verification code is <span class="sms-sim-code" id="regSimCodeDisplay">1234</span> (Valid for 2
+                mins).</div>
+            </div>
+          </div>
+
+          <form id="regOtpForm" novalidate>
+            <div class="otp-input-boxes">
+              <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp1" inputmode="numeric" autofocus />
+              <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp2" inputmode="numeric" />
+              <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp3" inputmode="numeric" />
+              <input type="text" maxlength="1" class="otp-box reg-otp-box" id="rotp4" inputmode="numeric" />
+            </div>
+
+            <div class="otp-auto-fill-hint" id="regAutoFillOtpBtn">
+              ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
+            </div>
+
+            <!-- COUNTDOWN TIMER & RESEND -->
+            <div class="otp-timer-box" id="regOtpTimerBox">
+              <span id="regCountdownLabel">Resend code in:</span>
+              <span class="otp-timer-clock" id="regTimerClock">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span id="regCountdownSeconds">00:59</span>
+              </span>
+              <button type="button" class="otp-resend-btn hidden" id="btnResendRegOtp">Resend Code via SMS</button>
+            </div>
+
+            <div class="ph-error-banner hidden" id="regOtpErrorBanner">
+              <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span id="regOtpErrorMessage">Invalid verification code. Please check SMS.</span>
+            </div>
+
+            <button type="submit" class="btn-auth-primary" id="btnVerifyRegisterOtp">
+              <span>Verify & Complete Account Creation</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </button>
+          </form>
+
+          <div style="margin-top:20px;text-align:center">
+            <button type="button" class="auth-text-btn" id="btnBackToRegForm">
+              ← Change Mobile Number / Edit Details
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../shared/js/api.js"></script>
+  <script src="../shared/js/auth.js"></script>
+  <script src="../shared/js/ui.js"></script>
+  <script src="../shared/js/locations.js"></script>
+  <script>
+    // ── SPLASH SCREEN CONTROLLER ─────────────────────────────
+    (function() {
+      const splash   = document.getElementById('authSplash');
+      const card     = document.getElementById('authMainCard');
+      const barFill  = document.getElementById('splashBarFill');
+      if (!splash || !card || !barFill) return;
+
+      let progress = 0;
+      const duration = 1800;   // total splash time in ms
+      const interval = 30;     // update every 30ms
+      const steps    = duration / interval;
+      const increment = 100 / steps;
+
+      const timer = setInterval(() => {
+        progress = Math.min(100, progress + increment + (Math.random() * 1.5));
+        barFill.style.width = progress + '%';
+
+        if (progress >= 100) {
+          clearInterval(timer);
+          // Small pause at 100% then dismiss
+          setTimeout(() => {
+            splash.classList.add('splash-hidden');
+            card.classList.add('auth-card-revealed');
+            setTimeout(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'none';
+            }, 600);
+          }, 200);
+        }
+      }, interval);
+    })();
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // ════ AUTO-REDIRECT OR LOGOUT HANDLING ════════════════════
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('logout') === 'true') {
+        if (typeof Auth !== 'undefined') Auth.logout();
+      } else if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+        const curr = Auth.getCurrentUser();
+        window.location.replace(curr.role === 'admin' ? '../admin/index.html' : 'index.html');
+        return;
+      }
+
+      // Initialize Cascading Purok Selector for Registration (if present)
+      if (window.MasbateLocations && typeof MasbateLocations.initCascadingLocation === 'function' && document.getElementById('regMunicipality')) {
+        window.regLocationCascade = MasbateLocations.initCascadingLocation({
+          municipalityId: 'regMunicipality',
+          barangayId: 'regBarangay',
+          purokId: 'regPurokSub',
+          masterId: 'regPurokSelect',
+          previewId: 'regPurokPreviewText',
+          defaultVal: 'Purok 1, Brgy. Espinosa, Masbate City'
+        });
+      }
+
+      // ════ TAB SWITCHING (LOG IN vs CREATE ACCOUNT) ════════════
+      const tabLogin = document.getElementById('tabLogin');
+      const tabRegister = document.getElementById('tabRegister');
+      const loginStepView = document.getElementById('loginStepView');
+      const loginOtpStepView = document.getElementById('loginOtpStepView');
+      const registerStepView = document.getElementById('registerStepView');
+      const registerOtpStepView = document.getElementById('registerOtpStepView');
+
+      function switchTab(mode) {
+        if (mode === 'login') {
+          if (tabLogin) {
+            tabLogin.classList.add('active');
+            tabLogin.setAttribute('aria-selected', 'true');
+          }
+          if (tabRegister) {
+            tabRegister.classList.remove('active');
+            tabRegister.setAttribute('aria-selected', 'false');
+          }
+
+          loginStepView.classList.remove('hidden');
+          loginOtpStepView.classList.add('hidden');
+          registerStepView.classList.add('hidden');
+          registerOtpStepView.classList.add('hidden');
+
+          stopCountdown();
+          setTimeout(() => document.getElementById('phPhoneInput')?.focus(), 100);
+        } else {
+          if (tabRegister) {
+            tabRegister.classList.add('active');
+            tabRegister.setAttribute('aria-selected', 'true');
+          }
+          if (tabLogin) {
+            tabLogin.classList.remove('active');
+            tabLogin.setAttribute('aria-selected', 'false');
+          }
+
+          registerStepView.classList.remove('hidden');
+          registerOtpStepView.classList.add('hidden');
+          loginStepView.classList.add('hidden');
+          loginOtpStepView.classList.add('hidden');
+
+          stopCountdown();
+          setTimeout(() => document.getElementById('regPhoneInput')?.focus(), 100);
+        }
+      }
+
+      tabLogin?.addEventListener('click', () => switchTab('login'));
+      tabRegister?.addEventListener('click', () => switchTab('register'));
+      document.getElementById('linkToRegister')?.addEventListener('click', () => switchTab('register'));
+      document.getElementById('linkToLogin')?.addEventListener('click', () => switchTab('login'));
+
+      if (urlParams.get('mode') === 'register') {
+        switchTab('register');
+      }
+
+      // ═════════════════════════════════════════════════════════
+      // 1. LOG IN LOGIC & OTP
+      // ═════════════════════════════════════════════════════════
+      const phoneInput = document.getElementById('phPhoneInput');
+      const inputBox = document.getElementById('phInputBox');
+      const errorBanner = document.getElementById('phErrorBanner');
+      const errorMessage = document.getElementById('phErrorMessage');
+      const digitCount = document.getElementById('digitCount');
+      const phLoginForm = document.getElementById('phLoginForm');
+
+      const loginOtpTargetPhone = document.getElementById('loginOtpTargetPhone');
+      const loginOtpForm = document.getElementById('loginOtpForm');
+      const loginOtpErrorBanner = document.getElementById('loginOtpErrorBanner');
+      const loginOtpBoxes = [
+        document.getElementById('lotp1'),
+        document.getElementById('lotp2'),
+        document.getElementById('lotp3'),
+        document.getElementById('lotp4')
+      ];
+
+      let currentLoginPhoneValidation = null;
+
+      phoneInput.addEventListener('input', () => {
+        hideLoginError();
+        const raw = phoneInput.value;
+        const res = Auth.validatePhilippineMobile(raw);
+
+        const digitsOnly = raw.replace(/\D/g, '');
+        digitCount.textContent = digitsOnly.length > 0 ? `${digitsOnly.length} digits` : '';
+
+        if (res.isValid) {
+          inputBox.classList.remove('input-invalid');
+          inputBox.classList.add('input-valid');
+        } else {
+          inputBox.classList.remove('input-valid');
+        }
+      });
+
+      // Password Input & Visibility Toggle
+      const loginPassword = document.getElementById('loginPassword');
+      const btnToggleLoginPass = document.getElementById('btnToggleLoginPass');
+      const loginEyeIcon = document.getElementById('loginEyeIcon');
+      const btnForgotPass = document.getElementById('btnForgotPass');
+      const btnUseSmsOtp = document.getElementById('btnUseSmsOtp');
+
+      if (btnToggleLoginPass && loginPassword) {
+        btnToggleLoginPass.addEventListener('click', () => {
+          const isPass = loginPassword.type === 'password';
+          loginPassword.type = isPass ? 'text' : 'password';
+          if (loginEyeIcon) {
+            loginEyeIcon.innerHTML = isPass
+              ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+              : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+          }
+        });
+      }
+
+      if (loginPassword) {
+        loginPassword.addEventListener('input', () => {
+          loginPassword.classList.remove('input-invalid');
+          hideLoginError();
+        });
+      }
+
+      const authRememberMe = document.getElementById('authRememberMe');
+      const savedPhone = localStorage.getItem('bb_remembered_phone');
+      if (savedPhone && phoneInput) {
+        phoneInput.value = savedPhone;
+        phoneInput.dispatchEvent(new Event('input'));
+      }
+
+      // SMS OTP Fallback Function
+      function startSmsOtpFlow(promptMessage) {
+        const inputVal = phoneInput.value.trim();
+        const validation = Auth.validatePhilippineMobile(inputVal);
+
+        if (!validation.isValid) {
+          showLoginError('Please enter your Philippine mobile number to receive an SMS verification code.');
+          inputBox.classList.add('input-invalid');
+          phoneInput.focus();
+          return;
+        }
+
+        currentLoginPhoneValidation = validation;
+        hideLoginError();
+
+        if (authRememberMe && authRememberMe.checked) {
+          localStorage.setItem('bb_remembered_phone', inputVal);
+        }
+
+        // Switch to OTP step
+        loginStepView.classList.add('hidden');
+        loginOtpStepView.classList.remove('hidden');
+        loginOtpTargetPhone.textContent = validation.intlFormatted;
+
+        loginOtpBoxes.forEach(b => b.value = '');
+        loginOtpErrorBanner.classList.add('hidden');
+        setTimeout(() => loginOtpBoxes[0].focus(), 150);
+
+        UI.toast(promptMessage || `SMS code sent to ${validation.intlFormatted}. Use code: 1234`, 'info');
+      }
+
+      btnForgotPass?.addEventListener('click', () => {
+        startSmsOtpFlow('Account Recovery: Use SMS OTP code 1234 to verify identity.');
+      });
+
+      btnUseSmsOtp?.addEventListener('click', () => {
+        startSmsOtpFlow('SMS code sent. Enter code: 1234 to sign in.');
+      });
+
+      phLoginForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const inputVal = phoneInput.value.trim();
+        const validation = Auth.validatePhilippineMobile(inputVal);
+
+        if (!validation.isValid) {
+          showLoginError(validation.error);
+          inputBox.classList.add('input-invalid');
+          phoneInput.focus();
+          return;
+        }
+
+        const passVal = loginPassword ? loginPassword.value : '';
+        if (!passVal) {
+          showLoginError('Please enter your password.');
+          loginPassword?.classList.add('input-invalid');
+          loginPassword?.focus();
+          return;
+        }
+
+        if (passVal.length < 6) {
+          showLoginError('Password must be at least 6 characters long.');
+          loginPassword?.classList.add('input-invalid');
+          loginPassword?.focus();
+          return;
+        }
+
+        hideLoginError();
+
+        const res = Auth.login(inputVal, passVal);
+        if (res.success) {
+          if (authRememberMe && authRememberMe.checked) {
+            localStorage.setItem('bb_remembered_phone', inputVal);
+          } else {
+            localStorage.removeItem('bb_remembered_phone');
+          }
+
+          UI.toast(`Login successful! Welcome back, ${res.user.name}.`, 'success');
+          setTimeout(() => {
+            window.location.href = res.user.role === 'admin' ? '../admin/index.html' : 'index.html';
+          }, 600);
+        } else {
+          showLoginError(res.error);
+          if (res.notFound) {
+            inputBox.classList.add('input-invalid');
+            phoneInput.focus();
+          } else {
+            loginPassword?.classList.add('input-invalid');
+            loginPassword?.focus();
+          }
+        }
+      });
+
+      function showLoginError(msg) {
+        errorMessage.textContent = msg;
+        errorBanner.classList.remove('hidden');
+      }
+
+      function hideLoginError() {
+        errorBanner.classList.add('hidden');
+        inputBox.classList.remove('input-invalid');
+        loginPassword?.classList.remove('input-invalid');
+      }
+
+      loginOtpBoxes.forEach((box, idx) => {
+        box.addEventListener('input', e => {
+          loginOtpErrorBanner.classList.add('hidden');
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val;
+          if (val && idx < loginOtpBoxes.length - 1) loginOtpBoxes[idx + 1].focus();
+        });
+        box.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !box.value && idx > 0) loginOtpBoxes[idx - 1].focus();
+        });
+      });
+
+      document.getElementById('loginAutoFillOtpBtn')?.addEventListener('click', () => {
+        ['1', '2', '3', '4'].forEach((num, i) => loginOtpBoxes[i].value = num);
+        loginOtpForm.dispatchEvent(new Event('submit'));
+      });
+
+      loginOtpForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const code = loginOtpBoxes.map(b => b.value).join('');
+        if (code !== '1234') {
+          loginOtpErrorBanner.classList.remove('hidden');
+          document.getElementById('loginOtpErrorMessage').textContent = 'Invalid verification code. Use demo code 1234.';
+          return;
+        }
+
+        const res = Auth.loginWithPhone(currentLoginPhoneValidation.raw);
+        if (res.success) {
+          UI.toast(`Login successful! Welcome back, ${res.user.name}.`, 'success');
+          setTimeout(() => {
+            window.location.href = res.user.role === 'admin' ? '../admin/index.html' : 'index.html';
+          }, 700);
+        } else {
+          loginOtpErrorBanner.classList.remove('hidden');
+          document.getElementById('loginOtpErrorMessage').textContent = res.error;
+        }
+      });
+
+      document.getElementById('btnEditLoginPhone')?.addEventListener('click', () => {
+        loginOtpStepView.classList.add('hidden');
+        loginStepView.classList.remove('hidden');
+        phoneInput.focus();
+      });
+
+      document.getElementById('btnResendLoginOtp')?.addEventListener('click', () => {
+        UI.toast(`New SMS code sent to ${currentLoginPhoneValidation.intlFormatted}. Use code: 1234`, 'info');
+      });
+
+      // ═════════════════════════════════════════════════════════
+      // 2. CREATE ACCOUNT (REGISTRATION) LOGIC & OTP
+      // ═════════════════════════════════════════════════════════
+      const regPhoneInput = document.getElementById('regPhoneInput');
+      const regPhoneBox = document.getElementById('regPhoneBox');
+      const regDigitCount = document.getElementById('regDigitCount');
+      const regPassword = document.getElementById('regPassword');
+      const regConfirmPassword = document.getElementById('regConfirmPassword');
+      const phRegisterForm = document.getElementById('phRegisterForm');
+      const regErrorBanner = document.getElementById('regErrorBanner');
+      const regErrorMessage = document.getElementById('regErrorMessage');
+
+      const regOtpBoxes = [
+        document.getElementById('rotp1'),
+        document.getElementById('rotp2'),
+        document.getElementById('rotp3'),
+        document.getElementById('rotp4')
+      ];
+      const regOtpForm = document.getElementById('regOtpForm');
+      const regOtpErrorBanner = document.getElementById('regOtpErrorBanner');
+      const regOtpErrorMessage = document.getElementById('regOtpErrorMessage');
+      const regCountdownSeconds = document.getElementById('regCountdownSeconds');
+      const regTimerClock = document.getElementById('regTimerClock');
+      const btnResendRegOtp = document.getElementById('btnResendRegOtp');
+      const regOtpTargetPhone = document.getElementById('regOtpTargetPhone');
+
+      let countdownTimerInterval = null;
+      let remainingSeconds = 60;
+
+      // Toggle Passwords
+      document.getElementById('btnToggleRegPass')?.addEventListener('click', () => {
+        const type = regPassword.type === 'password' ? 'text' : 'password';
+        regPassword.type = type;
+      });
+      document.getElementById('btnToggleRegConfirm')?.addEventListener('click', () => {
+        const type = regConfirmPassword.type === 'password' ? 'text' : 'password';
+        regConfirmPassword.type = type;
+      });
+
+      // Quick Fill Demo Registration
+      document.getElementById('btnQuickFillReg')?.addEventListener('click', () => {
+        regPhoneInput.value = '0919 444 8888';
+        regPassword.value = 'resident123';
+        regConfirmPassword.value = 'resident123';
+        regPhoneInput.dispatchEvent(new Event('input'));
+        hideRegError();
+        regPhoneInput.focus();
+      });
+
+      regPhoneInput.addEventListener('input', () => {
+        hideRegError();
+        const raw = regPhoneInput.value;
+        const res = Auth.validatePhilippineMobile(raw);
+        const digits = raw.replace(/\D/g, '');
+        regDigitCount.textContent = digits.length > 0 ? `${digits.length} digits` : '';
+
+        if (res.isValid) {
+          regPhoneBox.classList.remove('input-invalid');
+          regPhoneBox.classList.add('input-valid');
+        } else {
+          regPhoneBox.classList.remove('input-valid');
+        }
+      });
+
+      phRegisterForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const phoneVal = regPhoneInput.value.trim();
+        const passVal = regPassword.value;
+        const confirmVal = regConfirmPassword.value;
+
+        const validation = Auth.validatePhilippineMobile(phoneVal);
+        if (!validation.isValid) {
+          showRegError(validation.error);
+          regPhoneBox.classList.add('input-invalid');
+          regPhoneInput.focus();
+          return;
+        }
+
+        if (!passVal || passVal.length < 6) {
+          showRegError('Password must be at least 6 characters long.');
+          regPassword.focus();
+          return;
+        }
+
+        if (passVal !== confirmVal) {
+          showRegError('Passwords do not match. Please re-enter your password.');
+          regConfirmPassword.focus();
+          return;
+        }
+
+        hideRegError();
+
+        // Stage registration with Auth engine
+        const stageRes = Auth.stageRegistration({
+          mobile: validation.raw,
+          password: passVal,
+          role: 'resident'
+        });
+
+        if (!stageRes.success) {
+          showRegError(stageRes.error);
+          return;
+        }
+
+        // Move to Registration OTP Step
+        registerStepView.classList.add('hidden');
+        registerOtpStepView.classList.remove('hidden');
+        regOtpTargetPhone.textContent = validation.intlFormatted;
+
+        regOtpBoxes.forEach(b => b.value = '');
+        regOtpErrorBanner.classList.add('hidden');
+        setTimeout(() => regOtpBoxes[0].focus(), 150);
+
+        startCountdown();
+        UI.toast(`One-time verification code sent to ${validation.intlFormatted}. Use code: 1234`, 'info');
+      });
+
+      function showRegError(msg) {
+        regErrorMessage.textContent = msg;
+        regErrorBanner.classList.remove('hidden');
+      }
+
+      function hideRegError() {
+        regErrorBanner.classList.add('hidden');
+        regPhoneBox.classList.remove('input-invalid');
+      }
+
+      // Countdown Timer
+      function startCountdown() {
+        stopCountdown();
+        remainingSeconds = 60;
+        regCountdownSeconds.textContent = '01:00';
+        regTimerClock.classList.remove('hidden');
+        btnResendRegOtp.classList.add('hidden');
+
+        countdownTimerInterval = setInterval(() => {
+          remainingSeconds--;
+          const m = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+          const s = String(remainingSeconds % 60).padStart(2, '0');
+          regCountdownSeconds.textContent = `${m}:${s}`;
+
+          if (remainingSeconds <= 0) {
+            stopCountdown();
+            regTimerClock.classList.add('hidden');
+            btnResendRegOtp.classList.remove('hidden');
+            UI.toast('You can now request a new SMS verification code.', 'info');
+          }
+        }, 1000);
+      }
+
+      function stopCountdown() {
+        if (countdownTimerInterval) {
+          clearInterval(countdownTimerInterval);
+          countdownTimerInterval = null;
+        }
+      }
+
+      btnResendRegOtp?.addEventListener('click', () => {
+        const resendRes = Auth.resendRegistrationOtp();
+        if (resendRes.success) {
+          startCountdown();
+          UI.toast(`New SMS code sent. Use code: ${resendRes.otp}`, 'info');
+        } else {
+          UI.toast(resendRes.error || 'Failed to resend code.', 'error');
+        }
+      });
+
+      regOtpBoxes.forEach((box, idx) => {
+        box.addEventListener('input', e => {
+          regOtpErrorBanner.classList.add('hidden');
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val;
+          if (val && idx < regOtpBoxes.length - 1) regOtpBoxes[idx + 1].focus();
+        });
+        box.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !box.value && idx > 0) regOtpBoxes[idx - 1].focus();
+        });
+      });
+
+      document.getElementById('regAutoFillOtpBtn')?.addEventListener('click', () => {
+        ['1', '2', '3', '4'].forEach((num, i) => regOtpBoxes[i].value = num);
+        regOtpForm.dispatchEvent(new Event('submit'));
+      });
+
+      regOtpForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const code = regOtpBoxes.map(b => b.value).join('');
+        if (!code || code.length < 4) {
+          regOtpErrorMessage.textContent = 'Please enter all 4 digits of the verification code.';
+          regOtpErrorBanner.classList.remove('hidden');
+          return;
+        }
+
+        const verifyRes = Auth.verifyRegistrationOtp(code);
+        if (!verifyRes.success) {
+          regOtpErrorMessage.textContent = verifyRes.error;
+          regOtpErrorBanner.classList.remove('hidden');
+          regOtpBoxes.forEach(b => b.value = '');
+          regOtpBoxes[0].focus();
+          return;
+        }
+
+        stopCountdown();
+        UI.toast('Account verified and created! Welcome to BantayBarangay.', 'success');
+
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 800);
+      });
+
+      document.getElementById('btnBackToRegForm')?.addEventListener('click', () => {
+        stopCountdown();
+        registerOtpStepView.classList.add('hidden');
+        registerStepView.classList.remove('hidden');
+        regPhoneInput.focus();
+      });
+    });
+  </script>
+</body>
+
+</html>

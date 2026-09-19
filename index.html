@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BantayBarangay — Masbate Province Civic Infrastructure Reporting</title>
+  <script>
+    (function() {
+      try {
+        var raw = localStorage.getItem('bantay_current_user');
+        if (raw) {
+          var user = JSON.parse(raw);
+          if (user && user.role === 'admin') {
+            window.location.replace('admin/index.html' + window.location.search + window.location.hash);
+            return;
+          } else if (user) {
+            window.location.replace('resident/index.html' + window.location.search + window.location.hash);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Auth check error:', e);
+      }
+      // Not logged in: direct to Login / Create Account first
+      window.location.replace('resident/auth.html' + window.location.search + window.location.hash);
+    })();
+  </script>
+  <style>
+    body {
+      background: #0a1628;
+      color: #e8f4f8;
+      font-family: 'Inter', system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    .redirect-card {
+      padding: 32px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 420px;
+    }
+    a {
+      color: #2bbdcf;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="redirect-card">
+    <h2>🏛️ BantayBarangay</h2>
+    <p>Connecting to <strong>Masbate Province Citizen Portal</strong>...</p>
+    <p style="font-size: 13px; opacity: 0.7;">
+      If you are not redirected automatically, <a href="resident/auth.html">click here to Log In or Register</a>.
+    </p>
+  </div>
+</body>
+</html>

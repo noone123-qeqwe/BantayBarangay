@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="BantayBarangay" />
+  <title>BantayBarangay — Masbate Province Civic Infrastructure Portal</title>
+  <meta name="description" content="BantayBarangay helps residents across Masbate Province report infrastructure problems like potholes, broken electric posts, clogged drainage, and water leaks with photo evidence." />
+  <link rel="icon" type="image/png" href="images/icon-192.png" />
+  <link rel="apple-touch-icon" href="images/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="images/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="images/icon-512.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.2" />
+  <link rel="stylesheet" href="css/resident.css?v=5.2" />
+  <link rel="stylesheet" href="css/auth.css?v=5.2" />
+  <script>
+    (function() {
+      try {
+        var user = localStorage.getItem('bantay_current_user');
+        if (!user) {
+          window.location.replace('auth.html' + window.location.search + window.location.hash);
+          return;
+        }
+        var parsed = JSON.parse(user);
+        if (parsed.role === 'admin') {
+          window.location.replace('../admin/index.html');
+        }
+      } catch(e) {
+        window.location.replace('auth.html');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ── SIDEBAR NAV ──────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon-wrap">
+        <img src="images/logo.png" alt="BantayBarangay Seal" class="sidebar-seal-img" />
+      </div>
+      <div class="logo-text-block">
+        <div class="logo-text">
+          <span class="logo-main">Bantay</span><span class="logo-accent">Barangay</span>
+        </div>
+        <span class="sidebar-portal-sub">Province of Masbate</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button type="button" class="nav-item active" data-view="report" id="nav-report" onclick="window.BantayResident ? window.BantayResident.showView('report') : null">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </span>
+        <span class="nav-label">Report Issue</span>
+      </button>
+
+      <button type="button" class="nav-item" data-view="profile" id="nav-profile" onclick="window.BantayResident ? window.BantayResident.showView('profile') : null">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </span>
+        <span class="nav-label">Settings</span>
+      </button>
+
+
+      <button type="button" class="nav-item nav-logout" id="sidebarLogoutBtn" title="Sign out" aria-label="Sign out of your account" onclick="window.BantayResident ? window.BantayResident.logout() : (localStorage.removeItem('bantay_current_user'), window.location.href='auth.html?logout=true')">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </span>
+        <span class="nav-label">Sign out</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ── MOBILE NAV TOGGLE ─────────────────────────────── -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ── MOBILE APP TOP BAR ────────────────────────────── -->
+  <header class="mobile-top-bar" id="mobileTopBar">
+    <div class="mobile-top-brand" onclick="window.BantayResident ? window.BantayResident.showView('report') : null">
+      <div class="mobile-logo-wrap">
+        <img src="images/logo.png" alt="BantayBarangay Seal" class="mobile-top-seal" />
+      </div>
+      <div class="mobile-brand-meta">
+        <div class="mobile-brand-title">
+          <span>Bantay</span><span class="mobile-accent">Barangay</span>
+        </div>
+        <span class="mobile-brand-sub">Masbate Civic Portal</span>
+      </div>
+    </div>
+    <div class="mobile-top-actions">
+      <div class="mobile-status-pill" title="System Operational">
+        <span class="mobile-status-dot"></span>
+        <span class="mobile-status-text">Online</span>
+      </div>
+      <button type="button" class="mobile-avatar-btn" id="mobileAvatarBtn" title="Account Settings" onclick="window.BantayResident ? window.BantayResident.showView('profile') : null">
+        <span class="mobile-avatar-icon" id="mobileAvatarLetter">👤</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── MAIN CONTENT ──────────────────────────────────── -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ── EMERGENCY CITIZEN ADVISORY BANNER (ADMIN BROADCAST) ── -->
+    <div id="residentEmergencyAdvisory" class="emergency-advisory-container" style="max-width:760px;margin:0 auto 16px;"></div>
+    <div class="offline-strip hidden" id="offlineIndicatorStrip" role="status" aria-live="polite">
+      <span class="offline-dot"></span>
+      <span>Offline mode: your report will be kept on this device and sent when you reconnect.</span>
+    </div>
+
+    <!-- ════ REPORT FORM VIEW ═════════════════════════════ -->
+    <section class="view active" id="view-report">
+      <div class="view-header">
+        <h1 class="view-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Report an Issue
+        </h1>
+        <p class="view-subtitle">Help us fix your community. Fill in the details below and we'll route your report to the right agency.</p>
+      </div>
+
+      <section class="report-hero" aria-label="Community reporting overview">
+        <div class="report-hero-copy">
+          <span class="report-hero-kicker"><span class="report-hero-pulse"></span>Community action desk</span>
+          <h2>Spot it. Report it.<br><em>Help get it fixed.</em></h2>
+          <p>A clear report helps the barangay and MASELCO respond with confidence.</p>
+        </div>
+        <div class="report-hero-stats" aria-label="Reporting benefits">
+          <div><strong>~2 min</strong><span>to submit</span></div>
+          <div><strong>1 place</strong><span>to track action</span></div>
+        </div>
+        <div class="report-hero-orbit orbit-one" aria-hidden="true"></div>
+        <div class="report-hero-orbit orbit-two" aria-hidden="true"></div>
+      </section>
+
+      <form class="report-form glass-card" id="reportForm" novalidate style="max-width: 760px; margin: 0 auto; padding: 20px 28px;">
+        <!-- 1. CATEGORY & INFRASTRUCTURE TYPE -->
+        <div class="form-group">
+          <label class="form-label" for="categorySelect">
+            <span>Select Category &amp; Type of Infrastructure Issue</span>
+            <span class="required" style="color: #f43f5e; margin-left: 4px;">*</span>
+          </label>
+          <div class="category-select-wrapper">
+            <!-- Hidden native select for form serialization & programmatic compatibility -->
+            <select class="form-select category-dropdown" id="categorySelect" name="category" style="display:none;" tabindex="-1" aria-hidden="true">
+              <option value="" disabled selected>— Select an issue from the categorized dropdown —</option>
+
+              <optgroup label="Category A: Line & Pole Issues (Distribution Infrastructure)">
+                <option value="Toppled / Leaning Utility Pole" data-group="Category A: Line &amp; Pole Issues" data-desc="Concrete or wooden poles tilted or completely knocked down" data-sev="Critical">Toppled / Leaning Utility Pole (Concrete or wooden poles tilted or completely knocked down)</option>
+                <option value="Snapped / Downed Power Lines" data-group="Category A: Line &amp; Pole Issues" data-desc="Live or dead wires lying on the ground or across roads" data-sev="Critical">Snapped / Downed Power Lines (Live or dead wires lying on the ground or across roads)</option>
+                <option value="Low-Hanging Wires" data-group="Category A: Line &amp; Pole Issues" data-desc="Cables sagging dangerously low near traffic or roofs" data-sev="High">Low-Hanging Wires (Cables sagging dangerously low near traffic or roofs)</option>
+                <option value="Tangled or Crossed Lines" data-group="Category A: Line &amp; Pole Issues" data-desc="Secondary lines clashing or shorting due to wind" data-sev="High">Tangled or Crossed Lines (Secondary lines clashing or shorting due to wind)</option>
+                <option value="Broken Crossarm / Insulator" data-group="Category A: Line &amp; Pole Issues" data-desc="Damaged hardware holding the wires to the pole" data-sev="Medium">Broken Crossarm / Insulator (Damaged hardware holding the wires to the pole)</option>
+              </optgroup>
+
+              <optgroup label="Category B: Transformer & Substation Issues">
+                <option value="Blown Transformer" data-group="Category B: Transformer &amp; Substation Issues" data-desc="Loud bang, smoke, or total failure resulting in localized outage" data-sev="Critical">Blown Transformer (Loud bang, smoke, or total failure resulting in localized outage)</option>
+                <option value="Transformer Oil Leak / Smoking" data-group="Category B: Transformer &amp; Substation Issues" data-desc="Overheated or leaking transformer unit" data-sev="Critical">Transformer Oil Leak / Smoking (Overheated or leaking transformer unit)</option>
+                <option value="Sparking / Arcing Transformer" data-group="Category B: Transformer &amp; Substation Issues" data-desc="Visible electrical flashes and buzzing coming from the unit" data-sev="Critical">Sparking / Arcing Transformer (Visible electrical flashes and buzzing coming from the unit)</option>
+              </optgroup>
+
+              <optgroup label="Category C: Service Drop & Meter Issues (House Connection)">
+                <option value="Service Drop Disconnection" data-group="Category C: Service Drop &amp; Meter Issues" data-desc="Wires tearing off from the main line to a specific house" data-sev="Medium">Service Drop Disconnection (Wires tearing off from the main line to a specific house)</option>
+                <option value="Service Wire Sparking / Short Circuit" data-group="Category C: Service Drop &amp; Meter Issues" data-desc="Flashes or burning smell near the weather head" data-sev="Critical">Service Wire Sparking / Short Circuit (Flashes or burning smell near the weather head)</option>
+                <option value="Damaged Electric Meter Box" data-group="Category C: Service Drop &amp; Meter Issues" data-desc="Physical damage, broken seals, or burnt meter base" data-sev="Medium">Damaged Electric Meter Box (Physical damage, broken seals, or burnt meter base)</option>
+              </optgroup>
+
+              <optgroup label="Category D: Outage Types & Grid Status">
+                <option value="Total Blackout (Area-wide)" data-group="Category D: Outage Types &amp; Grid Status" data-desc="No power across the entire barangay or zone" data-sev="High">Total Blackout (Area-wide) (No power across the entire barangay or zone)</option>
+                <option value="Rotational Brownout / Load Shedding" data-group="Category D: Outage Types &amp; Grid Status" data-desc="Scheduled or sudden grid cuts due to power generation deficits" data-sev="Medium">Rotational Brownout / Load Shedding (Scheduled or sudden grid cuts due to power generation deficits)</option>
+                <option value="Low Voltage / Fluctuating Power" data-group="Category D: Outage Types &amp; Grid Status" data-desc="Dim lights, appliances failing to start properly" data-sev="Medium">Low Voltage / "Fluctuating Power" (Dim lights, appliances failing to start properly)</option>
+                <option value="Unscheduled Interruption (Cause Unknown)" data-group="Category D: Outage Types &amp; Grid Status" data-desc="Sudden loss of power without prior advisory" data-sev="High">Unscheduled Interruption (Cause Unknown) (Sudden loss of power without prior advisory)</option>
+              </optgroup>
+
+              <optgroup label="Category E: Vegetation & Environmental Hazards">
+                <option value="Tree Branches Entangled in Wires" data-group="Category E: Vegetation &amp; Environmental Hazards" data-desc="Overgrown branches rubbing against or pressing distribution lines" data-sev="High">Tree Branches Entangled in Wires (Overgrown branches rubbing against or pressing distribution lines)</option>
+                <option value="Tree Branch Fell on Lines" data-group="Category E: Vegetation &amp; Environmental Hazards" data-desc="Branches breaking and snapping lines during heavy winds/storms" data-sev="Critical">Tree Branch Fell on Lines (Branches breaking and snapping lines during heavy winds/storms)</option>
+              </optgroup>
+            </select>
+
+            <!-- CUSTOM CATEGORY PICKER UI -->
+            <div class="custom-cat-picker" id="customCatPicker">
+              <button type="button" class="custom-cat-trigger" id="customCatTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <div class="cat-trigger-main">
+                  <div class="cat-trigger-icon-box" id="catTriggerIconBox">
+                    <span id="catTriggerIcon">⚡</span>
+                  </div>
+                  <div class="cat-trigger-texts">
+                    <div class="cat-trigger-title" id="catTriggerTitle">Select category &amp; issue type…</div>
+                    <div class="cat-trigger-subtitle" id="catTriggerSub">Choose from 17 specific electrical, line, transformer, and outage issue types</div>
+                  </div>
+                </div>
+                <div class="cat-trigger-aside">
+                  <span class="cat-trigger-urgency-badge hidden" id="catTriggerUrgency"></span>
+                  <div class="cat-trigger-arrow-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </div>
+              </button>
+
+              <!-- FLOATING DROPDOWN PANEL -->
+              <div class="custom-cat-popover hidden" id="customCatPopover">
+                <!-- Search Filter Bar -->
+                <div class="cat-popover-search">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="catSearchInput" placeholder="Quick search issue (e.g. pole, transformer, wire, blackout)…" autocomplete="off" />
+                  <button type="button" class="cat-search-clear-btn hidden" id="catSearchClear" title="Clear">✕</button>
+                </div>
+
+                <!-- Category Filter Pills -->
+                <div class="cat-filter-pills" id="catFilterPills">
+                  <button type="button" class="cat-pill-btn active" data-filter="all">All Issues (17)</button>
+                  <button type="button" class="cat-pill-btn" data-filter="Category A">🗼 Line &amp; Pole</button>
+                  <button type="button" class="cat-pill-btn" data-filter="Category B">⚡ Transformer</button>
+                  <button type="button" class="cat-pill-btn" data-filter="Category C">🔌 Service Drop</button>
+                  <button type="button" class="cat-pill-btn" data-filter="Category D">💡 Outages</button>
+                  <button type="button" class="cat-pill-btn" data-filter="Category E">🌳 Vegetation</button>
+                </div>
+
+                <!-- Custom Options List -->
+                <div class="cat-options-list" id="catOptionsList" role="listbox">
+                  <!-- Category A -->
+                  <div class="cat-group-header-label" data-group="Category A">
+                    <span>🗼 Category A: Line &amp; Pole Issues (Distribution Infrastructure)</span>
+                  </div>
+                  <div class="custom-cat-item" data-value="Toppled / Leaning Utility Pole" data-group="Category A" data-desc="Concrete or wooden poles tilted or completely knocked down" data-sev="Critical" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🗼</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category A: Line &amp; Pole</span>
+                        <span class="cat-item-urgency-badge urgency-critical">Critical Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Toppled / Leaning Utility Pole</div>
+                      <div class="cat-item-desc">Concrete or wooden poles tilted or completely knocked down</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Snapped / Downed Power Lines" data-group="Category A" data-desc="Live or dead wires lying on the ground or across roads" data-sev="Critical" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">⚡</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category A: Line &amp; Pole</span>
+                        <span class="cat-item-urgency-badge urgency-critical">Critical Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Snapped / Downed Power Lines</div>
+                      <div class="cat-item-desc">Live or dead wires lying on the ground or across roads</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Low-Hanging Wires" data-group="Category A" data-desc="Cables sagging dangerously low near traffic or roofs" data-sev="High" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">⚠️</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category A: Line &amp; Pole</span>
+                        <span class="cat-item-urgency-badge urgency-high">High Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Low-Hanging Wires</div>
+                      <div class="cat-item-desc">Cables sagging dangerously low near traffic or roofs</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Tangled or Crossed Lines" data-group="Category A" data-desc="Secondary lines clashing or shorting due to wind" data-sev="High" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🔀</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category A: Line &amp; Pole</span>
+                        <span class="cat-item-urgency-badge urgency-high">High Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Tangled or Crossed Lines</div>
+                      <div class="cat-item-desc">Secondary lines clashing or shorting due to wind</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Broken Crossarm / Insulator" data-group="Category A" data-desc="Damaged hardware holding the wires to the pole" data-sev="Medium" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🔧</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category A: Line &amp; Pole</span>
+                        <span class="cat-item-urgency-badge urgency-medium">Medium Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Broken Crossarm / Insulator</div>
+                      <div class="cat-item-desc">Damaged hardware holding the wires to the pole</div>
+                    </div>
+                  </div>
+
+                  <!-- Category B -->
+                  <div class="cat-group-header-label" data-group="Category B">
+                    <span>⚡ Category B: Transformer &amp; Substation Issues</span>
+                  </div>
+                  <div class="custom-cat-item" data-value="Blown Transformer" data-group="Category B" data-desc="Loud bang, smoke, or total failure resulting in localized outage" data-sev="Critical" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">💥</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category B: Transformer</span>
+                        <span class="cat-item-urgency-badge urgency-critical">Critical Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Blown Transformer</div>
+                      <div class="cat-item-desc">Loud bang, smoke, or total failure resulting in localized outage</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Transformer Oil Leak / Smoking" data-group="Category B" data-desc="Overheated or leaking transformer unit" data-sev="Critical" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">♨️</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category B: Transformer</span>
+                        <span class="cat-item-urgency-badge urgency-critical">Critical Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Transformer Oil Leak / Smoking</div>
+                      <div class="cat-item-desc">Overheated or leaking transformer unit</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Sparking / Arcing Transformer" data-group="Category B" data-desc="Visible electrical flashes and buzzing coming from the unit" data-sev="Critical" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">⚡</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category B: Transformer</span>
+                        <span class="cat-item-urgency-badge urgency-critical">Critical Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Sparking / Arcing Transformer</div>
+                      <div class="cat-item-desc">Visible electrical flashes and buzzing coming from the unit</div>
+                    </div>
+                  </div>
+
+                  <!-- Category C -->
+                  <div class="cat-group-header-label" data-group="Category C">
+                    <span>🔌 Category C: Service Drop &amp; Meter Issues (House Connection)</span>
+                  </div>
+                  <div class="custom-cat-item" data-value="Service Drop Disconnection" data-group="Category C" data-desc="Wires tearing off from the main line to a specific house" data-sev="Medium" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🔌</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category C: Service Drop</span>
+                        <span class="cat-item-urgency-badge urgency-medium">Medium Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Service Drop Disconnection</div>
+                      <div class="cat-item-desc">Wires tearing off from the main line to a specific house</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Service Wire Sparking / Short Circuit" data-group="Category C" data-desc="Flashes or burning smell near the weather head" data-sev="Critical" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">⚡</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category C: Service Drop</span>
+                        <span class="cat-item-urgency-badge urgency-critical">Critical Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Service Wire Sparking / Short Circuit</div>
+                      <div class="cat-item-desc">Flashes or burning smell near the weather head</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Damaged Electric Meter Box" data-group="Category C" data-desc="Physical damage, broken seals, or burnt meter base" data-sev="Medium" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🎛️</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category C: Meter Box</span>
+                        <span class="cat-item-urgency-badge urgency-medium">Medium Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Damaged Electric Meter Box</div>
+                      <div class="cat-item-desc">Physical damage, broken seals, or burnt meter base</div>
+                    </div>
+                  </div>
+
+                  <!-- Category D -->
+                  <div class="cat-group-header-label" data-group="Category D">
+                    <span>💡 Category D: Outage Types &amp; Grid Status</span>
+                  </div>
+                  <div class="custom-cat-item" data-value="Total Blackout (Area-wide)" data-group="Category D" data-desc="No power across the entire barangay or zone" data-sev="High" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🌑</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category D: Outages</span>
+                        <span class="cat-item-urgency-badge urgency-high">High Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Total Blackout (Area-wide)</div>
+                      <div class="cat-item-desc">No power across the entire barangay or zone</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Rotational Brownout / Load Shedding" data-group="Category D" data-desc="Scheduled or sudden grid cuts due to power generation deficits" data-sev="Medium" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🔄</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category D: Outages</span>
+                        <span class="cat-item-urgency-badge urgency-medium">Medium Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Rotational Brownout / Load Shedding</div>
+                      <div class="cat-item-desc">Scheduled or sudden grid cuts due to power generation deficits</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Low Voltage / Fluctuating Power" data-group="Category D" data-desc="Dim lights, appliances failing to start properly" data-sev="Medium" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">📉</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category D: Outages</span>
+                        <span class="cat-item-urgency-badge urgency-medium">Medium Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Low Voltage / "Fluctuating Power"</div>
+                      <div class="cat-item-desc">Dim lights, appliances failing to start properly</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Unscheduled Interruption (Cause Unknown)" data-group="Category D" data-desc="Sudden loss of power without prior advisory" data-sev="High" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">❓</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category D: Outages</span>
+                        <span class="cat-item-urgency-badge urgency-high">High Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Unscheduled Interruption (Cause Unknown)</div>
+                      <div class="cat-item-desc">Sudden loss of power without prior advisory</div>
+                    </div>
+                  </div>
+
+                  <!-- Category E -->
+                  <div class="cat-group-header-label" data-group="Category E">
+                    <span>🌳 Category E: Vegetation &amp; Environmental Hazards</span>
+                  </div>
+                  <div class="custom-cat-item" data-value="Tree Branches Entangled in Wires" data-group="Category E" data-desc="Overgrown branches rubbing against or pressing distribution lines" data-sev="High" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🌿</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category E: Vegetation</span>
+                        <span class="cat-item-urgency-badge urgency-high">High Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Tree Branches Entangled in Wires</div>
+                      <div class="cat-item-desc">Overgrown branches rubbing against or pressing distribution lines</div>
+                    </div>
+                  </div>
+                  <div class="custom-cat-item" data-value="Tree Branch Fell on Lines" data-group="Category E" data-desc="Branches breaking and snapping lines during heavy winds/storms" data-sev="Critical" role="option" tabindex="0">
+                    <div class="cat-item-icon-box">🌳</div>
+                    <div class="cat-item-content">
+                      <div class="cat-item-top">
+                        <span class="cat-item-group-badge">Category E: Vegetation</span>
+                        <span class="cat-item-urgency-badge urgency-critical">Critical Urgency</span>
+                      </div>
+                      <div class="cat-item-title">Tree Branch Fell on Lines</div>
+                      <div class="cat-item-desc">Branches breaking and snapping lines during heavy winds/storms</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cat-no-results-msg hidden" id="catNoResultsMsg">
+                  <span>🔍 No issues match "<strong id="catSearchQueryText"></strong>"</span>
+                  <p>Try searching for keywords like <em>pole</em>, <em>wire</em>, <em>spark</em>, <em>voltage</em>, or <em>tree</em>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field-error hidden" id="err-category">Please select a category and issue type from the dropdown.</div>
+
+          <!-- DYNAMIC ISSUE SPECIFICATION CARD -->
+          <div class="issue-preview-card hidden" id="issuePreviewCard">
+            <div class="issue-preview-top">
+              <span class="issue-preview-category" id="issuePreviewGroup">Category A: Line &amp; Pole Issues</span>
+              <span class="issue-preview-urgency" id="issuePreviewSevBadge">High Urgency</span>
+            </div>
+            <div class="issue-preview-main">
+              <div class="issue-preview-icon" id="issuePreviewIcon">⚡</div>
+              <div class="issue-preview-text">
+                <h4 class="issue-preview-title" id="issuePreviewTitle">Toppled / Leaning Utility Pole</h4>
+                <p class="issue-preview-desc" id="issuePreviewDesc">Concrete or wooden poles tilted or completely knocked down</p>
+              </div>
+            </div>
+            <div class="issue-preview-routing">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span>Automated Dispatch Routing: <strong id="issuePreviewAgencyText">MASELCO (Masbate Electric Cooperative)</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. INCIDENT ADDRESS -->
+        <div class="form-group" style="margin-top: 20px;">
+          <label class="form-label" for="reportAddressInput">
+            <span>Address (Purok, Street, Brgy, Municipality)</span>
+            <span class="required" style="color: #f43f5e; margin-left: 4px;">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-input" 
+            id="reportAddressInput" 
+            name="incidentAddress" 
+            placeholder="e.g. Purok 2, Quezon St., Brgy. Centro, Masbate City" 
+            autocomplete="off" 
+            required
+          />
+          <span class="field-hint" style="font-size:12px;color:var(--text-muted);margin-top:5px;display:block;">
+            Provide complete incident location: Purok, Street, Barangay, and Municipality / City
+          </span>
+          <div class="field-error hidden" id="err-address">Please enter the address (purok, street, brgy, municipality).</div>
+
+          <div class="location-actions" style="margin-top: 8px; margin-bottom: 4px;">
+            <button type="button" class="btn btn-teal btn-sm" id="geolocateBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              Auto-Detect My GPS Coordinates
+            </button>
+          </div>
+
+          <section class="nearby-reports hidden" id="nearbyReports" aria-live="polite" aria-labelledby="nearbyReportsTitle">
+            <div class="nearby-reports-heading">
+              <span aria-hidden="true">📍</span>
+              <div>
+                <h3 id="nearbyReportsTitle">Possible existing reports nearby</h3>
+                <p>Support an open report instead of submitting the same issue again.</p>
+              </div>
+            </div>
+            <div id="nearbyReportsList"></div>
+          </section>
+        </div>
+
+        <input type="hidden" id="agencySelect" name="agency" value="MASELCO" />
+
+        <!-- 3. DESCRIPTION -->
+        <div class="form-group" style="margin-top: 14px;">
+          <label class="form-label" for="description">
+            <span>Description</span>
+            <span class="required" style="color: #f43f5e; margin-left: 4px;">*</span>
+          </label>
+          <textarea class="form-input form-textarea" id="description" name="description" rows="3" placeholder="Describe the problem in detail — how severe, how long it's been there, any danger to residents…" maxlength="500"></textarea>
+          <div class="char-count"><span id="charCount">0</span>/500</div>
+          <div class="field-error hidden" id="err-description">Please provide a description.</div>
+        </div>
+
+        <!-- Hidden severity auto-determined by infrastructure issue type -->
+        <input type="hidden" id="reportSeverityInput" name="severity" value="Medium" />
+
+        <!-- 4. REPORTER -->
+        <div class="form-group" style="margin-top: 14px;">
+          <label class="form-label" for="reporterName">Your Name <span class="optional">(optional)</span></label>
+          <input class="form-input" type="text" id="reporterName" name="reporter" placeholder="Anonymous" />
+        </div>
+
+        <!-- 5. SUBMIT ACTION -->
+        <div class="step-actions" style="margin-top: 20px; display: flex; justify-content: flex-end;">
+          <button type="submit" class="btn btn-primary btn-large" id="submitBtn" style="min-width: 220px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9 22,2"/></svg>
+            Submit Report
+          </button>
+        </div>
+        <p class="draft-status" id="draftStatus" role="status" aria-live="polite">Drafts are saved on this device while you type.</p>
+      </form>
+    </section>
+
+    <!-- ════ SETTINGS VIEW ═══════════════════════════════ -->
+    <section class="view" id="view-profile">
+      <div class="view-header">
+        <h1 class="view-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Settings
+        </h1>
+        <p class="view-subtitle">Manage your account credentials, password, and preferences.</p>
+      </div>
+
+      <div class="profile-layout-grid">
+        <!-- ── COLUMN 1: RESIDENT IDENTITY & SECURITY ── -->
+        <div class="profile-col">
+          <!-- IDENTITY CARD -->
+          <div class="profile-card glass-card">
+            <div class="profile-banner"></div>
+            <div class="profile-identity-header">
+              <div class="profile-avatar-large" id="profileAvatarLarge">👤</div>
+              <div class="profile-identity-details">
+                <div class="profile-name-row">
+                  <h2 class="profile-name" id="profileDisplayName">Resident Account</h2>
+                  <span class="profile-verified-badge" title="Verified Resident Account">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg>
+                    Verified
+                  </span>
+                </div>
+                <div class="profile-meta-tags">
+                  <span class="meta-tag-pill role-pill" id="profileRoleBadge">Citizen Account</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-info-list">
+              <div class="profile-info-item" style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <span class="info-label">Mobile Number</span>
+                  <span class="info-val" id="profilePhoneVal">🇵🇭 +63 917 123 4567</span>
+                </div>
+                <button type="button" class="btn btn-outline btn-xs" id="btnJumpChangePhone" style="font-size:11px;padding:3px 10px;border-color:rgba(56,189,248,0.35);color:var(--teal-400);cursor:pointer;" title="Change phone number">
+                  Change
+                </button>
+              </div>
+              <div class="profile-info-item">
+                <span class="info-label">Account ID</span>
+                <span class="info-val mono" id="profileUserId">usr-001</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="info-label">Registered Since</span>
+                <span class="info-val" id="profileMemberSince">September 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECURITY & CHANGE PASSWORD CARD -->
+          <div class="profile-card glass-card" style="margin-top:20px">
+            <div class="card-section-header">
+              <div class="header-icon-box icon-sky">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div>
+                <h3 class="card-section-title">Security & Password</h3>
+                <p class="card-section-sub">Update your account login password</p>
+              </div>
+            </div>
+
+            <form id="changePasswordForm" class="profile-form">
+              <div class="form-group">
+                <label class="form-label" for="currPassword">Current Password</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="currPassword" class="form-input" placeholder="Enter current password" required />
+                  <button type="button" class="password-toggle-styled" id="btnToggleCurrPass" title="Toggle visibility">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="newPassword">New Password (Min. 6 characters)</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="newPassword" class="form-input" placeholder="Create new password" required />
+                  <button type="button" class="password-toggle-styled" id="btnToggleNewPass" title="Toggle visibility">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="confirmNewPassword">Confirm New Password</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="confirmNewPassword" class="form-input" placeholder="Re-enter new password" required />
+                  <button type="button" class="password-toggle-styled" id="btnToggleConfirmPass" title="Toggle visibility">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="field-error hidden" id="err-change-pass" style="margin-bottom:12px"></div>
+              <div class="field-success hidden" id="succ-change-pass" style="margin-bottom:12px"></div>
+
+              <button type="submit" class="btn btn-primary btn-sm" id="btnSubmitChangePass">
+                <span>Update Password</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- CHANGE PHONE NUMBER CARD -->
+          <div class="profile-card glass-card" id="changePhoneCard" style="margin-top:20px">
+            <div class="card-section-header">
+              <div class="header-icon-box icon-teal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div>
+                <h3 class="card-section-title">Change Phone Number</h3>
+                <p class="card-section-sub">Update registered Philippine mobile for SMS & login</p>
+              </div>
+            </div>
+
+            <form id="changePhoneForm" class="profile-form">
+              <div class="form-group">
+                <label class="form-label" for="currentPhoneDisplay">Current Mobile Number</label>
+                <input type="text" id="currentPhoneDisplay" class="form-input" readonly disabled style="opacity:0.75;cursor:not-allowed;" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="newPhoneInput">
+                  New Philippine Mobile <span class="required" style="color:#ef476f">*</span>
+                </label>
+                <div class="ph-phone-input-box" id="newPhoneBox">
+                  <div class="ph-country-prefix">
+                    <span class="ph-country-flag">🇵🇭</span>
+                    <span class="ph-country-code">+63</span>
+                  </div>
+                  <input
+                    type="tel"
+                    id="newPhoneInput"
+                    class="ph-phone-input"
+                    placeholder="09XXXXXXXXX or +63 9XXXXXXXXX"
+                    autocomplete="tel"
+                    required
+                  />
+                </div>
+                <div class="ph-format-guide">
+                  <span>Format: <strong>09XXXXXXXXX</strong> (11 digits)</span>
+                  <span id="newPhoneDigitCount" style="font-family:monospace;font-size:11px;"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="confirmPhonePassword">
+                  Current Password Confirmation <span class="required" style="color:#ef476f">*</span>
+                </label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="confirmPhonePassword" class="form-input" placeholder="Enter password to confirm" required />
+                  <button type="button" class="password-toggle-styled" id="btnToggleConfirmPhonePass" title="Toggle visibility">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+                <span class="field-hint" style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;">Required to verify account ownership before changing your login phone.</span>
+              </div>
+
+              <div class="field-error hidden" id="err-change-phone" style="margin-bottom:12px"></div>
+              <div class="field-success hidden" id="succ-change-phone" style="margin-bottom:12px"></div>
+
+              <button type="submit" class="btn btn-teal btn-sm" id="btnSubmitChangePhone">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Save New Phone Number</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- ── COLUMN 2: EDIT DETAILS & APP SETTINGS ── -->
+        <div class="profile-col">
+          <!-- EDIT PERSONAL INFORMATION -->
+          <div class="profile-card glass-card">
+            <div class="card-section-header">
+              <div class="header-icon-box icon-teal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </div>
+              <div>
+                <h3 class="card-section-title">Account Details</h3>
+                <p class="card-section-sub">Update your account email and preferences</p>
+              </div>
+            </div>
+
+            <form id="editProfileForm" class="profile-form">
+              <div class="form-group">
+                <label class="form-label" for="editEmail">Email Address <span class="optional">(optional for alerts and receipts)</span></label>
+                <input type="email" id="editEmail" class="form-input" placeholder="name@domain.com" />
+              </div>
+
+              <div class="field-error hidden" id="err-edit-profile" style="margin-bottom:12px"></div>
+
+              <div style="display:flex;justify-content:flex-end">
+                <button type="submit" class="btn btn-teal btn-sm" id="btnSaveProfile">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- NOTIFICATION & APP SETTINGS -->
+          <div class="profile-card glass-card" style="margin-top:20px">
+            <div class="card-section-header">
+              <div class="header-icon-box icon-amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+              <div>
+                <h3 class="card-section-title">App Preferences & Alerts</h3>
+                <p class="card-section-sub">Configure notifications and interface options</p>
+              </div>
+            </div>
+
+            <div class="settings-list">
+              <!-- TOGGLE 1: SMS Emergency -->
+              <div class="setting-item-row">
+                <div class="setting-item-text">
+                  <div class="setting-item-title">SMS Emergency & Calamity Alerts</div>
+                  <div class="setting-item-desc">Receive real-time barangay disaster warnings and public safety broadcasts via SMS.</div>
+                </div>
+                <label class="setting-toggle-switch">
+                  <input type="checkbox" id="prefSmsEmergency" checked />
+                  <span class="setting-toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- TOGGLE 2: SMS Status Updates -->
+              <div class="setting-item-row">
+                <div class="setting-item-text">
+                  <div class="setting-item-title">Report Milestone SMS Updates</div>
+                  <div class="setting-item-desc">Send automated text updates when dispatch teams acknowledge or resolve your report.</div>
+                </div>
+                <label class="setting-toggle-switch">
+                  <input type="checkbox" id="prefSmsStatus" checked />
+                  <span class="setting-toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- TOGGLE 3: Sound Effects -->
+              <div class="setting-item-row">
+                <div class="setting-item-text">
+                  <div class="setting-item-title">UI Feedback & Sound Chimes</div>
+                  <div class="setting-item-desc">Play subtle audio feedback on filing reports, submitting edits, and milestone alerts.</div>
+                </div>
+                <label class="setting-toggle-switch">
+                  <input type="checkbox" id="prefSoundEffects" checked />
+                  <span class="setting-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── TOAST ─────────────────────────────────────────── -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ── SUCCESS OVERLAY ───────────────────────────────── -->
+  <div class="success-overlay hidden" id="successOverlay">
+    <div class="success-card glass-card">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="40" height="40"><polyline points="20,6 9,17 4,12"/></svg>
+      </div>
+      <h2>Report Submitted!</h2>
+      <p>Your incident report has been forwarded to MASELCO response teams.</p>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="successNewReport" data-view="report">Submit Another Report</button>
+        <button class="btn btn-ghost" id="successGoSettings" data-view="profile">Account Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ AUTH MODAL (PHILIPPINE MOBILE AUTHENTICATION) ════════════ -->
+  <div class="modal-overlay hidden" id="authModalOverlay">
+    <div class="modal auth-modal-dialog glass-card" id="authModal">
+      <div class="auth-modal-header">
+        <div>
+          <div class="ph-flag-pill" style="margin-bottom:6px"><span>🇵🇭</span> Philippine Mobile Access</div>
+          <div class="logo-text" style="font-size:20px">
+            <span class="logo-main">Bantay</span><span class="logo-accent">Barangay</span>
+          </div>
+        </div>
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close modal">✕</button>
+      </div>
+
+      <!-- MODAL MODE TABS -->
+      <div class="auth-mode-tabs" style="margin-bottom:18px;">
+        <button type="button" class="auth-mode-tab active" id="modalTabLogin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span>Log In</span>
+        </button>
+        <button type="button" class="auth-mode-tab" id="modalTabRegister">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          <span>Create Account</span>
+        </button>
+      </div>
+
+      <!-- STEP 1: MODAL LOGIN -->
+      <div id="modalPhoneStepView">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+          Log in with your Philippine mobile phone number.
+        </p>
+
+        <!-- DEMO NUMBERS -->
+        <div class="ph-demo-box" style="margin-bottom:14px;padding:10px 12px">
+          <div class="ph-demo-title" style="margin-bottom:6px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Quick Demo Numbers:</span>
+          </div>
+          <div class="ph-demo-pills">
+            <button type="button" class="ph-demo-btn modal-ph-demo-btn" data-phone="0917 123 4567">
+              <span class="ph-demo-number">0917 123 4567</span>
+              <span class="ph-demo-tag">Juan • Resident</span>
+            </button>
+            <button type="button" class="ph-demo-btn modal-ph-demo-btn" data-phone="+63 920 555 0199">
+              <span class="ph-demo-number">+63 920 555 0199</span>
+              <span class="ph-demo-tag">Renato • Admin</span>
+            </button>
+          </div>
+        </div>
+
+        <form id="modalPhoneLoginForm" novalidate>
+          <div class="ph-phone-field-wrap" style="margin-bottom:14px;">
+            <label class="form-label" for="modalPhInput" style="font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:6px;display:block">
+              Phone Number <span class="required">*</span>
+            </label>
+            <div class="ph-phone-input-box" id="modalPhInputBox">
+              <div class="ph-country-prefix">
+                <span class="ph-country-flag">🇵🇭</span>
+                <span class="ph-country-code">+63</span>
+              </div>
+              <input
+                type="tel"
+                id="modalPhInput"
+                class="ph-phone-input"
+                placeholder="09XXXXXXXXX or +63 9XXXXXXXXX"
+                autocomplete="tel"
+                required
+              />
+            </div>
+            <div class="ph-format-guide">
+              <span>Accepts <strong>09XXXXXXXXX</strong> or <strong>+63 9XXXXXXXXX</strong></span>
+              <span id="modalDigitCount" style="font-family:monospace;font-size:11px;"></span>
+            </div>
+          </div>
+
+          <!-- VALIDATION ERROR BANNER -->
+          <div class="ph-error-banner hidden" id="modalPhErrorBanner" role="alert" style="margin-bottom:16px;">
+            <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="modalPhErrorMessage">Please enter a valid Philippine mobile number.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-large btn-block" id="modalBtnContinue">
+            <span>Log In</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+
+        <div style="margin-top:14px;text-align:center;">
+          <a href="auth.html" class="auth-text-btn" style="font-size:12px;color:var(--text-muted);">
+            Open Full Auth Page ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- STEP 2: MODAL LOGIN OTP -->
+      <div id="modalOtpStepView" class="otp-step-container hidden">
+        <h3 class="auth-heading" style="font-size:20px;margin-top:8px">Verify Mobile Number</h3>
+        <p class="auth-subheading" style="margin-bottom:6px">We sent a verification code to:</p>
+        <div class="otp-phone-display" id="modalOtpTargetPhone">+63 917 123 4567</div>
+
+        <form id="modalOtpForm">
+          <div class="otp-input-boxes">
+            <input type="text" maxlength="1" class="otp-box modal-otp-box" id="motp1" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-box modal-otp-box" id="motp2" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-box modal-otp-box" id="motp3" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-box modal-otp-box" id="motp4" inputmode="numeric" />
+          </div>
+
+          <div class="otp-auto-fill-hint" id="modalAutoFillOtpBtn">
+            ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
+          </div>
+
+          <div class="ph-error-banner hidden" id="modalOtpErrorBanner" style="margin-bottom:16px;">
+            <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="modalOtpErrorMessage">Invalid code. Enter 1234.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-large btn-block">
+            Verify & Complete Login
+          </button>
+        </form>
+
+        <div style="margin-top:16px;text-align:center;">
+          <button type="button" class="auth-text-btn" id="modalBtnEditPhone">← Change Mobile Number</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: MODAL CREATE ACCOUNT FORM -->
+      <div id="modalRegisterStepView" class="hidden">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+          Register with your Philippine mobile phone number.
+        </p>
+
+        <!-- Quick Demo Fill -->
+        <button type="button" class="ph-demo-btn" id="modalQuickFillReg" style="width:100%;margin-bottom:14px;padding:8px 10px;">
+          <span class="ph-demo-number" style="font-size:12px">⚡ Test Register: Mobile 0918 222 3333</span>
+        </button>
+
+        <form id="modalRegisterForm" novalidate>
+          <div class="ph-phone-field-wrap" style="margin-bottom:12px;">
+            <label class="form-label" for="mregPhone" style="font-weight:700;font-size:12px;color:var(--text-primary);margin-bottom:4px;display:block">
+              Philippine Mobile <span class="required">*</span>
+            </label>
+            <div class="ph-phone-input-box" id="mregPhoneBox">
+              <div class="ph-country-prefix">
+                <span class="ph-country-flag">🇵🇭</span>
+                <span class="ph-country-code">+63</span>
+              </div>
+              <input type="tel" id="mregPhone" class="ph-phone-input" placeholder="09XXXXXXXXX or +63 9XXXXXXXXX" required />
+            </div>
+            <div class="ph-format-guide">
+              <span>09XXXXXXXXX or +63 9XXXXXXXXX</span>
+              <span id="mregDigitCount" style="font-family:monospace;font-size:11px;"></span>
+            </div>
+          </div>
+
+          <input type="hidden" id="mregPurok" value="Purok 1, Brgy. Espinosa, Masbate City" />
+
+          <div class="ph-phone-field-wrap" style="margin-bottom:10px;">
+            <label class="form-label" for="mregPass" style="font-weight:700;font-size:12px;color:var(--text-primary);margin-bottom:4px;display:block">
+              Password <span class="required">*</span>
+            </label>
+            <div class="password-field-box" id="mregPassBox">
+              <input type="password" id="mregPass" class="password-input" placeholder="Min. 6 characters" required />
+              <button type="button" class="password-toggle-btn" id="mbtnTogglePass">
+                <svg id="meyeIconPass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="ph-phone-field-wrap" style="margin-bottom:14px;">
+            <label class="form-label" for="mregConfirmPass" style="font-weight:700;font-size:12px;color:var(--text-primary);margin-bottom:4px;display:block">
+              Confirm Password <span class="required">*</span>
+            </label>
+            <div class="password-field-box" id="mregConfirmPassBox">
+              <input type="password" id="mregConfirmPass" class="password-input" placeholder="Confirm your password" required />
+              <button type="button" class="password-toggle-btn" id="mbtnToggleConfirmPass">
+                <svg id="meyeIconConfirm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="field-meta-row">
+              <span class="field-hint">Must match password</span>
+              <span class="field-status-badge" id="mregPassMatchBadge"></span>
+            </div>
+          </div>
+
+          <!-- MODAL REG ERROR BANNER -->
+          <div class="ph-error-banner hidden" id="mregErrorBanner" role="alert" style="margin-bottom:14px;">
+            <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="mregErrorMessage">Please fill out all required fields.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-large btn-block" id="mbtnSubmitRegister">
+            <span>Verify Mobile Number →</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- STEP 4: MODAL REGISTRATION OTP VERIFICATION -->
+      <div id="modalRegisterOtpStepView" class="otp-step-container hidden">
+        <h3 class="auth-heading" style="font-size:20px;margin-top:8px">Verify Mobile Number</h3>
+        <p class="auth-subheading" style="margin-bottom:6px">We sent a 4-digit code to:</p>
+        <div class="otp-phone-display" id="mregOtpTargetPhone">+63 918 222 3333</div>
+
+        <!-- Simulated SMS Alert -->
+        <div class="sms-simulation-banner" style="margin-bottom:14px;padding:10px 12px;">
+          <span class="sms-sim-icon">💬</span>
+          <div class="sms-sim-content">
+            <div class="sms-sim-sender">BantayBarangay SMS Gateway</div>
+            <div>Code: <span class="sms-sim-code" id="mregSimCode">1234</span> (Expires in 2m)</div>
+          </div>
+        </div>
+
+        <form id="modalRegisterOtpForm">
+          <div class="otp-input-boxes">
+            <input type="text" maxlength="1" class="otp-box mreg-otp-box" id="mrotp1" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-box mreg-otp-box" id="mrotp2" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-box mreg-otp-box" id="mrotp3" inputmode="numeric" />
+            <input type="text" maxlength="1" class="otp-box mreg-otp-box" id="mrotp4" inputmode="numeric" />
+          </div>
+
+          <div class="otp-auto-fill-hint" id="mregAutoFillOtpBtn">
+            ⚡ Demo Auto-Fill: Enter code <strong>1234</strong>
+          </div>
+
+          <!-- COUNTDOWN & RESEND -->
+          <div class="otp-timer-box" style="margin:12px 0;">
+            <span id="mregCountdownLabel">Resend in:</span>
+            <span class="otp-timer-clock" id="mregTimerClock">
+              <span id="mregTimerSeconds">00:59</span>
+            </span>
+            <button type="button" class="otp-resend-btn hidden" id="mbtnResendOtp">Resend Code</button>
+          </div>
+
+          <div class="ph-error-banner hidden" id="mregOtpErrorBanner" style="margin-bottom:14px;">
+            <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="mregOtpErrorMessage">Invalid verification code.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-large btn-block" id="mbtnVerifyRegisterOtp">
+            Verify & Create Account
+          </button>
+        </form>
+
+        <div style="margin-top:14px;text-align:center;">
+          <button type="button" class="auth-text-btn" id="mbtnBackToRegForm">← Change Number / Edit</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── MOBILE BOTTOM NAVIGATION BAR ────────────────── -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+    <button type="button" class="mob-nav-item active" id="mob-nav-report" data-view="report" onclick="window.BantayResident ? window.BantayResident.showView('report') : null">
+      <div class="mob-nav-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <span class="mob-nav-title">Report Issue</span>
+      <span class="mob-nav-active-pill"></span>
+    </button>
+
+    <button type="button" class="mob-nav-item" id="mob-nav-profile" data-view="profile" onclick="window.BantayResident ? window.BantayResident.showView('profile') : null">
+      <div class="mob-nav-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <span class="mob-nav-title">Settings</span>
+      <span class="mob-nav-active-pill"></span>
+    </button>
+
+      <button type="button" class="mob-nav-item mob-nav-logout" id="mob-nav-logout" title="Sign out" aria-label="Sign out of your account" onclick="window.BantayResident ? window.BantayResident.logout() : (localStorage.removeItem('bantay_current_user'), window.location.href='auth.html?logout=true')">
+      <div class="mob-nav-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+      <span class="mob-nav-title">Sign out</span>
+    </button>
+  </nav>
+
+  <script src="../shared/js/api.js"></script>
+  <script src="../shared/js/reports.js"></script>
+  <script src="../shared/js/auth.js"></script>
+  <script src="../shared/js/ui.js"></script>
+  <script src="../shared/js/locations.js"></script>
+  <script src="js/resident.js"></script>
+</body>
+</html>

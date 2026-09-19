@@ -1,0 +1,23 @@
+{
+  "name": "bantaybarangay",
+  "version": "1.0.0",
+  "description": "Barangay Infrastructure Incident Reporting & Civic Action System (Philippines)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "db:init": "node database/init-db.js",
+    "db:reset": "node database/init-db.js --force",
+    "test:db": "node database/test-db.js",
+    "test:api": "node database/test-api.js",
+    "test": "node database/test-db.js && node database/test-api.js"
+  },
+  "keywords": [
+    "barangay",
+    "philippines",
+    "civic-tech",
+    "infrastructure-reporting",
+    "sqlite"
+  ],
+  "author": "BantayBarangay Team",
+  "license": "MIT"
+}
