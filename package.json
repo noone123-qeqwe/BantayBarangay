@@ -18,6 +18,9 @@
     "infrastructure-reporting",
     "sqlite"
   ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "author": "BantayBarangay Team",
   "license": "MIT"
 }
