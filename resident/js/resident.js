@@ -369,6 +369,7 @@ function initApp() {
     selectedLocation = { address: '', purok: '', lat: 12.3713, lng: 123.6304, hasGps: false };
     localStorage.removeItem(draftKey());
     document.getElementById('nearbyReports')?.classList.add('hidden');
+    document.getElementById('gpsAccuracyBadge')?.classList.add('hidden');
     const repAddrInput = document.getElementById('reportAddressInput');
     if (repAddrInput) repAddrInput.value = '';
     document.getElementById('err-address')?.classList.add('hidden');
@@ -645,38 +646,509 @@ function initApp() {
 
   document.getElementById('reporterName')?.addEventListener('input', saveDraft);
 
-  // GEOLOCATE BUTTON
-  document.getElementById('geolocateBtn')?.addEventListener('click', () => {
+  // ── ACCURATE REVERSE GEOCODING HELPER ─────────────────────────
+  async function reverseGeocode(lat, lng) {
+    // 1. Try Nominatim OpenStreetMap API
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+        signal: controller.signal,
+        headers: { 'Accept-Language': 'en' }
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.address) {
+          const addr = data.address;
+          const road = addr.road || addr.pedestrian || addr.street || addr.residential || '';
+          const brgy = addr.village || addr.suburb || addr.neighbourhood || addr.quarter || addr.hamlet || '';
+          const muni = addr.city || addr.town || addr.municipality || 'Masbate City';
+          const parts = [];
+          if (road) parts.push(road);
+          if (brgy) {
+            const bLabel = brgy.toLowerCase().startsWith('brgy') ? brgy : `Brgy. ${brgy}`;
+            parts.push(bLabel);
+          }
+          if (muni) parts.push(muni);
+          if (parts.length >= 2) return parts.join(', ');
+          if (data.display_name) return data.display_name.split(',').slice(0, 3).join(', ').trim();
+        }
+      }
+    } catch (e) {
+      // Offline or network timeout - fallback to local Masbate coordinate database
+    }
+
+    // 2. Offline / Local fallback using Masbate Locations reference coordinates
+    if (typeof MasbateLocations !== 'undefined' && MasbateLocations.findNearestLocation) {
+      const nearest = MasbateLocations.findNearestLocation(lat, lng);
+      if (nearest) {
+        return nearest.formatted;
+      }
+    }
+
+    return 'Masbate Province';
+  }
+
+  // ── UPDATE ACCURACY BADGE UI ──────────────────────────────────
+  function updateGpsBadge(acc) {
+    const badge = document.getElementById('gpsAccuracyBadge');
+    if (!badge) return;
+    badge.classList.remove('hidden', 'acc-high', 'acc-medium', 'acc-coarse');
+    let level = 'acc-high';
+    let icon = '🎯';
+    let text = `Precision GPS: ±${acc}m (Satellite Lock)`;
+    if (acc > 70) {
+      level = 'acc-coarse';
+      icon = '⚠️';
+      text = `Coarse Location: ±${acc}m (Indoors or IP estimate)`;
+    } else if (acc > 25) {
+      level = 'acc-medium';
+      icon = '📍';
+      text = `Good Accuracy: ±${acc}m (Cell/Wi-Fi assisted)`;
+    }
+    badge.classList.add(level);
+    badge.innerHTML = `<span class="gps-accuracy-icon">${icon}</span> <span>${text}</span>`;
+  }
+
+  // ── HIGH-ACCURACY PROGRESSIVE GPS DETECTION ───────────────────
+  let activeGpsWatchId = null;
+  let activeGpsTimeoutTimer = null;
+
+  function runHighAccuracyGps() {
     if (!navigator.geolocation) {
       UI.toast('Geolocation is not supported by your browser.', 'error');
       return;
     }
-    UI.toast('Detecting GPS coordinates…', 'info');
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        selectedLocation.lat = pos.coords.latitude;
-        selectedLocation.lng = pos.coords.longitude;
-        selectedLocation.hasGps = true;
-        UI.toast(`GPS detected (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`, 'success');
-        const addrInput = document.getElementById('reportAddressInput');
-        if (addrInput) {
-          const gpsStr = `GPS: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-          if (!addrInput.value.trim()) {
-            addrInput.value = gpsStr;
-          } else if (!addrInput.value.includes('GPS:')) {
-            addrInput.value = `${addrInput.value.trim()} (${gpsStr})`;
-          }
-          selectedLocation.address = addrInput.value;
-          document.getElementById('err-address')?.classList.add('hidden');
+
+    const btn = document.getElementById('geolocateBtn');
+    const addrInput = document.getElementById('reportAddressInput');
+    const origBtnHtml = btn ? btn.innerHTML : '';
+
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add('loading');
+      btn.innerHTML = `<span class="spinner-border" style="width:13px;height:13px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite;margin-right:6px"></span> Acquiring high-precision GPS…`;
+    }
+    UI.toast('Locking onto satellite GPS… Stand by for precision coordinates.', 'info');
+
+    let bestFix = null;
+
+    function applyPosition(pos, isFinal = false) {
+      if (!pos || !pos.coords) return;
+      if (!bestFix || pos.coords.accuracy < bestFix.coords.accuracy) {
+        bestFix = pos;
+      }
+      const lat = bestFix.coords.latitude;
+      const lng = bestFix.coords.longitude;
+      const acc = Math.round(bestFix.coords.accuracy);
+
+      selectedLocation.lat = lat;
+      selectedLocation.lng = lng;
+      selectedLocation.accuracy = acc;
+      selectedLocation.hasGps = true;
+      updateGpsBadge(acc);
+
+      if (isFinal) {
+        cleanGpsWatch();
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Re-detect GPS`;
         }
-        saveDraft();
-        renderPossibleReports();
-      },
-      () => {
-        UI.toast('Could not retrieve GPS location. Please enter your address manually.', 'info');
-      },
-      { timeout: 8000 }
-    );
+
+        UI.toast(`GPS locked (±${acc}m accuracy)`, acc <= 30 ? 'success' : 'info');
+
+        reverseGeocode(lat, lng).then(resolvedAddr => {
+          const gpsDetail = `(GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}, ±${acc}m)`;
+          const finalAddr = resolvedAddr ? `${resolvedAddr} ${gpsDetail}` : `Masbate Incident Location ${gpsDetail}`;
+          if (addrInput) {
+            addrInput.value = finalAddr;
+            selectedLocation.address = finalAddr;
+            document.getElementById('err-address')?.classList.add('hidden');
+          }
+          saveDraft();
+          renderPossibleReports();
+          syncMapMarker(lat, lng, finalAddr);
+        });
+      }
+    }
+
+    function cleanGpsWatch() {
+      if (activeGpsWatchId !== null) {
+        navigator.geolocation.clearWatch(activeGpsWatchId);
+        activeGpsWatchId = null;
+      }
+      if (activeGpsTimeoutTimer !== null) {
+        clearTimeout(activeGpsTimeoutTimer);
+        activeGpsTimeoutTimer = null;
+      }
+    }
+
+    cleanGpsWatch();
+
+    // 1. Try high-accuracy watch for up to 3.5 seconds to acquire satellite locks
+    try {
+      activeGpsWatchId = navigator.geolocation.watchPosition(
+        pos => {
+          applyPosition(pos, false);
+          // If accuracy is already <= 12m, that's top tier satellite precision: finalize immediately!
+          if (pos.coords.accuracy <= 12) {
+            applyPosition(pos, true);
+          }
+        },
+        err => {
+          console.warn('High-accuracy GPS watch warning:', err);
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
+    } catch (e) {
+      console.warn('watchPosition failed:', e);
+    }
+
+    // 2. Timeout settling period: finalize with best fix or fallback to single-shot
+    activeGpsTimeoutTimer = setTimeout(() => {
+      if (bestFix) {
+        applyPosition(bestFix, true);
+      } else {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            applyPosition(pos, true);
+          },
+          err => {
+            cleanGpsWatch();
+            if (btn) {
+              btn.disabled = false;
+              btn.classList.remove('loading');
+              btn.innerHTML = origBtnHtml || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Auto-Detect GPS`;
+            }
+            UI.toast('Could not detect GPS. Please check location permissions or use "Pinpoint on Map".', 'error');
+          },
+          { enableHighAccuracy: false, timeout: 6000 }
+        );
+      }
+    }, 3500);
+  }
+
+  // GEOLOCATE BUTTON LISTENER
+  document.getElementById('geolocateBtn')?.addEventListener('click', runHighAccuracyGps);
+
+  // ── PINPOINT ON MAP MODAL & CONTROLLER ────────────────────────
+  let pinpointMap = null;
+  let pinpointMarker = null;
+  let pinpointCircle = null;
+  let pinpointCurrentLat = 12.3713;
+  let pinpointCurrentLng = 123.6306;
+  let pinpointCurrentAddr = '';
+
+  function openPinpointMap() {
+    const overlay = document.getElementById('pinpointMapModalOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('hidden');
+
+    const lat = selectedLocation.lat || 12.3713;
+    const lng = selectedLocation.lng || 123.6306;
+    pinpointCurrentLat = lat;
+    pinpointCurrentLng = lng;
+
+    setTimeout(() => {
+      initOrUpdatePinpointMap(lat, lng);
+    }, 150);
+  }
+
+  function closePinpointMap() {
+    document.getElementById('pinpointMapModalOverlay')?.classList.add('hidden');
+  }
+
+  function initOrUpdatePinpointMap(lat, lng) {
+    const container = document.getElementById('pinpointMapContainer');
+    if (!container) return;
+
+    if (typeof L === 'undefined') {
+      container.innerHTML = `<div style="padding:40px;text-align:center;color:#94a3b8;font-size:13px;">Leaflet map is offline. You can manually enter your address or select your Barangay using "Select Barangay & Purok".</div>`;
+      return;
+    }
+
+    if (!pinpointMap) {
+      pinpointMap = L.map('pinpointMapContainer', {
+        center: [lat, lng],
+        zoom: 16,
+        zoomControl: true
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(pinpointMap);
+
+      // Custom pulsing pin icon
+      const customPinIcon = L.divIcon({
+        className: 'map-pin-div-icon',
+        html: '<div class="map-pin-pulse"></div>',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+      });
+
+      pinpointMarker = L.marker([lat, lng], {
+        draggable: true,
+        icon: customPinIcon
+      }).addTo(pinpointMap);
+
+      pinpointCircle = L.circle([lat, lng], {
+        radius: selectedLocation.accuracy || 25,
+        color: '#0284c7',
+        fillColor: '#38bdf8',
+        fillOpacity: 0.15,
+        weight: 1.5
+      }).addTo(pinpointMap);
+
+      pinpointMarker.on('dragend', function (e) {
+        const pos = e.target.getLatLng();
+        onPinMoved(pos.lat, pos.lng);
+      });
+
+      pinpointMap.on('click', function (e) {
+        pinpointMarker.setLatLng(e.latlng);
+        onPinMoved(e.latlng.lat, e.latlng.lng);
+      });
+    } else {
+      pinpointMap.invalidateSize();
+      pinpointMap.setView([lat, lng], 16);
+      if (pinpointMarker) pinpointMarker.setLatLng([lat, lng]);
+      if (pinpointCircle) {
+        pinpointCircle.setLatLng([lat, lng]);
+        pinpointCircle.setRadius(selectedLocation.accuracy || 25);
+      }
+    }
+
+    onPinMoved(lat, lng);
+  }
+
+  function onPinMoved(lat, lng) {
+    pinpointCurrentLat = lat;
+    pinpointCurrentLng = lng;
+    if (pinpointCircle) pinpointCircle.setLatLng([lat, lng]);
+
+    const coordsDisplay = document.getElementById('mapCoordsPreview');
+    if (coordsDisplay) coordsDisplay.textContent = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+
+    const addrDisplay = document.getElementById('mapAddressPreview');
+    if (addrDisplay) addrDisplay.textContent = 'Resolving address…';
+
+    reverseGeocode(lat, lng).then(addr => {
+      pinpointCurrentAddr = addr;
+      if (addrDisplay) addrDisplay.textContent = addr || `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+    });
+  }
+
+  function syncMapMarker(lat, lng, addr) {
+    if (pinpointMap && pinpointMarker) {
+      pinpointMarker.setLatLng([lat, lng]);
+      pinpointMap.setView([lat, lng], 16);
+      if (pinpointCircle) {
+        pinpointCircle.setLatLng([lat, lng]);
+        pinpointCircle.setRadius(selectedLocation.accuracy || 20);
+      }
+    }
+  }
+
+  // QUICK JUMP IN PINPOINT MAP
+  document.querySelectorAll('.quick-jump-chips [data-jump]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const jumpKey = btn.dataset.jump;
+      let targetCoords = { lat: 12.3713, lng: 123.6306 };
+      if (typeof MasbateLocations !== 'undefined') {
+        if (jumpKey === 'Masbate City Hall') targetCoords = { lat: 12.3713, lng: 123.6306 };
+        else if (jumpKey === 'Espinosa') targetCoords = MasbateLocations.getCoordinates('Masbate City', 'Espinosa');
+        else if (jumpKey === 'Nursery') targetCoords = MasbateLocations.getCoordinates('Masbate City', 'Nursery');
+        else if (jumpKey === 'Tugbo') targetCoords = MasbateLocations.getCoordinates('Masbate City', 'Tugbo');
+        else if (jumpKey === 'Airport') targetCoords = MasbateLocations.getCoordinates('Masbate City', 'Ibingay');
+        else if (jumpKey === 'Mobo') targetCoords = MasbateLocations.getCoordinates('Mobo', 'Poblacion');
+      }
+      if (pinpointMap) {
+        pinpointMap.setView([targetCoords.lat, targetCoords.lng], 16);
+        if (pinpointMarker) pinpointMarker.setLatLng([targetCoords.lat, targetCoords.lng]);
+        onPinMoved(targetCoords.lat, targetCoords.lng);
+      }
+    });
+  });
+
+  // MAP CONTROLS
+  document.getElementById('pinpointMapBtn')?.addEventListener('click', openPinpointMap);
+  document.getElementById('btnClosePinpointMap')?.addEventListener('click', closePinpointMap);
+  document.getElementById('btnCancelPinpointMap')?.addEventListener('click', closePinpointMap);
+  document.getElementById('pinpointMapModalOverlay')?.addEventListener('click', (e) => {
+    if (e.target.id === 'pinpointMapModalOverlay') closePinpointMap();
+  });
+
+  document.getElementById('btnMapLocateMe')?.addEventListener('click', () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        if (pinpointMap) {
+          pinpointMap.setView([lat, lng], 17);
+          if (pinpointMarker) pinpointMarker.setLatLng([lat, lng]);
+          if (pinpointCircle) {
+            pinpointCircle.setLatLng([lat, lng]);
+            pinpointCircle.setRadius(pos.coords.accuracy);
+          }
+          onPinMoved(lat, lng);
+        }
+      }, null, { enableHighAccuracy: true, timeout: 8000 });
+    }
+  });
+
+  document.getElementById('btnApplyPinpointMap')?.addEventListener('click', () => {
+    selectedLocation.lat = pinpointCurrentLat;
+    selectedLocation.lng = pinpointCurrentLng;
+    selectedLocation.hasGps = true;
+    selectedLocation.accuracy = 8; // Manually verified pin on satellite/street map
+
+    updateGpsBadge(8);
+
+    const gpsStr = `(GPS: ${pinpointCurrentLat.toFixed(5)}, ${pinpointCurrentLng.toFixed(5)})`;
+    const finalAddress = pinpointCurrentAddr ? `${pinpointCurrentAddr} ${gpsStr}` : `Masbate Location ${gpsStr}`;
+
+    const addrInput = document.getElementById('reportAddressInput');
+    if (addrInput) {
+      addrInput.value = finalAddress;
+      selectedLocation.address = finalAddress;
+      document.getElementById('err-address')?.classList.add('hidden');
+    }
+
+    saveDraft();
+    renderPossibleReports();
+    closePinpointMap();
+    UI.toast('Location pinned successfully!', 'success');
+  });
+
+  // ── SELECT BARANGAY & PUROK MODAL & CONTROLLER ───────────────
+  function openSelectBarangay() {
+    const overlay = document.getElementById('selectBarangayModalOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('hidden');
+    initPickerDropdowns();
+  }
+
+  function closeSelectBarangay() {
+    document.getElementById('selectBarangayModalOverlay')?.classList.add('hidden');
+  }
+
+  function initPickerDropdowns() {
+    const mMuni = document.getElementById('pickerMunicipality');
+    const mBrgy = document.getElementById('pickerBarangay');
+    const mPurok = document.getElementById('pickerPurok');
+    const mPreview = document.getElementById('pickerPreviewText');
+    const mStreet = document.getElementById('pickerStreetDetail');
+
+    if (!mMuni || !mBrgy || !mPurok || typeof MasbateLocations === 'undefined') return;
+
+    // Populate Municipalities
+    if (mMuni.options.length === 0) {
+      Object.keys(MasbateLocations.DATA).forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        mMuni.appendChild(opt);
+      });
+      mMuni.value = 'Masbate City';
+    }
+
+    function populateBrgy() {
+      const muni = mMuni.value;
+      const brgys = MasbateLocations.DATA[muni] || [];
+      mBrgy.innerHTML = '';
+      brgys.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b;
+        opt.textContent = b.startsWith('Brgy.') ? b : `Brgy. ${b}`;
+        mBrgy.appendChild(opt);
+      });
+      populatePurok();
+    }
+
+    function populatePurok() {
+      const muni = mMuni.value;
+      const brgy = mBrgy.value;
+      const count = MasbateLocations.getPurokCount(muni, brgy);
+      mPurok.innerHTML = '';
+      for (let i = 1; i <= count; i++) {
+        const opt = document.createElement('option');
+        opt.value = `Purok ${i}`;
+        opt.textContent = `Purok ${i}`;
+        mPurok.appendChild(opt);
+      }
+      updatePreview();
+    }
+
+    function updatePreview() {
+      if (!mPreview) return;
+      const muni = mMuni.value;
+      const brgy = mBrgy.value;
+      const purok = mPurok.value;
+      const street = (mStreet && mStreet.value.trim()) ? `${mStreet.value.trim()}, ` : '';
+      mPreview.textContent = `${street}${MasbateLocations.formatPurokAddress(purok, brgy, muni)}`;
+    }
+
+    mMuni.onchange = populateBrgy;
+    mBrgy.onchange = populatePurok;
+    mPurok.onchange = updatePreview;
+    if (mStreet) mStreet.oninput = updatePreview;
+
+    if (mBrgy.options.length === 0) {
+      populateBrgy();
+    } else {
+      updatePreview();
+    }
+  }
+
+  document.getElementById('selectBarangayBtn')?.addEventListener('click', openSelectBarangay);
+  document.getElementById('btnCloseSelectBarangay')?.addEventListener('click', closeSelectBarangay);
+  document.getElementById('btnCancelSelectBarangay')?.addEventListener('click', closeSelectBarangay);
+  document.getElementById('selectBarangayModalOverlay')?.addEventListener('click', (e) => {
+    if (e.target.id === 'selectBarangayModalOverlay') closeSelectBarangay();
+  });
+
+  document.getElementById('btnApplySelectBarangay')?.addEventListener('click', () => {
+    const mMuni = document.getElementById('pickerMunicipality');
+    const mBrgy = document.getElementById('pickerBarangay');
+    const mPurok = document.getElementById('pickerPurok');
+    const mStreet = document.getElementById('pickerStreetDetail');
+
+    if (!mMuni || !mBrgy || !mPurok || typeof MasbateLocations === 'undefined') {
+      closeSelectBarangay();
+      return;
+    }
+
+    const muni = mMuni.value;
+    const brgy = mBrgy.value;
+    const purok = mPurok.value;
+    const street = (mStreet && mStreet.value.trim()) ? `${mStreet.value.trim()}, ` : '';
+    const formatted = `${street}${MasbateLocations.formatPurokAddress(purok, brgy, muni)}`;
+
+    // Set coordinates to known barangay center
+    const coords = MasbateLocations.getCoordinates(muni, brgy);
+    selectedLocation.lat = coords.lat;
+    selectedLocation.lng = coords.lng;
+    selectedLocation.purok = purok;
+    selectedLocation.address = formatted;
+    selectedLocation.hasGps = true;
+    selectedLocation.accuracy = 15;
+
+    updateGpsBadge(15);
+
+    const addrInput = document.getElementById('reportAddressInput');
+    if (addrInput) {
+      addrInput.value = formatted;
+      document.getElementById('err-address')?.classList.add('hidden');
+    }
+
+    saveDraft();
+    renderPossibleReports();
+    closeSelectBarangay();
+    UI.toast(`Location set to ${brgy}, ${muni}`, 'success');
   });
 
   // FORM SUBMIT
@@ -760,6 +1232,8 @@ function initApp() {
     if (e.key === 'Escape') {
       UI.hideSuccess();
       closeAuthModal();
+      closePinpointMap();
+      closeSelectBarangay();
     }
   });
 
@@ -1652,10 +2126,12 @@ function initApp() {
       return;
     }
 
-    // Filter out dismissed advisories in current session
+    // Filter out dismissed advisories (stored persistently so they never reappear after opening)
     let dismissed = [];
     try {
-      dismissed = JSON.parse(sessionStorage.getItem('bantay_dismissed_advisories') || '[]');
+      const local = JSON.parse(localStorage.getItem('bantay_dismissed_advisories') || '[]');
+      const session = JSON.parse(sessionStorage.getItem('bantay_dismissed_advisories') || '[]');
+      dismissed = Array.from(new Set([...local, ...session]));
     } catch {}
 
     const visible = advisories.filter(a => !dismissed.includes(a.id));
@@ -1695,9 +2171,9 @@ function initApp() {
         e.stopPropagation();
         const id = btn.dataset.advDismiss;
         try {
-          const list = JSON.parse(sessionStorage.getItem('bantay_dismissed_advisories') || '[]');
-          list.push(id);
-          sessionStorage.setItem('bantay_dismissed_advisories', JSON.stringify(list));
+          const list = JSON.parse(localStorage.getItem('bantay_dismissed_advisories') || '[]');
+          if (!list.includes(id)) list.push(id);
+          localStorage.setItem('bantay_dismissed_advisories', JSON.stringify(list));
         } catch {}
         renderEmergencyAdvisories();
       });

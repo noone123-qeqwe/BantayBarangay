@@ -343,13 +343,116 @@
     };
   }
 
+  // ── MASBATE GEOGRAPHIC REFERENCE COORDINATES ──────────────
+  const MASBATE_COORDINATES = {
+    'Masbate City': {
+      'Centro (Poblacion)': { lat: 12.3713, lng: 123.6306 },
+      'Espinosa': { lat: 12.3745, lng: 123.6335 },
+      'Tugbo': { lat: 12.3650, lng: 123.6290 },
+      'Ibingay': { lat: 12.3700, lng: 123.6240 },
+      'Nursery': { lat: 12.3680, lng: 123.6280 },
+      'Bagumbayan': { lat: 12.3670, lng: 123.6350 },
+      'Kalipay': { lat: 12.3750, lng: 123.6290 },
+      'Pating': { lat: 12.3720, lng: 123.6270 },
+      'Bantigue': { lat: 12.3850, lng: 123.6150 },
+      'Batuhan': { lat: 12.3600, lng: 123.6100 },
+      'Bolo': { lat: 12.3480, lng: 123.6400 },
+      'Cagay': { lat: 12.3550, lng: 123.6180 },
+      'Malinta': { lat: 12.3620, lng: 123.6020 },
+      'Asid': { lat: 12.2850, lng: 123.6050 },
+      'Anas': { lat: 12.3200, lng: 123.6150 },
+      'default': { lat: 12.3713, lng: 123.6306 }
+    },
+    'Mobo': { lat: 12.3275, lng: 123.6811 },
+    'Aroroy': { lat: 12.5117, lng: 123.4022 },
+    'Baleno': { lat: 12.4419, lng: 123.4900 },
+    'Balud': { lat: 12.0431, lng: 123.1897 },
+    'Batuan': { lat: 12.4208, lng: 123.7781 },
+    'Cataingan': { lat: 12.0008, lng: 123.9933 },
+    'Cawayan': { lat: 11.9275, lng: 123.7783 },
+    'Claveria': { lat: 12.9011, lng: 123.2422 },
+    'Dimasalang': { lat: 12.1878, lng: 123.8647 },
+    'Esperanza': { lat: 11.7583, lng: 124.0389 },
+    'Mandaon': { lat: 12.2286, lng: 123.2778 },
+    'Milagros': { lat: 12.2178, lng: 123.5097 },
+    'Monreal': { lat: 12.6681, lng: 123.6617 },
+    'Palanas': { lat: 12.1697, lng: 123.9458 },
+    'Pio V. Corpuz': { lat: 11.7892, lng: 124.0475 },
+    'Placer': { lat: 11.8906, lng: 123.9169 },
+    'San Fernando': { lat: 12.4839, lng: 123.7581 },
+    'San Jacinto': { lat: 12.5694, lng: 123.7028 },
+    'San Pascual': { lat: 13.1361, lng: 122.9806 },
+    'Uson': { lat: 12.2350, lng: 123.7744 }
+  };
+
+  function getCoordinates(municipality, barangay) {
+    if (!municipality) municipality = 'Masbate City';
+    const muniEntry = MASBATE_COORDINATES[municipality];
+    if (!muniEntry) return { lat: 12.3713, lng: 123.6306 };
+    if (typeof muniEntry.lat === 'number') return { lat: muniEntry.lat, lng: muniEntry.lng };
+    if (barangay && muniEntry[barangay]) return muniEntry[barangay];
+    return muniEntry.default || { lat: 12.3713, lng: 123.6306 };
+  }
+
+  function calcDistanceKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+  }
+
+  function findNearestLocation(lat, lng) {
+    if (typeof lat !== 'number' || typeof lng !== 'number') return null;
+    let closest = null;
+    let minDistance = Infinity;
+
+    // Check Masbate City barangays first
+    const mc = MASBATE_COORDINATES['Masbate City'];
+    for (const [brgy, coords] of Object.entries(mc)) {
+      if (brgy === 'default') continue;
+      const d = calcDistanceKm(lat, lng, coords.lat, coords.lng);
+      if (d < minDistance) {
+        minDistance = d;
+        closest = {
+          municipality: 'Masbate City',
+          barangay: brgy,
+          distanceKm: d,
+          formatted: `Brgy. ${brgy}, Masbate City`
+        };
+      }
+    }
+
+    // Check all other municipalities
+    for (const [muni, coords] of Object.entries(MASBATE_COORDINATES)) {
+      if (muni === 'Masbate City') continue;
+      const d = calcDistanceKm(lat, lng, coords.lat, coords.lng);
+      if (d < minDistance) {
+        minDistance = d;
+        closest = {
+          municipality: muni,
+          barangay: 'Poblacion',
+          distanceKm: d,
+          formatted: `Poblacion, ${muni}, Masbate`
+        };
+      }
+    }
+
+    return closest;
+  }
+
   // Export globally
   const exportObj = {
     DATA: MASBATE_LOCATIONS,
+    COORDINATES: MASBATE_COORDINATES,
     getPurokCount,
     formatPurokAddress,
     parsePurokAddress,
-    initCascadingLocation
+    initCascadingLocation,
+    getCoordinates,
+    findNearestLocation
   };
 
   if (typeof window !== 'undefined') {

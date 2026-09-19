@@ -16,6 +16,7 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="../shared/css/common.css?v=5.0" />
   <link rel="stylesheet" href="css/auth.css?v=5.0" />
+  <link rel="manifest" href="manifest.json" />
 </head>
 
 <body class="auth-body">
@@ -114,11 +115,6 @@
                 <input type="tel" id="phPhoneInput" class="ph-phone-input" placeholder="09XXXXXXXXX or 9XXXXXXXXX"
                   autocomplete="tel" autofocus required />
               </div>
-
-              <div class="ph-format-guide">
-                <span>Format: <strong>09XXXXXXXXX</strong> (11 digits)</span>
-                <span id="digitCount" style="font-family:monospace;font-size:11px"></span>
-              </div>
             </div>
 
             <!-- PASSWORD FIELD -->
@@ -128,7 +124,6 @@
                   <span>Password</span>
                   <span class="required" style="color:#ef476f">*</span>
                 </label>
-                <button type="button" class="auth-text-btn" id="btnForgotPass" style="font-size:13px;font-weight:600">Forgot password?</button>
               </div>
               <div class="password-input-wrapper">
                 <input type="password" id="loginPassword" class="form-input-styled" placeholder="Enter your password"
@@ -140,9 +135,8 @@
                   </svg>
                 </button>
               </div>
-              <div class="ph-format-guide" style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-                <span>Demo password: <strong>resident123</strong></span>
-                <button type="button" class="auth-text-btn" id="btnUseSmsOtp" style="font-size:12.5px;font-weight:600">Sign in via SMS Code</button>
+              <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:8px">
+                <button type="button" class="auth-text-btn" id="btnForgotPass" style="font-size:12.5px;font-weight:600">Forgot password?</button>
               </div>
             </div>
 
@@ -179,13 +173,69 @@
             </button>
           </form>
 
-          <div style="margin-top:30px;text-align:center;border-top:1px solid #e2e8f0;padding-top:22px">
-            <p style="font-size:14.5px;color:#64748b;margin:0">
+          <div style="margin-top:24px;text-align:center;border-top:1px solid #e2e8f0;padding-top:18px">
+            <p style="font-size:14px;color:#64748b;margin:0">
               Don't have an account yet?
               <button type="button" class="auth-text-btn" id="linkToRegister" style="font-weight:700;margin-left:4px">
                 Create Account
               </button>
             </p>
+          </div>
+
+          <!-- ── INSTALL APP & DOWNLOAD APK SECTION ───────────── -->
+          <div class="auth-app-download-card" id="authAppDownloadCard" style="margin-top:20px;">
+            <div class="auth-app-card-header">
+              <div class="auth-app-badge-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="color:#0284c7;">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                  <line x1="12" y1="18" x2="12.01" y2="18" />
+                </svg>
+              </div>
+              <div class="auth-app-card-text">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                  <span class="auth-app-title">BantayBarangay App</span>
+                  <span class="auth-app-pill">Android APK • v5.2</span>
+                </div>
+                <div class="auth-app-subtitle">Install or download APK for faster reporting & offline access</div>
+              </div>
+            </div>
+
+            <div class="auth-app-action-grid">
+              <button type="button" class="btn-install-app" id="btnInstallApp">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Install App</span>
+              </button>
+
+              <a href="../downloads/BantayBarangay.apk" download="BantayBarangay.apk" class="btn-download-apk" id="btnDownloadApk">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16">
+                  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                  <polyline points="7 11 12 16 17 11" />
+                  <line x1="12" y1="4" x2="12" y2="16" />
+                </svg>
+                <span>Download APK (5.8 MB)</span>
+              </a>
+            </div>
+
+            <div style="display:flex;justify-content:center;margin-top:8px;">
+              <button type="button" class="auth-text-btn" id="btnApkGuide" style="font-size:11.5px;color:#0284c7;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                <span>ℹ️ How to install downloaded APK on Android</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── RE-DOWNLOAD / REINSTALL NOTICE (Shown when already downloaded) ── -->
+          <div id="reinstallAppNotice" class="auth-reinstall-notice hidden">
+            <div class="auth-reinstall-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" style="color:#0284c7;flex-shrink:0;">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>App downloaded on this device.</span>
+              <button type="button" id="btnShowDownloadAgain" class="auth-reinstall-btn">Deleted the app? Download again</button>
+            </div>
           </div>
         </div>
 
@@ -427,6 +477,64 @@
   <!-- TOAST NOTIFICATIONS -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- ════ APK INSTALLATION GUIDE MODAL ══════════════════════════ -->
+  <div class="modal-overlay hidden" id="apkInstallModalOverlay">
+    <div class="modal auth-modal-dialog glass-card" id="apkInstallModal" style="max-width:460px;background:#0f172a;color:#f8fafc;">
+      <div class="modal-header" style="background:#0f172a;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 20px;">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:#0284c7;">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+              <line x1="12" y1="18" x2="12.01" y2="18" />
+            </svg>
+            How to Install BantayBarangay APK
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Simple 3-step guide for Android smartphones</div>
+        </div>
+        <button type="button" class="auth-modal-close" id="btnCloseApkGuide" aria-label="Close modal">✕</button>
+      </div>
+
+      <div style="padding:20px;background:#1e293b;color:#f1f5f9;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:26px;height:26px;border-radius:50%;background:#0284c7;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">1</div>
+            <div>
+              <div style="font-weight:700;font-size:13.5px;color:#fff;">Tap "Download APK"</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Save <strong style="color:#e2e8f0;">BantayBarangay.apk</strong> (5.8 MB) to your phone downloads.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:26px;height:26px;border-radius:50%;background:#0284c7;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">2</div>
+            <div>
+              <div style="font-weight:700;font-size:13.5px;color:#fff;">Allow "Unknown Sources"</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:2px;">When prompted, tap <em>Settings</em> and toggle <em>"Allow from this source"</em> to install the official Masbate civic APK package.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:26px;height:26px;border-radius:50%;background:#10b981;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">3</div>
+            <div>
+              <div style="font-weight:700;font-size:13.5px;color:#fff;">Tap "Install" & Open</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Tap <em>Install</em>. BantayBarangay will appear directly on your home screen with offline capability.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding:12px;border-radius:8px;background:rgba(2,132,199,0.12);border:1px solid rgba(2,132,199,0.25);font-size:12px;color:#7dd3fc;">
+          💡 <em>Tip: You can also tap <strong>"Install App"</strong> directly on Chrome/Edge without manually downloading the file!</em>
+        </div>
+      </div>
+
+      <div style="padding:14px 20px;background:#0f172a;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <a href="../downloads/BantayBarangay.apk" download="BantayBarangay.apk" id="btnModalDownloadApk" class="btn btn-teal btn-sm" style="font-size:12.5px;font-weight:700;text-decoration:none;padding:6px 14px;border-radius:8px;background:#0284c7;color:#fff;">
+          ⬇️ Download APK Now
+        </a>
+        <button type="button" class="btn btn-ghost btn-sm" id="btnDismissApkGuide" style="border:1px solid rgba(255,255,255,0.15);color:#94a3b8;">Got it</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../shared/js/api.js"></script>
   <script src="../shared/js/auth.js"></script>
   <script src="../shared/js/ui.js"></script>
@@ -572,7 +680,7 @@
         const res = Auth.validatePhilippineMobile(raw);
 
         const digitsOnly = raw.replace(/\D/g, '');
-        digitCount.textContent = digitsOnly.length > 0 ? `${digitsOnly.length} digits` : '';
+        if (digitCount) digitCount.textContent = digitsOnly.length > 0 ? `${digitsOnly.length} digits` : '';
 
         if (res.isValid) {
           inputBox.classList.remove('input-invalid');
@@ -587,7 +695,6 @@
       const btnToggleLoginPass = document.getElementById('btnToggleLoginPass');
       const loginEyeIcon = document.getElementById('loginEyeIcon');
       const btnForgotPass = document.getElementById('btnForgotPass');
-      const btnUseSmsOtp = document.getElementById('btnUseSmsOtp');
 
       if (btnToggleLoginPass && loginPassword) {
         btnToggleLoginPass.addEventListener('click', () => {
@@ -648,10 +755,6 @@
 
       btnForgotPass?.addEventListener('click', () => {
         startSmsOtpFlow('Account Recovery: Use SMS OTP code 1234 to verify identity.');
-      });
-
-      btnUseSmsOtp?.addEventListener('click', () => {
-        startSmsOtpFlow('SMS code sent. Enter code: 1234 to sign in.');
       });
 
       phLoginForm.addEventListener('submit', e => {
@@ -982,6 +1085,111 @@
         registerStepView.classList.remove('hidden');
         regPhoneInput.focus();
       });
+
+      // ── PWA & APK INSTALLATION CONTROLLER ──────────────────────
+      let deferredInstallPrompt = null;
+      const btnInstallApp = document.getElementById('btnInstallApp');
+      const btnDownloadApk = document.getElementById('btnDownloadApk');
+      const btnModalDownloadApk = document.getElementById('btnModalDownloadApk');
+      const authAppDownloadCard = document.getElementById('authAppDownloadCard');
+      const reinstallAppNotice = document.getElementById('reinstallAppNotice');
+      const btnShowDownloadAgain = document.getElementById('btnShowDownloadAgain');
+      const apkGuideModal = document.getElementById('apkInstallModalOverlay');
+
+      const STORAGE_KEY_DOWNLOADED = 'bb_app_downloaded';
+
+      // Check if running inside installed standalone PWA/WebAPK window
+      function isStandaloneMode() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.navigator.standalone === true;
+      }
+
+      function showInstallCard() {
+        if (authAppDownloadCard) authAppDownloadCard.classList.remove('hidden');
+        if (reinstallAppNotice) reinstallAppNotice.classList.add('hidden');
+      }
+
+      function hideInstallCard() {
+        if (authAppDownloadCard) authAppDownloadCard.classList.add('hidden');
+      }
+
+      // If running inside the installed standalone app, hide the install prompts
+      if (isStandaloneMode()) {
+        hideInstallCard();
+      } else {
+        // In phone browser or desktop browser, always display the Install App & APK card
+        showInstallCard();
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        // When beforeinstallprompt fires, Chrome has confirmed the PWA is NOT installed on this device.
+        if (btnInstallApp) {
+          btnInstallApp.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <span>Install App</span>
+          `;
+        }
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        localStorage.setItem(STORAGE_KEY_DOWNLOADED, 'true');
+        hideInstallUI(false);
+        if (typeof UI !== 'undefined' && UI.toast) {
+          UI.toast('BantayBarangay installed to your home screen!', 'success');
+        }
+      });
+
+      btnInstallApp?.addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          const { outcome } = await deferredInstallPrompt.userChoice;
+          if (outcome === 'accepted') {
+            localStorage.setItem(STORAGE_KEY_DOWNLOADED, 'true');
+            hideInstallUI(false);
+            if (typeof UI !== 'undefined' && UI.toast) {
+              UI.toast('Installing BantayBarangay...', 'info');
+            }
+          }
+          deferredInstallPrompt = null;
+        } else {
+          // Open APK guide modal if native prompt is not active
+          openApkGuideModal();
+        }
+      });
+
+      function openApkGuideModal() {
+        if (apkGuideModal) apkGuideModal.classList.remove('hidden');
+      }
+
+      function closeApkGuideModal() {
+        if (apkGuideModal) apkGuideModal.classList.add('hidden');
+      }
+
+      document.getElementById('btnApkGuide')?.addEventListener('click', openApkGuideModal);
+      document.getElementById('btnCloseApkGuide')?.addEventListener('click', closeApkGuideModal);
+      document.getElementById('btnDismissApkGuide')?.addEventListener('click', closeApkGuideModal);
+      apkGuideModal?.addEventListener('click', (e) => {
+        if (e.target === apkGuideModal) closeApkGuideModal();
+      });
+
+      // Keyboard Esc handler
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeApkGuideModal();
+      });
+
+      // Register service worker if supported
+      if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+          console.warn('[PWA] ServiceWorker registration:', err);
+        });
+      }
     });
   </script>
 </body>

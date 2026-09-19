@@ -30,7 +30,8 @@ const MIME_TYPES = {
     '.ico': 'image/x-icon',
     '.woff2': 'font/woff2',
     '.woff': 'font/woff',
-    '.ttf': 'font/ttf'
+    '.ttf': 'font/ttf',
+    '.apk': 'application/vnd.android.package-archive'
 };
 
 /**
@@ -127,11 +128,15 @@ function serveStatic(req, res, pathname) {
 
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-        res.writeHead(200, {
+        const headers = {
             'Content-Type': contentType,
             'Cache-Control': 'no-cache'
-        });
+        };
+        if (ext === '.apk') {
+            headers['Content-Disposition'] = 'attachment; filename="BantayBarangay.apk"';
+        }
+
+        res.writeHead(200, headers);
         fs.createReadStream(filePath).pipe(res);
     });
 }

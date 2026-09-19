@@ -21,6 +21,8 @@
   <link rel="stylesheet" href="../shared/css/common.css?v=5.2" />
   <link rel="stylesheet" href="css/resident.css?v=5.2" />
   <link rel="stylesheet" href="css/auth.css?v=5.2" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     (function() {
       try {
@@ -492,12 +494,22 @@
           </span>
           <div class="field-error hidden" id="err-address">Please enter the address (purok, street, brgy, municipality).</div>
 
-          <div class="location-actions" style="margin-top: 8px; margin-bottom: 4px;">
+          <div class="location-actions" style="margin-top: 8px; margin-bottom: 6px;">
             <button type="button" class="btn btn-teal btn-sm" id="geolocateBtn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-              Auto-Detect My GPS Coordinates
+              Auto-Detect High-Accuracy GPS
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="pinpointMapBtn" title="Pinpoint incident on interactive map" style="background:#1e293b;border:1px solid rgba(255,255,255,0.15);color:#f1f5f9;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+              Pinpoint on Map
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" id="selectBarangayBtn" title="Select Municipality, Barangay and Purok" style="border:1px solid rgba(255,255,255,0.15);color:#cbd5e1;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Select Barangay & Purok
             </button>
           </div>
+
+          <div id="gpsAccuracyBadge" class="gps-accuracy-badge hidden" style="margin-bottom: 10px;"></div>
 
           <section class="nearby-reports hidden" id="nearbyReports" aria-live="polite" aria-labelledby="nearbyReportsTitle">
             <div class="nearby-reports-heading">
@@ -1072,6 +1084,105 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ════ MAP PINPOINT MODAL ════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="pinpointMapModalOverlay">
+    <div class="modal pinpoint-map-dialog glass-card" id="pinpointMapModal">
+      <div class="modal-header" style="background:#0f172a;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 20px;">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:#38bdf8"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+            Pinpoint Exact Incident Location
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Drag the red marker or click anywhere on the map to set the exact spot.</div>
+        </div>
+        <button type="button" class="auth-modal-close" id="btnClosePinpointMap" aria-label="Close modal">✕</button>
+      </div>
+
+      <div style="padding:10px 16px;background:#1e293b;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <div style="font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span>⚡ Quick Jump:</span>
+          <div class="quick-jump-chips">
+            <button type="button" class="chip-btn" data-jump="Masbate City Hall">City Hall</button>
+            <button type="button" class="chip-btn" data-jump="Espinosa">Espinosa</button>
+            <button type="button" class="chip-btn" data-jump="Nursery">Nursery</button>
+            <button type="button" class="chip-btn" data-jump="Tugbo">Tugbo</button>
+            <button type="button" class="chip-btn" data-jump="Airport">Airport</button>
+            <button type="button" class="chip-btn" data-jump="Mobo">Mobo</button>
+          </div>
+        </div>
+        <button type="button" class="btn btn-teal btn-sm" id="btnMapLocateMe" style="font-size:12px;padding:4px 10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          GPS Lock
+        </button>
+      </div>
+
+      <div id="pinpointMapContainer" style="width:100%;height:380px;background:#0b1329;position:relative;"></div>
+
+      <div style="padding:16px 20px;background:#0f172a;border-top:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:240px;">
+          <div style="font-size:11px;text-transform:uppercase;color:#38bdf8;font-weight:700;letter-spacing:0.05em;">Selected Pinpoint Location</div>
+          <div id="mapAddressPreview" style="font-size:13px;color:#f8fafc;font-weight:600;margin-top:2px;line-height:1.35;">Click or drag the pin on the map</div>
+          <div id="mapCoordsPreview" style="font-size:11.5px;color:#94a3b8;font-family:monospace;margin-top:2px;">Lat: 12.37130, Lng: 123.63060</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn btn-ghost btn-sm" id="btnCancelPinpointMap" style="border:1px solid rgba(255,255,255,0.15);color:#94a3b8;">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btnApplyPinpointMap" style="background:#0284c7;border-color:#0284c7;padding:8px 18px;font-weight:700;">
+            ✓ Use This Location
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SELECT BARANGAY & PUROK MODAL ════════════════════════ -->
+  <div class="modal-overlay hidden" id="selectBarangayModalOverlay">
+    <div class="modal glass-card" id="selectBarangayModal" style="max-width:480px;">
+      <div class="modal-header" style="background:#0f172a;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 20px;">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:#0284c7"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Select Barangay & Purok Location
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Choose your municipality, barangay, and zone in Masbate.</div>
+        </div>
+        <button type="button" class="auth-modal-close" id="btnCloseSelectBarangay" aria-label="Close modal">✕</button>
+      </div>
+
+      <div style="padding:20px;background:#1e293b;">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="pickerMunicipality" style="color:#cbd5e1;font-size:12px;font-weight:600;">Municipality / City</label>
+          <select id="pickerMunicipality" class="form-input" style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);"></select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="pickerBarangay" style="color:#cbd5e1;font-size:12px;font-weight:600;">Barangay</label>
+          <select id="pickerBarangay" class="form-input" style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);"></select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="pickerPurok" style="color:#cbd5e1;font-size:12px;font-weight:600;">Purok / Zone</label>
+          <select id="pickerPurok" class="form-input" style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);"></select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="pickerStreetDetail" style="color:#cbd5e1;font-size:12px;font-weight:600;">Street, Building or Landmark (Optional)</label>
+          <input type="text" id="pickerStreetDetail" class="form-input" placeholder="e.g. Near City Hall, Quezon St." style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);" />
+        </div>
+
+        <div style="padding:10px 14px;background:rgba(2,132,199,0.1);border:1px solid rgba(2,132,199,0.25);border-radius:8px;font-size:12px;color:#7dd3fc;margin-top:10px;">
+          📍 <strong>Formatted Preview:</strong> <span id="pickerPreviewText">Purok 1, Brgy. Espinosa, Masbate City</span>
+        </div>
+      </div>
+
+      <div style="padding:14px 20px;background:#0f172a;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:flex-end;gap:8px;">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnCancelSelectBarangay" style="border:1px solid rgba(255,255,255,0.15);color:#94a3b8;">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btnApplySelectBarangay" style="background:#0284c7;border-color:#0284c7;font-weight:700;">
+          Apply Address
+        </button>
+      </div>
     </div>
   </div>
 

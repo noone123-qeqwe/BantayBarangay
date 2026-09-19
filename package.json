@@ -5,11 +5,13 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "node scripts/build-apk.js",
     "db:init": "node database/init-db.js",
     "db:reset": "node database/init-db.js --force",
     "test:db": "node database/test-db.js",
     "test:api": "node database/test-api.js",
-    "test": "node database/test-db.js && node database/test-api.js"
+    "test": "node database/test-db.js && node database/test-api.js",
+    "build:apk": "node scripts/build-apk.js"
   },
   "keywords": [
     "barangay",

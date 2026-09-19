@@ -502,30 +502,7 @@ const Reports = (() => {
 
   // ── CITIZEN ADVISORIES (POWER / WEATHER / SAFETY) ─────────
   const ADVISORIES_KEY = 'bantay_citizen_advisories';
-  const DEFAULT_ADVISORIES = [
-    {
-      id: 'ADV-001',
-      title: 'MASELCO Scheduled Substation Maintenance',
-      category: 'Power Outage',
-      severity: 'Medium',
-      areas: 'Purok 1 - 4, Brgy. Nursery, Masbate City',
-      message: 'Emergency line maintenance and insulator replacement on Feeder 2. Power interruption expected 08:00 AM - 01:00 PM.',
-      author: 'Admin Operations Desk',
-      createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-      active: true
-    },
-    {
-      id: 'ADV-002',
-      title: 'Typhoon / Strong Winds: Low Wires Alert',
-      category: 'Public Safety',
-      severity: 'High',
-      areas: 'Coastal Barangays & Mobo Highway corridor',
-      message: 'High wind gusts reported. Stay clear of swaying or grounded power lines. Report any sparking transformers immediately via BantayBarangay.',
-      author: 'MDRRMO / LGU Masbate',
-      createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-      active: true
-    }
-  ];
+  const DEFAULT_ADVISORIES = [];
 
   function getAdvisories() {
     try {
@@ -534,7 +511,16 @@ const Reports = (() => {
         localStorage.setItem(ADVISORIES_KEY, JSON.stringify(DEFAULT_ADVISORIES));
         return DEFAULT_ADVISORIES;
       }
-      return JSON.parse(raw);
+      let list = JSON.parse(raw);
+      if (Array.isArray(list)) {
+        // Strip legacy demo advisories (MASELCO maintenance and Typhoon alert)
+        const cleaned = list.filter(a => a && a.id !== 'ADV-001' && a.id !== 'ADV-002');
+        if (cleaned.length !== list.length) {
+          localStorage.setItem(ADVISORIES_KEY, JSON.stringify(cleaned));
+        }
+        return cleaned;
+      }
+      return DEFAULT_ADVISORIES;
     } catch {
       return DEFAULT_ADVISORIES;
     }
