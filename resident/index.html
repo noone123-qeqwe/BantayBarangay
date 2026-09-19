@@ -18,9 +18,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../shared/css/common.css?v=5.2" />
-  <link rel="stylesheet" href="css/resident.css?v=5.2" />
-  <link rel="stylesheet" href="css/auth.css?v=5.2" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.3" />
+  <link rel="stylesheet" href="css/resident.css?v=5.3" />
+  <link rel="stylesheet" href="css/auth.css?v=5.3" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
@@ -146,6 +146,11 @@
           <span class="report-hero-kicker"><span class="report-hero-pulse"></span>Community action desk</span>
           <h2>Spot it. Report it.<br><em>Help get it fixed.</em></h2>
           <p>A clear report helps the barangay and MASELCO respond with confidence.</p>
+          <div class="report-hero-badges">
+            <span class="hero-feature-chip">⚡ 48-hr LGU Dispatch</span>
+            <span class="hero-feature-chip">📍 21 Municipalities</span>
+            <span class="hero-feature-chip">🛡️ 100% Tracked</span>
+          </div>
         </div>
         <div class="report-hero-stats" aria-label="Reporting benefits">
           <div><strong>~2 min</strong><span>to submit</span></div>
@@ -155,7 +160,34 @@
         <div class="report-hero-orbit orbit-two" aria-hidden="true"></div>
       </section>
 
-      <form class="report-form glass-card" id="reportForm" novalidate style="max-width: 760px; margin: 0 auto; padding: 20px 28px;">
+      <form class="report-form glass-card" id="reportForm" novalidate style="max-width: 760px; margin: 0 auto; padding: 22px 28px;">
+        <!-- QUICK ISSUE SHORTCUT CHIPS -->
+        <div class="quick-category-section">
+          <span class="quick-cat-label">⚡ Common Masbate Issues (Quick Pick):</span>
+          <div class="quick-category-pills" id="quickCategoryPills">
+            <button type="button" class="quick-cat-pill" data-issue="Snapped / Downed Power Lines">
+              <span class="quick-cat-icon">⚡</span>
+              <span>Downed Wire</span>
+            </button>
+            <button type="button" class="quick-cat-pill" data-issue="Blown Transformer">
+              <span class="quick-cat-icon">💥</span>
+              <span>Transformer</span>
+            </button>
+            <button type="button" class="quick-cat-pill" data-issue="Low-Hanging Wires">
+              <span class="quick-cat-icon">⚠️</span>
+              <span>Low Cables</span>
+            </button>
+            <button type="button" class="quick-cat-pill" data-issue="Total Blackout (Area-wide)">
+              <span class="quick-cat-icon">🔌</span>
+              <span>Area Blackout</span>
+            </button>
+            <button type="button" class="quick-cat-pill" data-issue="Tree Branch Fell on Lines">
+              <span class="quick-cat-icon">🌳</span>
+              <span>Fallen Branch</span>
+            </button>
+          </div>
+        </div>
+
         <!-- 1. CATEGORY & INFRASTRUCTURE TYPE -->
         <div class="form-group">
           <label class="form-label" for="categorySelect">
@@ -503,18 +535,19 @@
           </span>
           <div class="field-error hidden" id="err-address">Please enter the address (purok, street, brgy, municipality).</div>
 
-          <div class="location-actions" style="margin-top: 8px; margin-bottom: 6px;">
-            <button type="button" class="btn btn-teal btn-sm" id="geolocateBtn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-              Auto-Detect High-Accuracy GPS
+          <div class="location-actions-modern" style="margin-top: 10px; margin-bottom: 8px;">
+            <button type="button" class="btn-location-action btn-geo-action" id="geolocateBtn">
+              <span class="geo-pulse-beacon"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              <span>Auto-Detect High-Accuracy GPS</span>
             </button>
-            <button type="button" class="btn btn-secondary btn-sm" id="pinpointMapBtn" title="Pinpoint incident on interactive map" style="background:#1e293b;border:1px solid rgba(255,255,255,0.15);color:#f1f5f9;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-              Pinpoint on Map
+            <button type="button" class="btn-location-action" id="pinpointMapBtn" title="Pinpoint incident on interactive map">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+              <span>Pinpoint on Map</span>
             </button>
-            <button type="button" class="btn btn-ghost btn-sm" id="selectBarangayBtn" title="Select Municipality, Barangay and Purok" style="border:1px solid rgba(255,255,255,0.15);color:#cbd5e1;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Select Barangay & Purok
+            <button type="button" class="btn-location-action" id="selectBarangayBtn" title="Select Municipality, Barangay and Purok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Select Barangay &amp; Purok</span>
             </button>
           </div>
 
@@ -533,6 +566,37 @@
         </div>
 
         <input type="hidden" id="agencySelect" name="agency" value="MASELCO" />
+
+        <!-- PHOTO / EVIDENCE DROPZONE -->
+        <div class="form-group" style="margin-top: 16px;">
+          <label class="form-label" for="reportPhotoInput">
+            <span>Incident Photo / Evidence</span>
+            <span class="optional" style="font-size:12px;color:#64748b;margin-left:4px;">(Optional)</span>
+          </label>
+          <div class="photo-upload-card" id="photoDropzone">
+            <input type="file" id="reportPhotoInput" accept="image/*" class="photo-file-input hidden" capture="environment" />
+            <div class="photo-drop-empty" id="photoDropEmpty">
+              <div class="photo-upload-icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </div>
+              <div class="photo-drop-copy">
+                <strong>Tap to Take or Upload Incident Photo</strong>
+                <span>Supports JPG, PNG • Max 10MB • Speeds up emergency dispatch</span>
+              </div>
+            </div>
+            <div class="photo-preview-wrap hidden" id="photoPreviewWrap">
+              <img id="photoPreviewImg" src="" alt="Incident evidence photo" class="photo-preview-thumb" />
+              <div class="photo-preview-meta">
+                <span class="photo-filename" id="photoFilename">photo.jpg</span>
+                <span class="photo-status">✓ Photo attached</span>
+              </div>
+              <button type="button" class="photo-remove-btn" id="btnRemovePhoto" title="Remove photo">✕</button>
+            </div>
+          </div>
+        </div>
 
         <!-- 3. DESCRIPTION -->
         <div class="form-group" style="margin-top: 14px;">
@@ -1081,21 +1145,21 @@
 
   <!-- ════ MAP PINPOINT MODAL ════════════════════════════════════ -->
   <div class="modal-overlay hidden" id="pinpointMapModalOverlay">
-    <div class="modal pinpoint-map-dialog glass-card" id="pinpointMapModal">
-      <div class="modal-header" style="background:#0f172a;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 20px;">
+    <div class="modal pinpoint-map-dialog glass-card modal-civic-light" id="pinpointMapModal">
+      <div class="modal-header modal-header-civic-light" style="padding:16px 20px;">
         <div>
-          <div style="font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:#38bdf8"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          <div style="font-size:16px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:8px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:#0284c7"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
             Pinpoint Exact Incident Location
           </div>
-          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Drag the red marker or click anywhere on the map to set the exact spot.</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px;">Drag the red marker or click anywhere on the map to set the exact spot.</div>
         </div>
         <button type="button" class="auth-modal-close" id="btnClosePinpointMap" aria-label="Close modal">✕</button>
       </div>
 
-      <div style="padding:10px 16px;background:#1e293b;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-        <div style="font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          <span>⚡ Quick Jump:</span>
+      <div style="padding:10px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <div style="font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span style="font-weight:700;color:#0284c7;">⚡ Quick Jump:</span>
           <div class="quick-jump-chips">
             <button type="button" class="chip-btn" data-jump="Masbate City Hall">City Hall</button>
             <button type="button" class="chip-btn" data-jump="Espinosa">Espinosa</button>
@@ -1105,22 +1169,52 @@
             <button type="button" class="chip-btn" data-jump="Mobo">Mobo</button>
           </div>
         </div>
-        <button type="button" class="btn btn-teal btn-sm" id="btnMapLocateMe" style="font-size:12px;padding:4px 10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-          GPS Lock
-        </button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="map-layer-switch" id="mapLayerSwitch" role="group" aria-label="Map Layer">
+            <button type="button" class="map-layer-btn active" id="btnLayerStreet" title="Standard Street Map">🗺️ Street</button>
+            <button type="button" class="map-layer-btn" id="btnLayerSatellite" title="High-Resolution Satellite Aerial">🛰️ Satellite</button>
+          </div>
+          <button type="button" class="btn btn-teal btn-sm" id="btnMapLocateMe" style="font-size:12px;padding:4px 10px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            GPS Lock
+          </button>
+        </div>
       </div>
 
-      <div id="pinpointMapContainer" style="width:100%;height:380px;background:#0b1329;position:relative;"></div>
+      <div id="pinpointMapContainer" style="width:100%;height:390px;background:#e2e8f0;position:relative;">
+        <div class="map-precision-toolbar" id="mapPrecisionToolbar">
+          <div class="map-precision-badge" id="mapPrecisionBadge">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#38bdf8;box-shadow:0 0 6px #38bdf8;"></span>
+            <span id="mapPrecisionText">Fine Precision (±1.5m)</span>
+          </div>
+          <div class="map-nudge-pad" title="1.5-meter micro-nudge D-pad" aria-label="Micro-nudge directional controls">
+            <div style="grid-column: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeUp" title="Nudge North 1.5m" aria-label="Nudge North">▲</button>
+            </div>
+            <div style="grid-column: 1; grid-row: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeLeft" title="Nudge West 1.5m" aria-label="Nudge West">◀</button>
+            </div>
+            <div style="grid-column: 2; grid-row: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeDown" title="Nudge South 1.5m" aria-label="Nudge South">▼</button>
+            </div>
+            <div style="grid-column: 3; grid-row: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeRight" title="Nudge East 1.5m" aria-label="Nudge East">▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div style="padding:16px 20px;background:#0f172a;border-top:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div style="padding:16px 20px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <div style="flex:1;min-width:240px;">
-          <div style="font-size:11px;text-transform:uppercase;color:#38bdf8;font-weight:700;letter-spacing:0.05em;">Selected Pinpoint Location</div>
-          <div id="mapAddressPreview" style="font-size:13px;color:#f8fafc;font-weight:600;margin-top:2px;line-height:1.35;">Click or drag the pin on the map</div>
-          <div id="mapCoordsPreview" style="font-size:11.5px;color:#94a3b8;font-family:monospace;margin-top:2px;">Lat: 12.37130, Lng: 123.63060</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;text-transform:uppercase;color:#0284c7;font-weight:700;letter-spacing:0.05em;">Selected Pinpoint Location</span>
+            <span style="font-size:10.5px;color:#64748b;">(Use D-pad or Arrow keys for 1.5m micro-nudge)</span>
+          </div>
+          <div id="mapAddressPreview" style="font-size:13px;color:#0f172a;font-weight:700;margin-top:2px;line-height:1.35;">Click or drag the pin on the map</div>
+          <div id="mapCoordsPreview" style="font-size:11.5px;color:#64748b;font-family:monospace;margin-top:2px;">Lat: 12.371300, Lng: 123.630600</div>
         </div>
         <div style="display:flex;gap:8px;">
-          <button type="button" class="btn btn-ghost btn-sm" id="btnCancelPinpointMap" style="border:1px solid rgba(255,255,255,0.15);color:#94a3b8;">Cancel</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="btnCancelPinpointMap" style="border:1px solid #cbd5e1;color:#475569;">Cancel</button>
           <button type="button" class="btn btn-primary btn-sm" id="btnApplyPinpointMap" style="background:#0284c7;border-color:#0284c7;padding:8px 18px;font-weight:700;">
             ✓ Use This Location
           </button>
@@ -1131,46 +1225,46 @@
 
   <!-- ════ SELECT BARANGAY & PUROK MODAL ════════════════════════ -->
   <div class="modal-overlay hidden" id="selectBarangayModalOverlay">
-    <div class="modal glass-card" id="selectBarangayModal" style="max-width:480px;">
-      <div class="modal-header" style="background:#0f172a;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 20px;">
+    <div class="modal glass-card modal-civic-light" id="selectBarangayModal" style="max-width:480px;">
+      <div class="modal-header modal-header-civic-light" style="padding:16px 20px;">
         <div>
-          <div style="font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;">
+          <div style="font-size:16px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:8px;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:#0284c7"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Select Barangay & Purok Location
+            Select Barangay &amp; Purok Location
           </div>
-          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Choose your municipality, barangay, and zone in Masbate.</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px;">Choose your municipality, barangay, and zone in Masbate.</div>
         </div>
         <button type="button" class="auth-modal-close" id="btnCloseSelectBarangay" aria-label="Close modal">✕</button>
       </div>
 
-      <div style="padding:20px;background:#1e293b;">
+      <div style="padding:20px;background:#ffffff;">
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label" for="pickerMunicipality" style="color:#cbd5e1;font-size:12px;font-weight:600;">Municipality / City</label>
-          <select id="pickerMunicipality" class="form-input" style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);"></select>
+          <label class="form-label" for="pickerMunicipality" style="color:#334155;font-size:12px;font-weight:700;">Municipality / City</label>
+          <select id="pickerMunicipality" class="form-input" style="background:#ffffff;color:#0f172a;border:1px solid #cbd5e1;"></select>
         </div>
 
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label" for="pickerBarangay" style="color:#cbd5e1;font-size:12px;font-weight:600;">Barangay</label>
-          <select id="pickerBarangay" class="form-input" style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);"></select>
+          <label class="form-label" for="pickerBarangay" style="color:#334155;font-size:12px;font-weight:700;">Barangay</label>
+          <select id="pickerBarangay" class="form-input" style="background:#ffffff;color:#0f172a;border:1px solid #cbd5e1;"></select>
         </div>
 
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label" for="pickerPurok" style="color:#cbd5e1;font-size:12px;font-weight:600;">Purok / Zone</label>
-          <select id="pickerPurok" class="form-input" style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);"></select>
+          <label class="form-label" for="pickerPurok" style="color:#334155;font-size:12px;font-weight:700;">Purok / Zone</label>
+          <select id="pickerPurok" class="form-input" style="background:#ffffff;color:#0f172a;border:1px solid #cbd5e1;"></select>
         </div>
 
         <div class="form-group" style="margin-bottom:14px;">
-          <label class="form-label" for="pickerStreetDetail" style="color:#cbd5e1;font-size:12px;font-weight:600;">Street, Building or Landmark (Optional)</label>
-          <input type="text" id="pickerStreetDetail" class="form-input" placeholder="e.g. Near City Hall, Quezon St." style="background:#0f172a;color:#fff;border-color:rgba(255,255,255,0.15);" />
+          <label class="form-label" for="pickerStreetDetail" style="color:#334155;font-size:12px;font-weight:700;">Street, Building or Landmark (Optional)</label>
+          <input type="text" id="pickerStreetDetail" class="form-input" placeholder="e.g. Near City Hall, Quezon St." style="background:#ffffff;color:#0f172a;border:1px solid #cbd5e1;" />
         </div>
 
-        <div style="padding:10px 14px;background:rgba(2,132,199,0.1);border:1px solid rgba(2,132,199,0.25);border-radius:8px;font-size:12px;color:#7dd3fc;margin-top:10px;">
+        <div style="padding:10px 14px;background:#e0f2fe;border:1px solid #bae6fd;border-radius:10px;font-size:12px;color:#0369a1;margin-top:10px;">
           📍 <strong>Formatted Preview:</strong> <span id="pickerPreviewText">Purok 1, Brgy. Espinosa, Masbate City</span>
         </div>
       </div>
 
-      <div style="padding:14px 20px;background:#0f172a;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:flex-end;gap:8px;">
-        <button type="button" class="btn btn-ghost btn-sm" id="btnCancelSelectBarangay" style="border:1px solid rgba(255,255,255,0.15);color:#94a3b8;">Cancel</button>
+      <div style="padding:14px 20px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:8px;">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnCancelSelectBarangay" style="border:1px solid #cbd5e1;color:#475569;">Cancel</button>
         <button type="button" class="btn btn-primary btn-sm" id="btnApplySelectBarangay" style="background:#0284c7;border-color:#0284c7;font-weight:700;">
           Apply Address
         </button>
@@ -1209,7 +1303,7 @@
   <script src="../shared/js/auth.js"></script>
   <script src="../shared/js/ui.js"></script>
   <script src="../shared/js/locations.js"></script>
-  <script src="js/resident.js"></script>
+  <script src="js/resident.js?v=2.1"></script>
   <script src="../shared/js/version-checker.js?v=2.0"></script>
 </body>
 </html>

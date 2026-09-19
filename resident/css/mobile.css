@@ -855,8 +855,39 @@ html, body {
   transform: translateY(-2px);
 }
 
+.mob-nav-item.mob-nav-logout {
+  color: #fca5a5 !important;
+}
+
+.mob-nav-item.mob-nav-logout .mob-nav-icon-box {
+  color: #f87171 !important;
+}
+
+.mob-nav-item.mob-nav-logout .mob-nav-icon-box svg {
+  stroke: #f87171 !important;
+  stroke-width: 2.2 !important;
+}
+
+.mob-nav-item.mob-nav-logout .mob-nav-title {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.mob-nav-item.mob-nav-logout:hover,
 .mob-nav-item.mob-nav-logout:active {
-  color: #dc2626;
+  color: #ffffff !important;
+  background: rgba(239, 68, 68, 0.18) !important;
+}
+
+.mob-nav-item.mob-nav-logout:hover .mob-nav-icon-box svg,
+.mob-nav-item.mob-nav-logout:active .mob-nav-icon-box svg {
+  stroke: #ffffff !important;
+  transform: scale(1.1);
+}
+
+.mob-nav-item.mob-nav-logout:hover .mob-nav-title,
+.mob-nav-item.mob-nav-logout:active .mob-nav-title {
+  color: #ffffff !important;
 }
 
 /* ── 10. FLOATING AI ASSISTANT WIDGET ────────────────────── */

@@ -18,8 +18,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../shared/css/common.css?v=5.2" />
-  <link rel="stylesheet" href="css/mobile.css?v=5.2" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.3" />
+  <link rel="stylesheet" href="css/mobile.css?v=5.3" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
@@ -652,17 +652,47 @@
           <button type="button" class="chip-btn" data-jump="Tugbo">Tugbo</button>
           <button type="button" class="chip-btn" data-jump="Mobo">Mobo</button>
         </div>
-        <button type="button" class="btn btn-teal btn-sm" id="btnMapLocateMe" style="font-size:11px;padding:3px 8px;flex-shrink:0;">
-          GPS Lock
-        </button>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <div class="map-layer-switch" id="mapLayerSwitch" role="group" aria-label="Map Layer">
+            <button type="button" class="map-layer-btn active" id="btnLayerStreet" title="Street Map" style="padding:3px 7px;font-size:11px;">Street</button>
+            <button type="button" class="map-layer-btn" id="btnLayerSatellite" title="Satellite Map" style="padding:3px 7px;font-size:11px;">Sat</button>
+          </div>
+          <button type="button" class="btn btn-teal btn-sm" id="btnMapLocateMe" style="font-size:11px;padding:3px 8px;flex-shrink:0;">
+            GPS
+          </button>
+        </div>
       </div>
 
-      <div id="pinpointMapContainer" style="width:100%;height:290px;background:#0b1329;position:relative;"></div>
+      <div id="pinpointMapContainer" style="width:100%;height:300px;background:#0b1329;position:relative;">
+        <div class="map-precision-toolbar" id="mapPrecisionToolbar" style="bottom:10px;right:10px;">
+          <div class="map-precision-badge" id="mapPrecisionBadge" style="font-size:9.5px;padding:3px 6px;">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#38bdf8;box-shadow:0 0 5px #38bdf8;"></span>
+            <span id="mapPrecisionText">Fine (±1.5m)</span>
+          </div>
+          <div class="map-nudge-pad" title="1.5-meter micro-nudge D-pad" aria-label="Micro-nudge directional controls" style="padding:3px;gap:3px;">
+            <div style="grid-column: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeUp" title="Nudge North 1.5m" aria-label="Nudge North" style="height:26px;font-size:10px;">▲</button>
+            </div>
+            <div style="grid-column: 1; grid-row: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeLeft" title="Nudge West 1.5m" aria-label="Nudge West" style="height:26px;font-size:10px;">◀</button>
+            </div>
+            <div style="grid-column: 2; grid-row: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeDown" title="Nudge South 1.5m" aria-label="Nudge South" style="height:26px;font-size:10px;">▼</button>
+            </div>
+            <div style="grid-column: 3; grid-row: 2;">
+              <button type="button" class="map-nudge-btn" id="btnNudgeRight" title="Nudge East 1.5m" aria-label="Nudge East" style="height:26px;font-size:10px;">▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div style="padding:12px 16px;background:#0f172a;border-top:1px solid rgba(255,255,255,0.1);">
-        <div style="font-size:10px;text-transform:uppercase;color:#38bdf8;font-weight:700;">Selected Pinpoint Location</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:10px;text-transform:uppercase;color:#38bdf8;font-weight:700;">Selected Pinpoint Location</div>
+          <div style="font-size:10px;color:#94a3b8;">1.5m D-pad Nudge</div>
+        </div>
         <div id="mapAddressPreview" style="font-size:12.5px;color:#f8fafc;font-weight:600;margin-top:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Tap on map to place pin</div>
-        <div id="mapCoordsPreview" style="font-size:11px;color:#94a3b8;font-family:monospace;margin-top:2px;">Lat: 12.37130, Lng: 123.63060</div>
+        <div id="mapCoordsPreview" style="font-size:11px;color:#94a3b8;font-family:monospace;margin-top:2px;">Lat: 12.371300, Lng: 123.630600</div>
         <div style="display:flex;gap:8px;margin-top:10px;">
           <button type="button" class="btn btn-ghost btn-sm" id="btnCancelPinpointMap" style="flex:1;border:1px solid rgba(255,255,255,0.15);color:#94a3b8;font-size:12px;">Cancel</button>
           <button type="button" class="btn btn-primary btn-sm" id="btnApplyPinpointMap" style="flex:2;background:#0284c7;border-color:#0284c7;font-size:12px;font-weight:700;">
@@ -727,6 +757,6 @@
   <script src="../shared/js/auth.js"></script>
   <script src="../shared/js/ui.js"></script>
   <script src="../shared/js/locations.js"></script>
-  <script src="js/resident.js"></script>
+  <script src="js/resident.js?v=2.1"></script>
 </body>
 </html>

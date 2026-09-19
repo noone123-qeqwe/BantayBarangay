@@ -78,16 +78,20 @@
 
     <!-- ════ CARD BRAND HEADER ═════════════════════════════ -->
     <div class="auth-card-brand-header">
+      <div class="auth-brand-aura"></div>
       <a href="index.html" class="auth-brand-logo" title="BantayBarangay">
-        <div class="logo-icon">
+        <div class="logo-icon-wrap-premium">
+          <div class="logo-glow-ring"></div>
           <img src="images/logo.png" alt="BantayBarangay Seal" class="brand-logo-img" />
         </div>
         <div class="logo-text">
           <span class="logo-main">Bantay</span><span class="logo-accent">Barangay</span>
         </div>
       </a>
-      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;">
-        <span style="font-size:12px;font-weight:700;color:#0284c7;letter-spacing:0.08em;text-transform:uppercase;">Province of Masbate</span>
+      <div class="auth-civic-subtitle-bar">
+        <span class="auth-republic-text">Republic of the Philippines</span>
+        <span class="auth-bullet">•</span>
+        <span class="auth-province-text">Province of Masbate</span>
         <span class="auth-version-badge">v2.0</span>
       </div>
     </div>
@@ -96,14 +100,42 @@
     <div class="auth-form-panel">
       <div class="ph-login-card">
 
+        <!-- SEGMENTED NAVIGATION TAB CONTROL -->
+        <div class="auth-segment-control" role="tablist" aria-label="Authentication mode">
+          <button type="button" class="auth-segment-tab active" id="tabLogin" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>Sign In</span>
+          </button>
+          <button type="button" class="auth-segment-tab" id="tabRegister" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+            <span>Create Account</span>
+          </button>
+        </div>
 
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- VIEW 1: LOG IN WITH PHILIPPINE MOBILE               -->
         <!-- ═══════════════════════════════════════════════════ -->
         <div id="loginStepView">
           <div>
-            <h2 class="auth-panel-heading">Welcome Back</h2>
-            <p class="auth-panel-sub">Sign in with your Philippine mobile phone number.</p>
+            <h2 class="auth-panel-heading">Citizen Sign In</h2>
+            <p class="auth-panel-sub">Access verified Masbate incident reporting and status tracking.</p>
+
+            <!-- DEMO SHORTCUT -->
+            <div class="auth-demo-shortcut-wrap">
+              <button type="button" class="auth-demo-pill" id="btnFillDemoResident" title="Click to auto-fill test citizen account">
+                <span class="auth-demo-sparkle">✨</span>
+                <span>Demo Account: <strong>0917 123 4567</strong></span>
+                <span class="auth-demo-arrow">Auto-Fill →</span>
+              </button>
+            </div>
           </div>
 
           <!-- LOGIN FORM -->
@@ -453,6 +485,11 @@
           </div>
         </div>
 
+        <!-- TRUST & SECURITY FOOTER -->
+        <div class="auth-trust-footer">
+          <span class="auth-trust-icon">🛡️</span>
+          <span>Official Masbate Provincial Government Civic Portal • 256-Bit Encrypted Incident Registry</span>
+        </div>
       </div>
     </div>
 
@@ -653,6 +690,22 @@
       if (urlParams.get('mode') === 'register') {
         switchTab('register');
       }
+
+      // Demo citizen auto-fill shortcut
+      document.getElementById('btnFillDemoResident')?.addEventListener('click', () => {
+        switchTab('login');
+        const pInput = document.getElementById('phPhoneInput');
+        const passInput = document.getElementById('loginPassword');
+        if (pInput && passInput) {
+          pInput.value = '09171234567';
+          passInput.value = 'resident123';
+          pInput.dispatchEvent(new Event('input'));
+          passInput.dispatchEvent(new Event('input'));
+          if (typeof UI !== 'undefined' && UI.toast) {
+            UI.toast('Demo citizen credentials filled! Tap "Log In" to proceed.', 'info');
+          }
+        }
+      });
 
       // ═════════════════════════════════════════════════════════
       // 1. LOG IN LOGIC & OTP
