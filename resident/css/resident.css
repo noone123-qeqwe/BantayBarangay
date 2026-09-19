@@ -3606,38 +3606,43 @@ button.nav-item {
   }
 
   .mob-nav-item.mob-nav-logout {
-    color: #fca5a5 !important;
+    color: #ef4444 !important;
   }
 
   .mob-nav-item.mob-nav-logout .mob-nav-icon-box {
-    color: #f87171 !important;
+    color: #ef4444 !important;
   }
 
   .mob-nav-item.mob-nav-logout .mob-nav-icon-box svg {
-    stroke: #f87171 !important;
+    stroke: #ef4444 !important;
     stroke-width: 2.2 !important;
   }
 
   .mob-nav-item.mob-nav-logout .mob-nav-title {
-    color: #fecdd3 !important;
+    color: #ef4444 !important;
     font-weight: 700 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.1px !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .mob-nav-item.mob-nav-logout:hover,
   .mob-nav-item.mob-nav-logout:active {
-    color: #ffffff !important;
-    background: rgba(239, 68, 68, 0.18) !important;
+    color: #dc2626 !important;
+    background: rgba(239, 68, 68, 0.1) !important;
   }
 
   .mob-nav-item.mob-nav-logout:hover .mob-nav-icon-box svg,
   .mob-nav-item.mob-nav-logout:active .mob-nav-icon-box svg {
-    stroke: #ffffff !important;
+    stroke: #dc2626 !important;
     transform: scale(1.1);
   }
 
   .mob-nav-item.mob-nav-logout:hover .mob-nav-title,
   .mob-nav-item.mob-nav-logout:active .mob-nav-title {
-    color: #ffffff !important;
+    color: #dc2626 !important;
   }
 
   /* 4. MAIN CONTENT & VIEW ADAPTATIONS */
