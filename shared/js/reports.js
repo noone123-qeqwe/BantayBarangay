@@ -232,6 +232,19 @@ const Reports = (() => {
 
   function save(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+      window.dispatchEvent(new CustomEvent('bantay_reports_updated', { detail: { reports: data } }));
+      if (typeof BroadcastChannel !== 'undefined') {
+        const bc = new BroadcastChannel('bantay_reports_channel');
+        bc.postMessage({ type: 'REPORTS_UPDATED', count: data.length });
+        bc.close();
+      }
+    } catch (e) {}
+  }
+
+  function resetSeed() {
+    save(SEED);
+    return SEED;
   }
 
   async function syncFromApi() {
@@ -433,11 +446,12 @@ const Reports = (() => {
   }
 
   // ── FILTER ────────────────────────────────────────────────
-  function filter({ search = '', status = 'all', category = 'all', agency = 'all' } = {}) {
+  function filter({ search = '', status = 'all', category = 'all', agency = 'all', urgency = 'all' } = {}) {
     let results = getAll();
     if (status !== 'all') results = results.filter(r => r.status === status);
     if (category !== 'all') results = results.filter(r => r.category === category);
     if (agency !== 'all') results = results.filter(r => r.agency === agency);
+    if (urgency !== 'all') results = results.filter(r => (r.severity || '').toLowerCase() === urgency.toLowerCase());
     if (search.trim()) {
       const q = search.toLowerCase();
       results = results.filter(r =>
@@ -595,6 +609,8 @@ const Reports = (() => {
     confirm,
     confirmOnce,
     flushPendingReports,
+    syncFromApi,
+    resetSeed,
     getAdvisories,
     addAdvisory,
     deleteAdvisory,

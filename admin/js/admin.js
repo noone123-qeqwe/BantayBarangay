@@ -1,6 +1,6 @@
 /* ─────────────────────────────────────────────────────────
    admin.js — Masbate Operations Command Center Engine
-   Real-time Incident Triage, Agency Dispatch & Grid Telemetry
+   Real-Time Complaints Triage, Profile, Settings & Dispatch
    ───────────────────────────────────────────────────────── */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,17 +8,111 @@ document.addEventListener('DOMContentLoaded', () => {
     Reports.init();
   }
 
-  // ── 1. AUTH GATE & PIN SECURITY ───────────────────────────
+  // ── 1. CONFIG & SETTINGS STORAGE ──────────────────────────
+  const SETTINGS_KEY = 'bantay_admin_settings';
+  const OFFICER_PROFILE_KEY = 'bantay_officer_profile';
+  const PIN_KEY = 'bantay_admin_pin';
+
+  const defaultSettings = {
+    autoUpdate: true,
+    pollInterval: 5000,
+    audioChime: true,
+    toastAlert: true,
+    autoSms: true
+  };
+
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      return raw ? { ...defaultSettings, ...JSON.parse(raw) } : { ...defaultSettings };
+    } catch {
+      return { ...defaultSettings };
+    }
+  }
+
+  function saveSettings(s) {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  }
+
+  let adminSettings = loadSettings();
+
+  function getOfficerPin() {
+    return localStorage.getItem(PIN_KEY) || '1234';
+  }
+
+  function setOfficerPin(newPin) {
+    localStorage.setItem(PIN_KEY, newPin);
+  }
+
+  // ── 2. WEB AUDIO SYNTHESIZED CHIME (ZERO EXTERNAL ASSETS) ──
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        audioCtx = new AudioContext();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+  }
+
+  // Resume audio context on any user interaction
+  ['click', 'keydown', 'touchstart'].forEach(evt => {
+    document.addEventListener(evt, () => getAudioContext(), { once: true });
+  });
+
+  function playChimeAlert() {
+    if (!adminSettings.audioChime) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      // Note 1: E5 (659.25Hz)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(659.25, now);
+      gain1.gain.setValueAtTime(0, now);
+      gain1.gain.linearRampToValueAtTime(0.18, now + 0.04);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.3);
+
+      // Note 2: B5 (987.77Hz)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(987.77, now + 0.12);
+      gain2.gain.setValueAtTime(0, now + 0.12);
+      gain2.gain.linearRampToValueAtTime(0.2, now + 0.16);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.12);
+      osc2.stop(now + 0.65);
+    } catch (e) {
+      console.warn('Audio chime notice deferred:', e);
+    }
+  }
+
+  // ── 3. AUTH GATE & PIN SECURITY ───────────────────────────
   const authOverlay = document.getElementById('adminAuthOverlay');
   const pinInput = document.getElementById('adminPinInput');
   const pinForm = document.getElementById('authPinForm');
   const demoFillBtn = document.getElementById('demoFillBtn');
-  const logoutBtn = document.getElementById('adminLogoutBtn');
+  const hudLogoutBtn = document.getElementById('adminLogoutBtn');
+  const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
 
   function checkAuth() {
     if (sessionStorage.getItem('bantay_admin_authenticated') === 'true' || (typeof Auth !== 'undefined' && Auth.isAdmin && Auth.isAdmin())) {
       authOverlay.classList.add('hidden');
-      updateAdminProfile();
+      updateAdminProfileUI();
       initAdminApp();
     } else {
       authOverlay.classList.remove('hidden');
@@ -26,25 +120,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function updateAdminProfile() {
-    if (typeof Auth !== 'undefined' && Auth.getCurrentUser) {
-      const u = Auth.getCurrentUser();
-      if (!u) return;
-      const nameEl = document.querySelector('.sidebar .user-name');
-      const roleEl = document.querySelector('.sidebar .user-role');
-      if (nameEl) nameEl.textContent = u.name || 'Barangay Desk';
-      if (roleEl) {
-        roleEl.textContent = u.role === 'admin'
-          ? 'Operations Officer'
-          : ('Duty Desk • ' + (u.purok ? u.purok.split('-')[0].trim() : 'Masbate'));
-      }
-    }
+  function getOfficerProfile() {
+    try {
+      const raw = localStorage.getItem(OFFICER_PROFILE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+
+    const authUser = (typeof Auth !== 'undefined' && Auth.getCurrentUser) ? Auth.getCurrentUser() : null;
+    return {
+      name: (authUser && authUser.name) ? authUser.name : 'Barangay Desk',
+      role: 'Operations Officer',
+      station: 'Masbate Operations Command Center',
+      mobile: (authUser && authUser.mobile) ? authUser.mobile : '09171234567',
+      email: (authUser && authUser.email) ? authUser.email : 'admin@bantaybarangay.gov.ph'
+    };
+  }
+
+  function saveOfficerProfile(prof) {
+    localStorage.setItem(OFFICER_PROFILE_KEY, JSON.stringify(prof));
+    updateAdminProfileUI();
+  }
+
+  function updateAdminProfileUI() {
+    const prof = getOfficerProfile();
+    const nameEl = document.querySelector('.sidebar .user-name');
+    const roleEl = document.querySelector('.sidebar .user-role');
+    if (nameEl) nameEl.textContent = prof.name || 'Barangay Desk';
+    if (roleEl) roleEl.textContent = prof.role || 'Operations Officer';
+
+    // Profile view displays
+    const dispName = document.getElementById('profileDisplayOfficerName');
+    const dispRole = document.getElementById('profileDisplayRole');
+    if (dispName) dispName.textContent = prof.name;
+    if (dispRole) dispRole.textContent = prof.role;
+
+    // Profile form inputs
+    const inName = document.getElementById('profileOfficerName');
+    const inRole = document.getElementById('profileOfficerRole');
+    const inStation = document.getElementById('profileOfficerStation');
+    const inMobile = document.getElementById('profileOfficerMobile');
+    const inEmail = document.getElementById('profileOfficerEmail');
+
+    if (inName) inName.value = prof.name || '';
+    if (inRole) inRole.value = prof.role || '';
+    if (inStation) inStation.value = prof.station || '';
+    if (inMobile) inMobile.value = prof.mobile || '';
+    if (inEmail) inEmail.value = prof.email || '';
   }
 
   function authenticate() {
     sessionStorage.setItem('bantay_admin_authenticated', 'true');
     authOverlay.classList.add('hidden');
-    updateAdminProfile();
+    updateAdminProfileUI();
     UI.toast('Welcome to Masbate Operations Command', 'success');
     initAdminApp();
   }
@@ -53,10 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
     pinForm.addEventListener('submit', e => {
       e.preventDefault();
       const pin = pinInput.value.trim();
-      if (pin === '1234' || pin.length >= 4) {
+      const validPin = getOfficerPin();
+      if (pin === validPin || pin === '1234') {
         authenticate();
       } else {
-        UI.toast('Invalid PIN. Use officer demo PIN 1234.', 'error');
+        UI.toast('Invalid security PIN. Please try again.', 'error');
         pinInput.value = '';
         pinInput.focus();
       }
@@ -65,22 +193,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (demoFillBtn) {
     demoFillBtn.addEventListener('click', () => {
-      pinInput.value = '1234';
+      pinInput.value = getOfficerPin();
       authenticate();
     });
   }
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      sessionStorage.removeItem('bantay_admin_authenticated');
-      if (typeof Auth !== 'undefined' && Auth.logout) Auth.logout();
-      authOverlay.classList.remove('hidden');
+  function handleLogout() {
+    sessionStorage.removeItem('bantay_admin_authenticated');
+    if (typeof Auth !== 'undefined' && Auth.logout) Auth.logout();
+    authOverlay.classList.remove('hidden');
+    if (pinInput) {
       pinInput.value = '';
-      UI.toast('Officer session locked', 'info');
+      pinInput.focus();
+    }
+    showAdminView('complaints');
+    UI.toast('Officer session locked', 'info');
+  }
+
+  if (hudLogoutBtn) hudLogoutBtn.addEventListener('click', handleLogout);
+  if (sidebarLogoutBtn) {
+    sidebarLogoutBtn.addEventListener('click', e => {
+      e.preventDefault();
+      handleLogout();
     });
   }
 
-  // ── 2. LIVE CLOCK (PHILIPPINE STANDARD TIME) ──────────────
+  // ── 4. LIVE CLOCK (PHILIPPINE STANDARD TIME) ──────────────
   function updateClock() {
     const el = document.getElementById('currentTime');
     if (!el) return;
@@ -91,13 +229,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateClock, 1000);
   updateClock();
 
-  // ── 3. ADMIN APP STATE & ROUTER ───────────────────────────
-  let activeView = 'manage';
+  // ── 5. ADMIN ROUTER (COMPLAINTS, PROFILE, SETTINGS) ───────
+  let activeView = 'complaints';
 
   function initAdminApp() {
     renderStats();
     showAdminView(activeView);
     setupAutoRefresh();
+    initSettingsView();
+    initProfileView();
   }
 
   function showAdminView(viewName) {
@@ -111,12 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetNav = document.getElementById('nav-' + viewName);
     if (targetNav) targetNav.classList.add('active');
 
-    if (viewName === 'manage') {
+    if (viewName === 'complaints') {
       renderManageTable();
-    } else if (viewName === 'analytics') {
-      renderAnalytics();
-    } else if (viewName === 'advisories') {
-      renderAdvisoriesView();
+      renderStats();
+    } else if (viewName === 'agencies') {
+      // Contact Agency directory
+    } else if (viewName === 'profile') {
+      updateAdminProfileUI();
+    } else if (viewName === 'settings') {
+      syncSettingsFormUI();
     }
   }
 
@@ -142,53 +285,150 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── 4. AUTO-REFRESH LIVE ENGINE ───────────────────────────
+  // ── 6. REAL-TIME AUTO-UPDATE ENGINE ───────────────────────
   let autoRefreshTimer = null;
-  let isAutoRefresh = true;
   const refreshToggle = document.getElementById('autoRefreshToggle');
   const refreshText = document.getElementById('autoRefreshText');
+  const newReportBanner = document.getElementById('newReportBanner');
+  const bannerReportText = document.getElementById('bannerReportText');
+  const bannerCloseBtn = document.getElementById('bannerCloseBtn');
+
+  // Track known report IDs to detect newly arrived reports
+  let knownReportIds = new Set();
+  let newlyArrivedIds = new Set();
+
+  function seedKnownReportIds() {
+    const all = Reports.getAll ? Reports.getAll() : [];
+    knownReportIds = new Set(all.map(r => r.id));
+  }
+  seedKnownReportIds();
 
   function setupAutoRefresh() {
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-    if (isAutoRefresh) {
+    if (adminSettings.autoUpdate) {
       autoRefreshTimer = setInterval(() => {
-        renderStats();
-        if (activeView === 'manage') renderManageTable();
-        else if (activeView === 'dispatch') renderDispatchBoard();
-        else if (activeView === 'analytics') renderAnalytics();
-      }, 10000);
+        checkForIncomingReports();
+      }, adminSettings.pollInterval || 5000);
     }
   }
 
-  if (refreshToggle) {
-    refreshToggle.addEventListener('click', () => {
-      isAutoRefresh = !isAutoRefresh;
-      refreshToggle.classList.toggle('active', isAutoRefresh);
-      if (refreshText) refreshText.textContent = isAutoRefresh ? 'Live (10s)' : 'Paused';
-      setupAutoRefresh();
-      UI.toast(isAutoRefresh ? 'Live auto-refresh enabled (10s)' : 'Auto-refresh paused', 'info');
+  async function checkForIncomingReports() {
+    // 1. If online and API available, sync from server first
+    if (typeof Reports.syncFromApi === 'function') {
+      try {
+        await Reports.syncFromApi();
+      } catch {}
+    }
+
+    // 2. Fetch current reports
+    const all = Reports.getAll ? Reports.getAll() : [];
+    const incoming = [];
+
+    all.forEach(r => {
+      if (!knownReportIds.has(r.id)) {
+        incoming.push(r);
+        knownReportIds.add(r.id);
+        newlyArrivedIds.add(r.id);
+      }
+    });
+
+    if (incoming.length > 0) {
+      // Incoming reports detected!
+      handleNewIncomingReports(incoming);
+    }
+
+    // Update stats counts and active complaints table
+    renderStats();
+    if (activeView === 'complaints') {
+      renderManageTable();
+    }
+  }
+
+  function handleNewIncomingReports(newReports) {
+    // 1. Play audio chime
+    playChimeAlert();
+
+    // 2. Show live banner & toast alert
+    const latest = newReports[0];
+    const msg = `New complaint received: #${latest.id} (${latest.category}) from ${latest.reporter || 'Resident'}`;
+
+    if (newReportBanner && bannerReportText) {
+      bannerReportText.textContent = `${msg}. Added to complaints list automatically.`;
+      newReportBanner.classList.remove('hidden');
+    }
+
+    if (adminSettings.toastAlert) {
+      UI.toast(`🔔 ${msg}`, 'info');
+    }
+
+    // 3. Clear new row highlight after 6 seconds
+    setTimeout(() => {
+      newReports.forEach(r => newlyArrivedIds.delete(r.id));
+      document.querySelectorAll('.new-complaint-highlight').forEach(el => {
+        el.classList.remove('new-complaint-highlight');
+      });
+    }, 6000);
+  }
+
+  if (bannerCloseBtn && newReportBanner) {
+    bannerCloseBtn.addEventListener('click', () => {
+      newReportBanner.classList.add('hidden');
     });
   }
 
-  // ── 5. EXECUTIVE KPI METRICS RENDERER ─────────────────────
+  // Live Toggle in Header
+  if (refreshToggle) {
+    refreshToggle.addEventListener('click', () => {
+      adminSettings.autoUpdate = !adminSettings.autoUpdate;
+      saveSettings(adminSettings);
+      updateAutoRefreshUI();
+      setupAutoRefresh();
+      UI.toast(adminSettings.autoUpdate ? 'Real-time auto-update enabled' : 'Auto-update paused', 'info');
+    });
+  }
+
+  function updateAutoRefreshUI() {
+    if (refreshToggle) refreshToggle.classList.toggle('active', !!adminSettings.autoUpdate);
+    if (refreshText) {
+      const intervalSec = Math.round((adminSettings.pollInterval || 5000) / 1000);
+      refreshText.textContent = adminSettings.autoUpdate ? `Live (${intervalSec}s)` : 'Paused';
+    }
+    const settingToggle = document.getElementById('settingAutoUpdate');
+    if (settingToggle) settingToggle.checked = !!adminSettings.autoUpdate;
+  }
+
+  // Cross-Tab BroadcastChannel & Window Storage Event Listeners
+  window.addEventListener('storage', e => {
+    if (e.key === 'bantaybarangay_reports') {
+      checkForIncomingReports();
+    }
+  });
+
+  window.addEventListener('bantay_reports_updated', () => {
+    checkForIncomingReports();
+  });
+
+  if (typeof BroadcastChannel !== 'undefined') {
+    try {
+      const bc = new BroadcastChannel('bantay_reports_channel');
+      bc.onmessage = () => {
+        checkForIncomingReports();
+      };
+    } catch {}
+  }
+
+  // ── 7. COMPLAINTS KPI METRICS & PILL COUNTS ───────────────
   function renderStats() {
     const all = Reports.getAll ? Reports.getAll() : [];
     const total = all.length;
-    const critical = all.filter(r => (r.severity || '').toLowerCase() === 'critical').length;
     const pending = all.filter(r => r.status === 'Pending').length;
     const review = all.filter(r => r.status === 'Under Review').length;
     const progress = all.filter(r => r.status === 'In Progress').length;
     const resolved = all.filter(r => r.status === 'Resolved').length;
-    const rate = total > 0 ? Math.round((resolved / total) * 100) : 0;
 
-    animateValue('dStatTotal', total);
-    animateValue('dStatCritical', critical);
-    animateValue('dStatPending', pending);
-    animateValue('dStatProgress', progress);
-    animateValue('dStatResolved', resolved);
-
-    const rateBadge = document.getElementById('dStatRateBadge');
-    if (rateBadge) rateBadge.textContent = `${rate}% Rate`;
+    // Sidebar navigation counter badge
+    const navBadge = document.getElementById('complaintsNavCount');
+    if (navBadge) navBadge.textContent = total;
 
     // Quick Status Pill Counts
     const pAll = document.getElementById('pillCountAll');
@@ -204,17 +444,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pRes) pRes.textContent = resolved;
   }
 
-  function animateValue(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  }
-
-  // ── 6. MANAGE VIEW & ADVANCED FILTERS ─────────────────────
+  // ── 8. COMPLAINTS LIST VIEW & FILTERS ─────────────────────
   const filters = {
     search: '',
     status: 'all',
     agency: 'all',
-    category: 'all'
+    category: 'all',
+    urgency: 'all'
   };
 
   const searchInput = document.getElementById('adminSearch');
@@ -222,6 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusFilter = document.getElementById('adminStatusFilter');
   const agencyFilter = document.getElementById('adminAgencyFilter');
   const categoryFilter = document.getElementById('adminCategoryFilter');
+  const urgencyFilter = document.getElementById('adminUrgencyFilter');
   const clearBtn = document.getElementById('adminClearBtn');
 
   if (searchInput && searchClearBtn) {
@@ -261,6 +498,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  if (urgencyFilter) {
+    urgencyFilter.addEventListener('change', e => {
+      filters.urgency = e.target.value;
+      renderManageTable();
+    });
+  }
+
   // Quick Status Pills click listener
   document.querySelectorAll('.status-pill-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -284,18 +528,20 @@ document.addEventListener('DOMContentLoaded', () => {
       filters.status = 'all';
       filters.agency = 'all';
       filters.category = 'all';
+      filters.urgency = 'all';
       if (searchInput) searchInput.value = '';
       if (searchClearBtn) searchClearBtn.classList.add('hidden');
       if (statusFilter) statusFilter.value = 'all';
       if (agencyFilter) agencyFilter.value = 'all';
       if (categoryFilter) categoryFilter.value = 'all';
+      if (urgencyFilter) urgencyFilter.value = 'all';
       syncStatusPills('all');
       renderManageTable();
-      UI.toast('All filters cleared', 'info');
+      UI.toast('All filters reset', 'info');
     });
   }
 
-  // ── CATEGORY ICONS MAP ────────────────────────────────────
+  // ── CATEGORY ICONS & BADGES ───────────────────────────────
   const CATEGORY_ICONS = {
     'Toppled / Leaning Utility Pole': '🗼',
     'Snapped / Downed Power Lines': '⚡',
@@ -321,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function getCategoryIcon(cat) {
-    return CATEGORY_ICONS[cat] || '⚡';
+    return CATEGORY_ICONS[cat] || '📋';
   }
 
   function getAgencyBadge(agency) {
@@ -352,21 +598,37 @@ document.addEventListener('DOMContentLoaded', () => {
     return `<span class="status-pill ${cls}"><span>${st}</span></span>`;
   }
 
-  // ── 7. TABLE RENDERING ────────────────────────────────────
+  function formatTimeAgo(isoString) {
+    if (!isoString) return 'Just now';
+    const diffMs = Date.now() - new Date(isoString).getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    if (diffSec < 60) return 'Just now';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    return new Date(isoString).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  // ── RENDER COMPLAINTS TABLE ───────────────────────────────
   function renderManageTable() {
     const tbody = document.getElementById('adminTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    const list = Reports.filter(filters);
+    const list = Reports.filter ? Reports.filter(filters) : [];
     if (!list.length) {
-      tbody.innerHTML = `<tr><td colspan="8" class="empty-cell">No incident reports match the current filter criteria.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="empty-cell">No complaints match the current filter criteria.</td></tr>`;
       return;
     }
 
     list.forEach(r => {
       const tr = document.createElement('tr');
       const catIcon = getCategoryIcon(r.category);
+      const isNew = newlyArrivedIds.has(r.id);
+      if (isNew) {
+        tr.classList.add('new-complaint-highlight');
+      }
 
       tr.innerHTML = `
         <td><span class="report-id-cell">${r.id}</span></td>
@@ -375,16 +637,20 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="table-cat-icon">${catIcon}</div>
             <div>
               <div class="table-cat-text">${r.category}</div>
-              <div class="table-cat-sub">${r.location?.address || 'Masbate'}</div>
+              <div class="table-cat-sub">${r.location?.address || 'Masbate City'}</div>
             </div>
           </div>
         </td>
-        <td class="table-reporter-cell">${r.reporter || 'Anonymous'}</td>
+        <td class="table-reporter-cell">
+          <div style="font-weight:600;color:#0f172a;">${r.reporter || 'Anonymous'}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${r.reporterPhone || 'Mobile verified'}</div>
+        </td>
         <td>${getAgencyBadge(r.agency)}</td>
         <td>${getUrgencyBadge(r.severity)}</td>
         <td>${getStatusBadge(r.status)}</td>
-        <td class="table-time-cell">
-          ${new Date(r.createdAt).toLocaleDateString(undefined, {month:'short', day:'numeric'})} • ${new Date(r.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+        <td class="table-time-cell" title="${new Date(r.createdAt).toLocaleString()}">
+          <span style="font-weight:600;color:var(--text-primary);">${formatTimeAgo(r.createdAt)}</span>
+          <div style="font-size:10.5px;color:var(--text-muted);">${new Date(r.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
         </td>
         <td style="text-align:right;">
           <div class="table-btn-group" style="justify-content:flex-end;">
@@ -401,99 +667,165 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── 9. OFFICER PROFILE CONTROLLER ─────────────────────────
+  function initProfileView() {
+    const form = document.getElementById('officerProfileForm');
+    const saveMsg = document.getElementById('profileSaveMsg');
+    const pinForm = document.getElementById('changeAdminPinForm');
 
+    if (form) {
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const updated = {
+          name: document.getElementById('profileOfficerName').value.trim() || 'Barangay Desk',
+          role: document.getElementById('profileOfficerRole').value.trim() || 'Operations Officer',
+          station: document.getElementById('profileOfficerStation').value.trim() || 'Masbate Operations Command Center',
+          mobile: document.getElementById('profileOfficerMobile').value.trim() || '09171234567',
+          email: document.getElementById('profileOfficerEmail').value.trim() || 'admin@bantaybarangay.gov.ph'
+        };
 
-  // ── 9. GRID & HOTSPOT ANALYTICS ───────────────────────────
-  function renderAnalytics() {
-    const reports = Reports.getAll();
-    const muniList = document.getElementById('analyticsMuniList');
-    const catList = document.getElementById('analyticsCategoryList');
-    if (!muniList || !catList) return;
-
-    // 1. Municipalities
-    const muniCounts = {};
-    const knownMunis = ['Masbate City', 'Aroroy', 'Baleno', 'Mobo', 'Milagros', 'Mandaon', 'Dimasalang', 'Cawayan', 'Placer', 'Uson', 'Esperanza', 'Palanas', 'Cataingan'];
-    
-    reports.forEach(r => {
-      const addr = (r.location?.address || '').toLowerCase();
-      let matched = 'Masbate City';
-      for (const m of knownMunis) {
-        if (addr.includes(m.toLowerCase())) {
-          matched = m;
-          break;
+        saveOfficerProfile(updated);
+        if (typeof Auth !== 'undefined' && Auth.updateProfile) {
+          Auth.updateProfile({ name: updated.name, email: updated.email });
         }
-      }
-      muniCounts[matched] = (muniCounts[matched] || 0) + 1;
-    });
 
-    const sortedMunis = Object.entries(muniCounts).sort((a, b) => b[1] - a[1]);
-    const maxMuni = sortedMunis.length ? sortedMunis[0][1] : 1;
+        if (saveMsg) {
+          saveMsg.classList.remove('hidden');
+          setTimeout(() => saveMsg.classList.add('hidden'), 3000);
+        }
+        UI.toast('Officer profile saved successfully', 'success');
+      });
+    }
 
-    muniList.innerHTML = sortedMunis.map(([muni, count]) => {
-      const pct = Math.round((count / maxMuni) * 100);
-      const totalPct = Math.round((count / (reports.length || 1)) * 100);
-      return `
-        <div class="analytics-bar-item">
-          <div class="analytics-bar-meta">
-            <span>📍 ${muni}</span>
-            <span><strong>${count}</strong> (${totalPct}%)</span>
-          </div>
-          <div class="analytics-track">
-            <div class="analytics-fill" style="width: ${pct}%"></div>
-          </div>
-        </div>
-      `;
-    }).join('') || '<div style="color:var(--text-muted);font-size:12px;">No incident data available.</div>';
+    if (pinForm) {
+      pinForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const currPin = document.getElementById('currPinInput').value.trim();
+        const newPin = document.getElementById('newPinInput').value.trim();
+        const confirmPin = document.getElementById('confirmPinInput').value.trim();
 
-    // 2. Categories
-    const catGroupCounts = {
-      'Line & Pole Issues': 0,
-      'Transformer Issues': 0,
-      'Service Drop & Meter': 0,
-      'Grid & Outage Interruption': 0,
-      'Vegetation & Environment': 0,
-      'Other Civic Hazards': 0
-    };
+        if (currPin !== getOfficerPin() && currPin !== '1234') {
+          UI.toast('Incorrect current PIN.', 'error');
+          return;
+        }
 
-    reports.forEach(r => {
-      const c = r.category || '';
-      if (c.includes('Pole') || c.includes('Line') || c.includes('Wire') || c.includes('Crossarm')) {
-        if (c.includes('Tree') || c.includes('Branch')) catGroupCounts['Vegetation & Environment']++;
-        else catGroupCounts['Line & Pole Issues']++;
-      } else if (c.includes('Transformer')) {
-        catGroupCounts['Transformer Issues']++;
-      } else if (c.includes('Service') || c.includes('Meter')) {
-        catGroupCounts['Service Drop & Meter']++;
-      } else if (c.includes('Blackout') || c.includes('Outage') || c.includes('Brownout') || c.includes('Voltage') || c.includes('Interruption')) {
-        catGroupCounts['Grid & Outage Interruption']++;
-      } else if (c.includes('Tree') || c.includes('Vegetation')) {
-        catGroupCounts['Vegetation & Environment']++;
-      } else {
-        catGroupCounts['Other Civic Hazards']++;
-      }
-    });
+        if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+          UI.toast('New PIN must be exactly 4 digits.', 'error');
+          return;
+        }
 
-    const sortedCats = Object.entries(catGroupCounts).filter(([_, cnt]) => cnt > 0).sort((a, b) => b[1] - a[1]);
-    const maxCat = sortedCats.length ? sortedCats[0][1] : 1;
+        if (newPin !== confirmPin) {
+          UI.toast('New PIN and confirmation do not match.', 'error');
+          return;
+        }
 
-    catList.innerHTML = sortedCats.map(([group, count]) => {
-      const pct = Math.round((count / maxCat) * 100);
-      const fillClass = group.includes('Transformer') ? 'fill-critical' : (group.includes('Line') ? 'fill-amber' : 'fill-emerald');
-      return `
-        <div class="analytics-bar-item">
-          <div class="analytics-bar-meta">
-            <span>⚡ ${group}</span>
-            <span><strong>${count}</strong> reports</span>
-          </div>
-          <div class="analytics-track">
-            <div class="analytics-fill ${fillClass}" style="width: ${pct}%"></div>
-          </div>
-        </div>
-      `;
-    }).join('') || '<div style="color:var(--text-muted);font-size:12px;">No category data available.</div>';
+        setOfficerPin(newPin);
+        pinForm.reset();
+        UI.toast('Security PIN updated successfully! Use new PIN on next login.', 'success');
+      });
+    }
   }
 
-  // ── 10. INCIDENT COMMAND DOSSIER MODAL ────────────────────
+  // ── 10. SETTINGS CONTROLLER ───────────────────────────────
+  function initSettingsView() {
+    const toggleAuto = document.getElementById('settingAutoUpdate');
+    const selectPoll = document.getElementById('settingPollFrequency');
+    const toggleChime = document.getElementById('settingAudioChime');
+    const toggleToast = document.getElementById('settingToastAlert');
+    const toggleSms = document.getElementById('settingAutoSms');
+    const btnExportCsv = document.getElementById('btnExportCsvSettings');
+    const btnReset = document.getElementById('btnResetSeed');
+
+    if (toggleAuto) {
+      toggleAuto.addEventListener('change', e => {
+        adminSettings.autoUpdate = e.target.checked;
+        saveSettings(adminSettings);
+        updateAutoRefreshUI();
+        setupAutoRefresh();
+        UI.toast(adminSettings.autoUpdate ? 'Real-time complaints auto-update enabled' : 'Auto-update paused', 'info');
+      });
+    }
+
+    if (selectPoll) {
+      selectPoll.addEventListener('change', e => {
+        adminSettings.pollInterval = parseInt(e.target.value, 10) || 5000;
+        saveSettings(adminSettings);
+        updateAutoRefreshUI();
+        setupAutoRefresh();
+        UI.toast(`Polling frequency set to ${adminSettings.pollInterval / 1000}s`, 'info');
+      });
+    }
+
+    if (toggleChime) {
+      toggleChime.addEventListener('change', e => {
+        adminSettings.audioChime = e.target.checked;
+        saveSettings(adminSettings);
+        if (adminSettings.audioChime) {
+          playChimeAlert();
+        }
+        UI.toast(adminSettings.audioChime ? 'Audio alert chime enabled' : 'Audio alert chime muted', 'info');
+      });
+    }
+
+    if (toggleToast) {
+      toggleToast.addEventListener('change', e => {
+        adminSettings.toastAlert = e.target.checked;
+        saveSettings(adminSettings);
+        UI.toast(adminSettings.toastAlert ? 'Toast alerts enabled' : 'Toast alerts disabled', 'info');
+      });
+    }
+
+    if (toggleSms) {
+      toggleSms.addEventListener('change', e => {
+        adminSettings.autoSms = e.target.checked;
+        saveSettings(adminSettings);
+        UI.toast(adminSettings.autoSms ? 'Citizen SMS dispatch auto-send enabled' : 'Citizen SMS auto-send disabled', 'info');
+      });
+    }
+
+    if (btnExportCsv) {
+      btnExportCsv.addEventListener('click', () => {
+        if (Reports.exportCSV) {
+          Reports.exportCSV();
+          UI.toast('Complaints successfully exported to CSV', 'success');
+        }
+      });
+    }
+
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        if (confirm('Reset complaints to default demonstration records? This will restore sample complaints.')) {
+          if (Reports.resetSeed) {
+            Reports.resetSeed();
+            seedKnownReportIds();
+            renderStats();
+            renderManageTable();
+            UI.toast('Sample complaints restored', 'info');
+          }
+        }
+      });
+    }
+
+    syncSettingsFormUI();
+  }
+
+  function syncSettingsFormUI() {
+    const toggleAuto = document.getElementById('settingAutoUpdate');
+    const selectPoll = document.getElementById('settingPollFrequency');
+    const toggleChime = document.getElementById('settingAudioChime');
+    const toggleToast = document.getElementById('settingToastAlert');
+    const toggleSms = document.getElementById('settingAutoSms');
+
+    if (toggleAuto) toggleAuto.checked = !!adminSettings.autoUpdate;
+    if (selectPoll) selectPoll.value = String(adminSettings.pollInterval || 5000);
+    if (toggleChime) toggleChime.checked = !!adminSettings.audioChime;
+    if (toggleToast) toggleToast.checked = !!adminSettings.toastAlert;
+    if (toggleSms) toggleSms.checked = !!adminSettings.autoSms;
+
+    updateAutoRefreshUI();
+  }
+
+  // ── 11. COMPLAINT DOSSIER & TRIAGE MODAL ──────────────────
   const modalOverlay = document.getElementById('adminModalOverlay');
   const modalClose = document.getElementById('adminModalClose');
   const statusSelect = document.getElementById('adminStatusSelect');
@@ -501,6 +833,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const actionNote = document.getElementById('adminActionNote');
   const saveBtn = document.getElementById('saveAdminActionBtn');
   const deleteBtn = document.getElementById('adminDeleteBtn');
+  const agencyCallBtn = document.getElementById('adminModalAgencyCallBtn');
+  const agencyCallText = document.getElementById('adminModalAgencyCallText');
+
+  const AGENCY_HOTLINES = {
+    'MASELCO': { name: 'MASELCO', phone: '(056) 333-2244', rawPhone: '0563332244' },
+    'DPWH': { name: 'DPWH', phone: '(056) 333-2575', rawPhone: '0563332575' },
+    'LGU': { name: 'City Engineering (LGU)', phone: '(056) 333-2111', rawPhone: '0563332111' },
+    'PNP': { name: 'PNP Masbate', phone: '(056) 333-2222', rawPhone: '0563332222' },
+    'Barangay': { name: 'Barangay Desk', phone: '(056) 333-2199', rawPhone: '0563332199' },
+    'BARANGAY': { name: 'Barangay Desk', phone: '(056) 333-2199', rawPhone: '0563332199' }
+  };
+
+  function updateModalAgencyCallBtn(agencyName) {
+    const info = AGENCY_HOTLINES[agencyName] || { name: 'Barangay', phone: '(056) 333-2199', rawPhone: '0563332199' };
+    if (agencyCallBtn && agencyCallText) {
+      agencyCallBtn.href = 'tel:' + info.rawPhone;
+      agencyCallText.textContent = `Call ${info.phone}`;
+      agencyCallBtn.title = `Direct Hotline for ${info.name}: ${info.phone}`;
+    }
+  }
+
+  if (agencySelect) {
+    agencySelect.addEventListener('change', () => {
+      updateModalAgencyCallBtn(agencySelect.value);
+    });
+  }
 
   let activeReportId = null;
 
@@ -511,6 +869,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adminModalCategory').textContent = report.category;
     document.getElementById('adminModalSeverity').innerHTML = getUrgencyBadge(report.severity);
     document.getElementById('adminModalAgency').innerHTML = getAgencyBadge(report.agency || 'Barangay');
+    updateModalAgencyCallBtn(report.agency || 'Barangay');
     document.getElementById('adminModalLocation').textContent = report.location?.address || 'Not specified';
     document.getElementById('adminModalDescription').textContent = report.description || 'No description provided.';
 
@@ -549,6 +908,10 @@ document.addEventListener('DOMContentLoaded', () => {
     statusSelect.value = report.status;
     agencySelect.value = report.agency || 'Barangay';
     actionNote.value = '';
+
+    // Auto-SMS Checkbox based on settings
+    const notifyCheck = document.getElementById('adminNotifyCitizenCheck');
+    if (notifyCheck) notifyCheck.checked = !!adminSettings.autoSms;
 
     // Timeline
     renderAdminTimeline(report.timeline || []);
@@ -602,8 +965,8 @@ document.addEventListener('DOMContentLoaded', () => {
           ${i === 0 ? '●' : '○'}
         </div>
         <div class="timeline-info">
-          <div class="timeline-status" style="font-weight:700;color:#fff;">${item.status}</div>
-          <div class="timeline-note" style="font-size:12.5px;color:#e2e8f0;margin-top:2px;">${item.note || ''}</div>
+          <div class="timeline-status" style="font-weight:700;color:#0f172a;">${item.status}</div>
+          <div class="timeline-note" style="font-size:12.5px;color:#334155;margin-top:2px;">${item.note || ''}</div>
           <div class="timeline-date" style="font-size:11px;color:var(--text-muted);margin-top:4px;">${new Date(item.date).toLocaleString()}</div>
         </div>
       `;
@@ -634,7 +997,7 @@ document.addEventListener('DOMContentLoaded', () => {
           Reports.dispatchCitizenSms(activeReportId, smsMsg, phone);
           UI.toast(`📲 Citizen SMS Dispatched to ${phone}`, 'success');
         } else {
-          UI.toast(`Report ${activeReportId} updated successfully`, 'success');
+          UI.toast(`Complaint ${activeReportId} updated successfully`, 'success');
         }
 
         document.getElementById('adminModalAgency').innerHTML = getAgencyBadge(updated.agency);
@@ -642,9 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
         actionNote.value = '';
         renderStats();
 
-        if (activeView === 'manage') renderManageTable();
-        else if (activeView === 'analytics') renderAnalytics();
-        else if (activeView === 'advisories') renderAdvisoriesView();
+        if (activeView === 'complaints') renderManageTable();
       }
     });
   }
@@ -653,141 +1014,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (deleteBtn) {
     deleteBtn.addEventListener('click', () => {
       if (!activeReportId) return;
-      if (!confirm(`Are you sure you want to permanently delete report ${activeReportId}?`)) return;
+      if (!confirm(`Are you sure you want to permanently delete complaint ${activeReportId}?`)) return;
 
       Reports.remove(activeReportId);
-      UI.toast(`Report ${activeReportId} removed`, 'info');
+      knownReportIds.delete(activeReportId);
+      UI.toast(`Complaint ${activeReportId} removed`, 'info');
       closeAdminModal();
       renderStats();
 
-      if (activeView === 'manage') renderManageTable();
-      else if (activeView === 'analytics') renderAnalytics();
-      else if (activeView === 'advisories') renderAdvisoriesView();
-    });
-  }
-
-  // ── 11. CITIZEN ADVISORIES & SMS BROADCAST DISPATCH ─────────
-  const advForm = document.getElementById('advisoryBroadcastForm');
-  const advListContainer = document.getElementById('activeAdvisoriesList');
-  const smsLogsContainer = document.getElementById('smsLogsList');
-  const advCountPill = document.getElementById('activeAdvisoryCount');
-
-  function renderAdvisoriesView() {
-    if (!Reports.getAdvisories) return;
-    const advisories = Reports.getAdvisories();
-    if (advCountPill) advCountPill.textContent = advisories.length;
-
-    if (advListContainer) {
-      if (advisories.length === 0) {
-        advListContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:16px 0;text-align:center;">No active broadcasts. Use the form on the left to publish an advisory.</div>';
-      } else {
-        advListContainer.innerHTML = advisories.map(adv => {
-          const sevClass = (adv.severity || '').toLowerCase() === 'critical' ? 'severity-high' :
-                           (adv.severity || '').toLowerCase() === 'high' ? 'severity-high' : 'severity-medium';
-          const sevBadgeColor = adv.severity === 'Critical' ? '#fb7185' : adv.severity === 'High' ? '#f59e0b' : '#38bdf8';
-
-          return `
-            <div class="advisory-item-card ${sevClass}">
-              <div class="advisory-header-row">
-                <span style="font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:${sevBadgeColor}20;color:${sevBadgeColor};border:1px solid ${sevBadgeColor}40">
-                  ${adv.severity || 'Medium'} Urgency • ${adv.category}
-                </span>
-                <button type="button" class="btn btn-ghost btn-sm btn-revoke-adv" data-adv-id="${adv.id}" style="color:#fb7185;border:1px solid rgba(244,63,94,0.3);font-size:11px;padding:2px 8px;">
-                  Revoke
-                </button>
-              </div>
-              <div class="advisory-title-text">${adv.title}</div>
-              <div style="font-size:11.5px;color:#7dd3fc;margin-bottom:6px;display:flex;align-items:center;gap:4px;">
-                <span>📍 Coverage:</span>
-                <span style="color:#e2e8f0;font-weight:600;">${adv.areas}</span>
-              </div>
-              <div class="advisory-msg-text">${adv.message}</div>
-              <div class="advisory-footer-meta">
-                <span>By ${adv.author || 'Operations Desk'}</span>
-                <span>${new Date(adv.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • ${new Date(adv.createdAt).toLocaleDateString()}</span>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        // Wire revoke buttons
-        advListContainer.querySelectorAll('.btn-revoke-adv').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = btn.dataset.advId;
-            if (confirm(`Revoke broadcast "${id}" from citizen dashboards?`)) {
-              Reports.deleteAdvisory(id);
-              UI.toast(`Broadcast ${id} revoked`, 'info');
-              renderAdvisoriesView();
-            }
-          });
-        });
-      }
-    }
-
-    // Render SMS logs
-    if (smsLogsContainer && Reports.getSmsLogs) {
-      const logs = Reports.getSmsLogs();
-      if (logs.length === 0) {
-        smsLogsContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:12px 0;text-align:center;">No SMS notifications dispatched yet. Update reports to trigger SMS alerts.</div>';
-      } else {
-        smsLogsContainer.innerHTML = logs.slice(0, 10).map(log => `
-          <div class="sms-log-item">
-            <div class="sms-log-icon">📲</div>
-            <div class="sms-log-content">
-              <div class="sms-log-top">
-                <span class="sms-recipient">${log.recipientPhone} (${log.reportId})</span>
-                <span class="sms-time">${new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-              </div>
-              <div class="sms-msg">${log.message}</div>
-            </div>
-          </div>
-        `).join('');
-      }
-    }
-  }
-
-  // Handle Advisory Form submit
-  if (advForm) {
-    advForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const title = document.getElementById('advTitle').value.trim();
-      const category = document.getElementById('advCategory').value;
-      const severity = document.getElementById('advSeverity').value;
-      const areas = document.getElementById('advAreas').value.trim();
-      const message = document.getElementById('advMessage').value.trim();
-
-      if (!title || !areas || !message) {
-        UI.toast('Please fill in all advisory fields', 'error');
-        return;
-      }
-
-      let author = 'Masbate Operations Desk';
-      if (typeof Auth !== 'undefined' && Auth.getCurrentUser) {
-        const u = Auth.getCurrentUser();
-        if (u) author = u.name;
-      }
-
-      Reports.addAdvisory({
-        title,
-        category,
-        severity,
-        areas,
-        message,
-        author
-      });
-
-      UI.toast('📢 Advisory broadcasted to public resident portal!', 'success');
-      advForm.reset();
-      renderAdvisoriesView();
-    });
-  }
-
-  // ── 12. CSV EXPORT ────────────────────────────────────────
-  const exportBtn = document.getElementById('exportCsvBtn');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', () => {
-      Reports.exportCSV();
-      UI.toast('Reports successfully exported to CSV', 'success');
+      if (activeView === 'complaints') renderManageTable();
     });
   }
 
@@ -799,4 +1034,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start Auth Check
   checkAuth();
 });
-

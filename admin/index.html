@@ -74,34 +74,42 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a href="#" class="nav-item active" data-admin-view="manage" id="nav-manage">
+      <a href="#" class="nav-item active" data-admin-view="complaints" id="nav-complaints">
         <span class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         </span>
-        <span class="nav-label">All Reports</span>
+        <span class="nav-label">Complaints</span>
+        <span class="nav-badge" id="complaintsNavCount">0</span>
       </a>
 
-      <a href="#" class="nav-item" data-admin-view="analytics" id="nav-analytics">
+      <a href="#" class="nav-item" data-admin-view="agencies" id="nav-agencies">
         <span class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </span>
-        <span class="nav-label">Grid Analytics</span>
+        <span class="nav-label">Contact Agency</span>
       </a>
 
-      <a href="#" class="nav-item" data-admin-view="advisories" id="nav-advisories">
+      <a href="#" class="nav-item" data-admin-view="profile" id="nav-profile">
         <span class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </span>
-        <span class="nav-label">Citizen Advisories</span>
+        <span class="nav-label">Profile</span>
+      </a>
+
+      <a href="#" class="nav-item" data-admin-view="settings" id="nav-settings">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </span>
+        <span class="nav-label">Settings</span>
+      </a>
+
+      <a href="#" class="nav-item nav-item-logout" id="sidebarLogoutBtn">
+        <span class="nav-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </span>
+        <span class="nav-label">Logout</span>
       </a>
     </nav>
-
-    <div class="sidebar-action-wrap">
-      <button class="btn btn-ghost btn-sm" id="exportCsvBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>Export Reports (CSV)</span>
-      </button>
-    </div>
 
     <div class="sidebar-footer">
       <div class="user-chip">
@@ -114,10 +122,6 @@
           <span class="user-role">Operations Officer</span>
         </div>
       </div>
-      <a href="../resident/index.html" class="admin-portal-entry" title="Switch to Public Resident View">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>Exit to Resident Portal</span>
-      </a>
     </div>
   </aside>
 
@@ -133,8 +137,8 @@
     <!-- ════ TOP OPERATIONS COMMAND HUD ═══════════════════ -->
     <header class="admin-hud-bar">
       <div class="hud-title-block">
-        <h1 class="hud-main-heading">Barangay Incident Management</h1>
-        <p class="hud-sub-heading">Province of Masbate • Operations Command &amp; Incident Dispatch</p>
+        <h1 class="hud-main-heading">Barangay Incident &amp; Complaints Command</h1>
+        <p class="hud-sub-heading">Province of Masbate • Real-Time Dispatch &amp; Officer Operations</p>
       </div>
 
       <div class="hud-actions-block">
@@ -145,9 +149,9 @@
         </div>
 
         <!-- Auto-Refresh Live Toggle -->
-        <div class="hud-live-toggle active" id="autoRefreshToggle" title="Toggle 10-second automatic polling">
+        <div class="hud-live-toggle active" id="autoRefreshToggle" title="Real-time live automatic update enabled">
           <span class="hud-live-dot"></span>
-          <span id="autoRefreshText">Live</span>
+          <span id="autoRefreshText">Live Auto-Update</span>
         </div>
 
         <!-- Lock Session Button -->
@@ -158,66 +162,13 @@
       </div>
     </header>
 
-    <!-- ════ 5. EXECUTIVE KPI METRIC CARDS ═════════════════ -->
-    <div class="dashboard-stats">
-      <!-- 1. Total Incidents -->
-      <div class="dash-stat stat-total">
-        <div class="dash-stat-header">
-          <span class="dash-stat-label">Total Reports</span>
-          <span class="dash-stat-micro">All-Time</span>
-        </div>
-        <div class="dash-stat-val" id="dStatTotal">0</div>
-        <div class="dash-stat-sub">Province-wide incidents</div>
-      </div>
-
-      <!-- 2. Critical Hazards Alert -->
-      <div class="dash-stat stat-critical">
-        <div class="dash-stat-header">
-          <span class="dash-stat-label">Critical Hazards</span>
-          <span class="dash-stat-micro alert">High Priority</span>
-        </div>
-        <div class="dash-stat-val" id="dStatCritical">0</div>
-        <div class="dash-stat-sub">Immediate action needed</div>
-      </div>
-
-      <!-- 3. Pending Triage -->
-      <div class="dash-stat stat-pending">
-        <div class="dash-stat-header">
-          <span class="dash-stat-label">Pending Triage</span>
-          <span class="dash-stat-micro warn">Action Needed</span>
-        </div>
-        <div class="dash-stat-val" id="dStatPending">0</div>
-        <div class="dash-stat-sub">Awaiting desk review</div>
-      </div>
-
-      <!-- 4. Active Dispatch (In Progress) -->
-      <div class="dash-stat stat-progress">
-        <div class="dash-stat-header">
-          <span class="dash-stat-label">In Progress</span>
-          <span class="dash-stat-micro info">Deployed</span>
-        </div>
-        <div class="dash-stat-val" id="dStatProgress">0</div>
-        <div class="dash-stat-sub">Active field response</div>
-      </div>
-
-      <!-- 5. Resolved Incidents & Rate -->
-      <div class="dash-stat stat-resolved">
-        <div class="dash-stat-header">
-          <span class="dash-stat-label">Resolved</span>
-          <span class="dash-stat-micro success" id="dStatRateBadge">0% Rate</span>
-        </div>
-        <div class="dash-stat-val" id="dStatResolved">0</div>
-        <div class="dash-stat-sub">Closed incidents</div>
-      </div>
-    </div>
-
-    <!-- ════ VIEW 1: MANAGE REPORTS ════════════════════════ -->
-    <section class="view active" id="view-manage">
+    <!-- ════ VIEW 1: LIST OF COMPLAINTS ════════════════════ -->
+    <section class="view active" id="view-complaints">
 
       <!-- QUICK STATUS PILLS (SEGMENTED CONTROL) -->
       <div class="quick-status-pills">
         <div class="status-pill-tab active" data-status-filter="all">
-          <span>All Reports</span>
+          <span>All Complaints</span>
           <span class="status-pill-count" id="pillCountAll">0</span>
         </div>
         <div class="status-pill-tab" data-status-filter="Pending">
@@ -247,7 +198,7 @@
         <!-- Search -->
         <div class="search-input-wrap">
           <svg class="search-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="form-input search-input" type="search" id="adminSearch" placeholder="Search by ID, keyword, address, or reporter…" />
+          <input class="form-input search-input" type="search" id="adminSearch" placeholder="Search complaints by ID, resident name, issue, or address…" />
           <button type="button" class="search-clear-btn hidden" id="adminSearchClear" aria-label="Clear Search">✕</button>
         </div>
 
@@ -291,6 +242,21 @@
             <option value="Tree Branches Entangled in Wires">Tree Branches Entangled in Wires</option>
             <option value="Tree Branch Fell on Lines">Tree Branch Fell on Lines</option>
           </optgroup>
+          <optgroup label="Category F: Civic Issues">
+            <option value="Pothole">Pothole</option>
+            <option value="Busted Streetlight">Busted Streetlight</option>
+            <option value="Clogged Drainage">Clogged Drainage</option>
+            <option value="Water Pipe Leak">Water Pipe Leak</option>
+          </optgroup>
+        </select>
+
+        <!-- Urgency Filter -->
+        <select class="form-select filter-select" id="adminUrgencyFilter">
+          <option value="all">All Urgencies</option>
+          <option value="Critical">🔴 Critical</option>
+          <option value="High">🟠 High</option>
+          <option value="Medium">🔵 Medium</option>
+          <option value="Low">🟢 Low</option>
         </select>
 
         <!-- Status Filter (Synced with segmented pills above) -->
@@ -308,148 +274,501 @@
         </button>
       </div>
 
-      <!-- TRIAGE DATA TABLE -->
+      <!-- INCOMING COMPLAINT LIVE NOTIFICATION BANNER -->
+      <div class="new-report-live-banner hidden" id="newReportBanner">
+        <div class="banner-live-pulse"></div>
+        <div class="banner-text-block">
+          <span class="banner-badge">NEW COMPLAINT RECEIVED</span>
+          <span id="bannerReportText">A new complaint was submitted and added automatically.</span>
+        </div>
+        <button type="button" class="banner-close-btn" id="bannerCloseBtn">✕</button>
+      </div>
+
+      <!-- COMPLAINTS DATA TABLE -->
       <div class="table-wrapper">
         <table class="reports-table">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Category &amp; Hazard</th>
+              <th>Category &amp; Issue</th>
               <th>Reporter</th>
               <th>Assigned Agency</th>
               <th>Urgency</th>
               <th>Status</th>
-              <th>Timestamp</th>
+              <th>Filed</th>
               <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody id="adminTableBody">
-            <tr><td colspan="8" class="empty-cell">Loading reports…</td></tr>
+            <tr><td colspan="8" class="empty-cell">Loading complaints…</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-
-
-    <!-- ════ VIEW 3: GRID & HOTSPOT ANALYTICS ═══════════════ -->
-    <section class="view" id="view-analytics">
-      <div style="margin-bottom:16px;">
-        <h2 style="font-size:18px;font-weight:800;color:var(--text-primary);margin-bottom:4px;">Grid Telemetry &amp; Hotspot Analytics</h2>
-        <p style="font-size:13px;color:var(--text-secondary)">Incident frequency patterns across Masbate municipalities, critical infrastructure sectors, and agency resolution efficiency.</p>
+    <!-- ════ VIEW 2: CONTACT AGENCY DIRECTORY ═══════════════ -->
+    <section class="view" id="view-agencies">
+      <div class="view-header">
+        <h2 class="view-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Emergency &amp; Government Agency Contact Directory
+        </h2>
+        <p class="view-subtitle">Direct hotline numbers, emergency dispatch desks, and agency liaisons across Masbate Province.</p>
       </div>
 
-      <div class="analytics-grid">
-        <!-- Municipality Hotspots -->
-        <div class="analytics-card">
-          <div class="analytics-card-header">
-            <div class="analytics-card-title">
-              <span>📍 Municipality Distribution &amp; Hotspots</span>
+      <div class="agencies-grid">
+        <!-- 1. MASELCO -->
+        <div class="agency-card">
+          <div class="agency-card-top">
+            <div class="agency-card-icon" style="background:rgba(217,119,6,0.12);color:#d97706;">⚡</div>
+            <div class="agency-card-header-info">
+              <h3 class="agency-card-name">MASELCO</h3>
+              <div class="agency-card-category">
+                <span>Masbate Electric Cooperative</span>
+                <span class="agency-status-badge">● 24/7 Hotline</span>
+              </div>
             </div>
-            <span class="dash-stat-badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">Province-wide</span>
           </div>
-          <div class="analytics-list" id="analyticsMuniList">
-            <!-- Dynamic Municipality Bars -->
+          <p class="agency-card-desc">
+            Emergency power dispatch, fallen wires, blown transformers, power outages, and leaning utility poles.
+          </p>
+          <div class="agency-contact-details">
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">24/7 Hotline:</span>
+              <a href="tel:0563332244" class="agency-contact-val">(056) 333-2244</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Alternate Line:</span>
+              <a href="tel:0563332283" class="agency-contact-val">(056) 333-2283</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Mobile Dispatch:</span>
+              <a href="tel:09173336273" class="agency-contact-val">0917-333-6273</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Email:</span>
+              <a href="mailto:helpdesk@maselco.com.ph" class="agency-contact-val">helpdesk@maselco.com.ph</a>
+            </div>
+          </div>
+          <div class="agency-actions-row">
+            <a href="tel:0563332244" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call MASELCO</span>
+            </a>
+            <a href="mailto:helpdesk@maselco.com.ph?subject=Barangay%20Incident%20Dispatch" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;">
+              <span>Email</span>
+            </a>
           </div>
         </div>
 
-        <!-- Hazard Category Breakdown -->
-        <div class="analytics-card">
-          <div class="analytics-card-header">
-            <div class="analytics-card-title">
-              <span>⚡ Infrastructure Hazard Categories</span>
+        <!-- 2. DPWH -->
+        <div class="agency-card">
+          <div class="agency-card-top">
+            <div class="agency-card-icon" style="background:rgba(3,105,161,0.12);color:#0369a1;">🛣️</div>
+            <div class="agency-card-header-info">
+              <h3 class="agency-card-name">DPWH Masbate 1st DEO</h3>
+              <div class="agency-card-category">
+                <span>District Engineering Office</span>
+                <span class="agency-status-badge">● On-Duty</span>
+              </div>
             </div>
-            <span class="dash-stat-badge" style="background:rgba(245,158,11,0.15);color:#fbbf24;">Distribution</span>
           </div>
-          <div class="analytics-list" id="analyticsCategoryList">
-            <!-- Dynamic Category Breakdown Bars -->
+          <p class="agency-card-desc">
+            National highway road repairs, bridge maintenance, major drainage culverts, and road obstructions.
+          </p>
+          <div class="agency-contact-details">
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Hotline:</span>
+              <a href="tel:0563332575" class="agency-contact-val">(056) 333-2575</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Email:</span>
+              <a href="mailto:dpwh.masbate1st@gov.ph" class="agency-contact-val">dpwh.masbate1st@gov.ph</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Jurisdiction:</span>
+              <span style="font-size:12px;color:var(--text-secondary);">Masbate 1st District</span>
+            </div>
+          </div>
+          <div class="agency-actions-row">
+            <a href="tel:0563332575" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call DPWH</span>
+            </a>
+            <a href="mailto:dpwh.masbate1st@gov.ph?subject=Barangay%20Incident%20Dispatch" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;">
+              <span>Email</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3. LGU Engineering -->
+        <div class="agency-card">
+          <div class="agency-card-top">
+            <div class="agency-card-icon" style="background:rgba(13,148,136,0.12);color:#0d9488;">🏢</div>
+            <div class="agency-card-header-info">
+              <h3 class="agency-card-name">City Engineering (LGU)</h3>
+              <div class="agency-card-category">
+                <span>Masbate City Engineering</span>
+                <span class="agency-status-badge">● Operational</span>
+              </div>
+            </div>
+          </div>
+          <p class="agency-card-desc">
+            Municipal roads, city drainage canals, busted streetlights, water district leaks, and public market facilities.
+          </p>
+          <div class="agency-contact-details">
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Hotline:</span>
+              <a href="tel:0563332111" class="agency-contact-val">(056) 333-2111</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Email:</span>
+              <a href="mailto:engineering@masbatecity.gov.ph" class="agency-contact-val">engineering@masbatecity.gov.ph</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Location:</span>
+              <span style="font-size:12px;color:var(--text-secondary);">Masbate City Hall Compound</span>
+            </div>
+          </div>
+          <div class="agency-actions-row">
+            <a href="tel:0563332111" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call LGU Engineering</span>
+            </a>
+            <a href="mailto:engineering@masbatecity.gov.ph?subject=Barangay%20Incident%20Dispatch" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;">
+              <span>Email</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4. PNP Masbate -->
+        <div class="agency-card">
+          <div class="agency-card-top">
+            <div class="agency-card-icon" style="background:rgba(185,28,28,0.12);color:#b91c1c;">🚨</div>
+            <div class="agency-card-header-info">
+              <h3 class="agency-card-name">PNP Masbate City</h3>
+              <div class="agency-card-category">
+                <span>City Police Station</span>
+                <span class="agency-status-badge">● 24/7 Response</span>
+              </div>
+            </div>
+          </div>
+          <p class="agency-card-desc">
+            Public safety, hazard perimeter security, traffic control during road repairs, and emergency law enforcement.
+          </p>
+          <div class="agency-contact-details">
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Emergency Desk:</span>
+              <a href="tel:0563332222" class="agency-contact-val">(056) 333-2222</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Mobile Hotline:</span>
+              <a href="tel:09985986011" class="agency-contact-val">0998-598-6011</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Email:</span>
+              <a href="mailto:pnp.masbatecity@pnp.gov.ph" class="agency-contact-val">pnp.masbatecity@pnp.gov.ph</a>
+            </div>
+          </div>
+          <div class="agency-actions-row">
+            <a href="tel:0563332222" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call PNP</span>
+            </a>
+            <a href="mailto:pnp.masbatecity@pnp.gov.ph?subject=Barangay%20Incident%20Dispatch" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;">
+              <span>Email</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 5. Barangay Quick Response -->
+        <div class="agency-card">
+          <div class="agency-card-top">
+            <div class="agency-card-icon" style="background:rgba(194,65,12,0.12);color:#c2410c;">🏛️</div>
+            <div class="agency-card-header-info">
+              <h3 class="agency-card-name">Barangay Tanod Response</h3>
+              <div class="agency-card-category">
+                <span>Barangay Operations Desk</span>
+                <span class="agency-status-badge">● Ready</span>
+              </div>
+            </div>
+          </div>
+          <p class="agency-card-desc">
+            Immediate on-site hazard cordoning, fallen tree branch pruning, pathway clearing, and community notification.
+          </p>
+          <div class="agency-contact-details">
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Barangay Desk:</span>
+              <a href="tel:0563332199" class="agency-contact-val">(056) 333-2199</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Mobile Radio:</span>
+              <span style="font-weight:700;color:var(--text-primary);">Channel 7 VHF / Tanod Base</span>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Email:</span>
+              <a href="mailto:brgy.centro.masbate@gov.ph" class="agency-contact-val">brgy.centro.masbate@gov.ph</a>
+            </div>
+          </div>
+          <div class="agency-actions-row">
+            <a href="tel:0563332199" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call Barangay Tanod</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 6. CDRRMO & BFP -->
+        <div class="agency-card">
+          <div class="agency-card-top">
+            <div class="agency-card-icon" style="background:rgba(220,38,38,0.12);color:#dc2626;">🚒</div>
+            <div class="agency-card-header-info">
+              <h3 class="agency-card-name">BFP &amp; CDRRMO Rescue</h3>
+              <div class="agency-card-category">
+                <span>Disaster Risk &amp; Fire Protection</span>
+                <span class="agency-status-badge">● 24/7 Emergency</span>
+              </div>
+            </div>
+          </div>
+          <p class="agency-card-desc">
+            Fire outbreak response, severe flood rescues, structural collapse, and emergency vehicle extraction.
+          </p>
+          <div class="agency-contact-details">
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">Emergency Hotline:</span>
+              <a href="tel:0563332999" class="agency-contact-val">(056) 333-2999 / 911</a>
+            </div>
+            <div class="agency-contact-row">
+              <span class="agency-contact-label">BFP Masbate:</span>
+              <a href="tel:09291234911" class="agency-contact-val">0929-123-4911</a>
+            </div>
+          </div>
+          <div class="agency-actions-row">
+            <a href="tel:0563332999" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call 911 / BFP</span>
+            </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ════ VIEW 4: CITIZEN ADVISORIES & SMS BROADCAST ════ -->
-    <section class="view" id="view-advisories">
-      <div style="margin-bottom:16px;">
-        <h2 style="font-size:18px;font-weight:800;color:var(--text-primary);margin-bottom:4px;">Citizen Emergency &amp; Power Advisories</h2>
-        <p style="font-size:13px;color:var(--text-secondary)">Publish live power interruption, hazard advisories, and grid restoration notices directly to resident dashboards.</p>
+    <!-- ════ VIEW 3: OFFICER PROFILE ═══════════════════════ -->
+    <section class="view" id="view-profile">
+      <div class="view-header">
+        <h2 class="view-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Barangay Operations Officer Profile
+        </h2>
+        <p class="view-subtitle">Manage administrative officer credentials, assigned station, and security PIN.</p>
       </div>
 
-      <div class="advisories-layout">
-        <!-- Broadcast Form -->
-        <div class="advisory-broadcast-card">
-          <h3>
-            <span>📢 Broadcast Public Advisory</span>
-          </h3>
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Broadcasted advisories immediately appear as high-visibility emergency banners on resident dashboards.</p>
-
-          <form id="advisoryBroadcastForm">
-            <div style="margin-bottom:12px;">
-              <label class="form-label" for="advTitle" style="font-size:11.5px;color:var(--primary);font-weight:700;">Advisory Title / Headline</label>
-              <input class="form-input" id="advTitle" type="text" placeholder="e.g. MASELCO Scheduled Feeder Line Maintenance" required style="font-size:13px;" />
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="profile-layout-grid">
+        <!-- Officer Information Card -->
+        <div class="admin-card">
+          <div class="profile-card-header">
+            <div class="profile-avatar-block">
+              <div class="profile-avatar-large">🏛️</div>
               <div>
-                <label class="form-label" for="advCategory" style="font-size:11.5px;color:var(--primary);font-weight:700;">Category</label>
-                <select class="form-select" id="advCategory" style="font-size:12.5px;">
-                  <option value="Power Outage">⚡ Power Outage / Grid</option>
-                  <option value="Public Safety">⚠️ Public Safety Hazard</option>
-                  <option value="Weather Alert">🌧️ Weather / Storm Advisory</option>
-                  <option value="Road Closure">🚧 Road / Post Repair</option>
-                </select>
+                <h3 class="profile-title" id="profileDisplayOfficerName">Barangay Desk Officer</h3>
+                <div class="profile-badges-row">
+                  <span class="badge badge-verified">✓ Verified Officer</span>
+                  <span class="badge badge-role" id="profileDisplayRole">Operations Officer</span>
+                </div>
               </div>
-              <div>
-                <label class="form-label" for="advSeverity" style="font-size:11.5px;color:var(--primary);font-weight:700;">Severity Level</label>
-                <select class="form-select" id="advSeverity" style="font-size:12.5px;">
-                  <option value="Medium">Medium (Scheduled Notice)</option>
-                  <option value="High">High (Immediate Caution)</option>
-                  <option value="Critical">Critical (Emergency / Danger)</option>
-                </select>
-              </div>
-            </div>
-
-            <div style="margin-bottom:12px;">
-              <label class="form-label" for="advAreas" style="font-size:11.5px;color:var(--primary);font-weight:700;">Affected Areas / Puroks</label>
-              <input class="form-input" id="advAreas" type="text" placeholder="e.g. Purok 1 to 5, Brgy. Nursery &amp; Mobo Junction" required style="font-size:13px;" />
-            </div>
-
-            <div style="margin-bottom:14px;">
-              <label class="form-label" for="advMessage" style="font-size:11.5px;color:var(--primary);font-weight:700;">Broadcast Message Details</label>
-              <textarea class="form-textarea" id="advMessage" rows="3" placeholder="Provide instructions, expected restoration schedule, or safety precautions for residents…" required style="font-size:12.5px;"></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="width:100%;height:42px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-              <span>Publish &amp; Broadcast to Resident Portal</span>
-            </button>
-          </form>
-        </div>
-
-        <!-- Active Advisories & SMS Logs Column -->
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <div class="advisory-broadcast-card">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <h3>
-                <span>📡 Active Public Broadcasts</span>
-              </h3>
-              <span class="agency-count-pill" id="activeAdvisoryCount">0</span>
-            </div>
-            <div id="activeAdvisoriesList" style="max-height:280px;overflow-y:auto;padding-right:4px;">
-              <!-- Dynamic Advisories -->
             </div>
           </div>
 
-          <div class="advisory-broadcast-card">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-              <h3>
-                <span>📲 Citizen SMS Dispatch Logs</span>
-              </h3>
-              <span class="dash-stat-badge" style="background:rgba(16,185,129,0.15);color:#34d399;">Auto-Dispatched</span>
+          <form id="officerProfileForm" style="margin-top:20px;">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="profileOfficerName">Officer Full Name</label>
+                <input class="form-input" id="profileOfficerName" type="text" value="Barangay Desk" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="profileOfficerRole">Administrative Role / Title</label>
+                <input class="form-input" id="profileOfficerRole" type="text" value="Operations Officer" required />
+              </div>
             </div>
-            <div id="smsLogsList" style="max-height:220px;overflow-y:auto;padding-right:4px;">
-              <!-- Dynamic SMS Dispatch Logs -->
+
+            <div class="form-grid-2" style="margin-top:14px;">
+              <div class="form-group">
+                <label class="form-label" for="profileOfficerStation">Assigned Station / Barangay</label>
+                <input class="form-input" id="profileOfficerStation" type="text" value="Masbate Operations Command Center" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="profileOfficerMobile">Official Contact Mobile</label>
+                <input class="form-input" id="profileOfficerMobile" type="tel" value="09171234567" placeholder="09XXXXXXXXX" required />
+              </div>
             </div>
+
+            <div class="form-group" style="margin-top:14px;">
+              <label class="form-label" for="profileOfficerEmail">Official Email</label>
+              <input class="form-input" id="profileOfficerEmail" type="email" value="admin@bantaybarangay.gov.ph" />
+            </div>
+
+            <div style="margin-top:20px;display:flex;gap:10px;align-items:center;">
+              <button type="submit" class="btn btn-primary" id="btnSaveProfile" style="height:42px;font-size:13px;font-weight:700;">
+                Save Profile Changes
+              </button>
+              <span id="profileSaveMsg" class="save-msg hidden">✓ Profile updated</span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Security & PIN Management Card -->
+        <div class="admin-card">
+          <h3 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+            <span>🛡️ Security &amp; Officer PIN</span>
+          </h3>
+          <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:18px;">
+            Update the 4-digit security PIN used to authenticate and unlock this operations portal.
+          </p>
+
+          <div class="security-info-box">
+            <div class="security-info-row">
+              <span class="security-info-label">Security Tier</span>
+              <span class="security-info-val" style="color:#0284c7;font-weight:700;">Tier 2 Dispatch Officer</span>
+            </div>
+            <div class="security-info-row">
+              <span class="security-info-label">Session Status</span>
+              <span class="security-info-val" style="color:#16a34a;font-weight:700;">● Authenticated (Active)</span>
+            </div>
+            <div class="security-info-row">
+              <span class="security-info-label">PIN Security</span>
+              <span class="security-info-val" id="profilePinStatus">Configured (4 digits)</span>
+            </div>
+          </div>
+
+          <form id="changeAdminPinForm" style="margin-top:18px;">
+            <div class="form-group">
+              <label class="form-label" for="currPinInput">Current Officer PIN</label>
+              <input class="form-input auth-pin-input" id="currPinInput" type="password" maxlength="4" placeholder="••••" required style="letter-spacing:4px;width:140px;text-align:center;" />
+            </div>
+            <div class="form-grid-2" style="margin-top:12px;">
+              <div class="form-group">
+                <label class="form-label" for="newPinInput">New 4-Digit PIN</label>
+                <input class="form-input auth-pin-input" id="newPinInput" type="password" maxlength="4" placeholder="••••" required style="letter-spacing:4px;text-align:center;" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="confirmPinInput">Confirm New PIN</label>
+                <input class="form-input auth-pin-input" id="confirmPinInput" type="password" maxlength="4" placeholder="••••" required style="letter-spacing:4px;text-align:center;" />
+              </div>
+            </div>
+
+            <div style="margin-top:16px;">
+              <button type="submit" class="btn btn-primary" id="btnUpdatePin" style="height:42px;font-size:13px;font-weight:700;">
+                Update Security PIN
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ VIEW 3: SETTINGS ══════════════════════════════ -->
+    <section class="view" id="view-settings">
+      <div class="view-header">
+        <h2 class="view-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Operations Center Settings
+        </h2>
+        <p class="view-subtitle">Configure real-time complaint auto-updates, alert notifications, and data management.</p>
+      </div>
+
+      <div class="settings-grid">
+        <!-- 1. Real-Time Auto-Update & Telemetry -->
+        <div class="admin-card">
+          <h3 class="settings-card-title">
+            <span>⚡ Real-Time Auto-Update Engine</span>
+          </h3>
+          <p class="settings-card-desc">
+            Automatically check for and display new complaints filed by citizens across Masbate without refreshing the browser.
+          </p>
+
+          <div class="setting-toggle-row">
+            <div>
+              <div class="setting-label">Automatic Complaints Auto-Update</div>
+              <div class="setting-sub">Instantly sync new reports via BroadcastChannel, storage events, and background polling</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="settingAutoUpdate" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item-row" style="margin-top:16px;">
+            <label class="setting-label" for="settingPollFrequency">Background Polling Interval</label>
+            <select class="form-select" id="settingPollFrequency" style="max-width:220px;font-size:13px;">
+              <option value="2000">Fastest (Every 2 seconds)</option>
+              <option value="5000" selected>Standard (Every 5 seconds)</option>
+              <option value="10000">Conservative (Every 10 seconds)</option>
+            </select>
+          </div>
+
+          <div class="setting-toggle-row" style="margin-top:16px;">
+            <div>
+              <div class="setting-label">Audio Notification Chime</div>
+              <div class="setting-sub">Play a clean sound chime whenever a new complaint is filed</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="settingAudioChime" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-toggle-row" style="margin-top:16px;">
+            <div>
+              <div class="setting-label">Live Toast Banner Alert</div>
+              <div class="setting-sub">Show an alert banner at the top of the complaints list on new report submission</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="settingToastAlert" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. Citizen Dispatch & SMS -->
+        <div class="admin-card">
+          <h3 class="settings-card-title">
+            <span>📲 Citizen SMS Notifications</span>
+          </h3>
+          <p class="settings-card-desc">
+            Configure automated citizen mobile communication when updating complaints status and dispatch.
+          </p>
+
+          <div class="setting-toggle-row">
+            <div>
+              <div class="setting-label">Auto-SMS Citizen Dispatch</div>
+              <div class="setting-sub">Default to sending an SMS update to the resident's mobile number upon status change</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="settingAutoSms" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 3. Data Operations & Export -->
+        <div class="admin-card">
+          <h3 class="settings-card-title">
+            <span>💾 Data Management &amp; Export</span>
+          </h3>
+          <p class="settings-card-desc">
+            Download administrative complaint logs or reset demonstration records for field drills.
+          </p>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;">
+            <button type="button" class="btn btn-outline" id="btnExportCsvSettings" style="height:42px;font-size:13px;display:flex;align-items:center;gap:7px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Export Complaints (CSV)</span>
+            </button>
+
+            <button type="button" class="btn btn-ghost" id="btnResetSeed" style="height:42px;font-size:13px;color:#dc2626;border-color:rgba(220,38,38,0.3);display:flex;align-items:center;gap:7px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              <span>Reset Demo Complaints</span>
+            </button>
           </div>
         </div>
       </div>
@@ -522,7 +841,13 @@
           </div>
           <div class="modal-info-block">
             <label>Responsible Agency</label>
-            <p id="adminModalAgency">—</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-top:2px;">
+              <span id="adminModalAgency">—</span>
+              <a id="adminModalAgencyCallBtn" href="#" class="agency-call-link" title="Direct Agency Hotline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span id="adminModalAgencyCallText">Call Agency</span>
+              </a>
+            </div>
           </div>
           <div class="modal-info-block">
             <label>Incident Reference</label>
