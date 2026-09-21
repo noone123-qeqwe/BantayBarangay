@@ -110,13 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
 
   function checkAuth() {
-    if (sessionStorage.getItem('bantay_admin_authenticated') === 'true' || (typeof Auth !== 'undefined' && Auth.isAdmin && Auth.isAdmin())) {
-      authOverlay.classList.add('hidden');
+    const isAuth = sessionStorage.getItem('bantay_admin_authenticated') === 'true' || (typeof Auth !== 'undefined' && Auth.isAdmin && Auth.isAdmin());
+    if (isAuth) {
+      if (authOverlay) authOverlay.classList.add('hidden');
       updateAdminProfileUI();
       initAdminApp();
     } else {
-      authOverlay.classList.remove('hidden');
-      setTimeout(() => pinInput && pinInput.focus(), 150);
+      window.location.replace('login.html');
     }
   }
 
@@ -201,13 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleLogout() {
     sessionStorage.removeItem('bantay_admin_authenticated');
     if (typeof Auth !== 'undefined' && Auth.logout) Auth.logout();
-    authOverlay.classList.remove('hidden');
-    if (pinInput) {
-      pinInput.value = '';
-      pinInput.focus();
-    }
-    showAdminView('complaints');
-    UI.toast('Officer session locked', 'info');
+    window.location.href = 'login.html';
   }
 
   if (hudLogoutBtn) hudLogoutBtn.addEventListener('click', handleLogout);

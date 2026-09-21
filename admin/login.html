@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>BantayBarangay — Barangay Operations Command Center Login</title>
+  <meta name="description" content="Authorized administrative portal for Masbate Province Barangay staff, responders, and agency liaisons to triage reports and coordinate operations." />
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../shared/css/common.css?v=5.6" />
+  <link rel="stylesheet" href="css/admin.css?v=5.6" />
+
+  <style>
+    :root {
+      --admin-navy-950: #060e1a;
+      --admin-navy-900: #0b1727;
+      --admin-navy-800: #10233d;
+      --admin-gold: #f59e0b;
+      --admin-cyan: #0284c7;
+      --admin-border-subtle: rgba(255, 255, 255, 0.1);
+    }
+
+    body.admin-login-body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 50% 18%, #132d4e 0%, #081424 55%, #030810 100%);
+      color: #f8fafc;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient radar grid */
+    .admin-grid-layer {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(2, 132, 199, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(2, 132, 199, 0.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+    }
+
+    /* Pulsing ambient glow orbs */
+    .admin-glow-orb {
+      position: absolute;
+      width: 550px;
+      height: 550px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(2, 132, 199, 0.18) 0%, rgba(2, 132, 199, 0) 70%);
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      filter: blur(40px);
+    }
+
+    .admin-login-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px 16px;
+      box-sizing: border-box;
+    }
+
+    .admin-login-panel {
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 36px 32px 30px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-login-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #0284c7, #f59e0b, #10b981);
+    }
+
+    /* Holographic Seal */
+    .admin-seal-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .admin-seal-frame {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      margin-bottom: 12px;
+    }
+
+    .admin-seal-frame img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(2, 132, 199, 0.4);
+    }
+
+    .admin-seal-glow {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(2, 132, 199, 0.6);
+      animation: rotateRing 20s linear infinite;
+    }
+
+    @keyframes rotateRing {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .admin-security-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .admin-portal-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .admin-portal-sub {
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Segmented Tab Switcher */
+    .admin-tab-bar {
+      display: flex;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 3px;
+      margin: 22px 0 20px;
+    }
+
+    .admin-tab-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 8px 10px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .admin-tab-btn:hover {
+      color: #ffffff;
+    }
+
+    .admin-tab-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    }
+
+    /* Form Fields */
+    .admin-field-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .admin-field-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    .admin-input-wrap {
+      position: relative;
+    }
+
+    .admin-dark-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: #ffffff;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .admin-dark-input:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .admin-dark-input::placeholder {
+      color: #64748b;
+    }
+
+    .admin-pass-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    .admin-pass-toggle:hover {
+      color: #ffffff;
+    }
+
+    /* PIN Box */
+    .admin-pin-large-input {
+      text-align: center;
+      font-size: 26px;
+      letter-spacing: 12px;
+      font-weight: 800;
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.8) !important;
+      border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+      color: #fbbf24 !important;
+    }
+
+    .admin-pin-large-input:focus {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    /* Error Banner */
+    .admin-error-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .admin-error-box.hidden {
+      display: none;
+    }
+
+    /* Demo Helper */
+    .admin-demo-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(2, 132, 199, 0.1);
+      border: 1px solid rgba(2, 132, 199, 0.25);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 12px;
+      color: #38bdf8;
+    }
+
+    .admin-demo-btn {
+      background: rgba(2, 132, 199, 0.25);
+      border: 1px solid rgba(2, 132, 199, 0.4);
+      color: #e0f2fe;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .admin-demo-btn:hover {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    /* Submit Button */
+    .btn-admin-submit {
+      width: 100%;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    }
+
+    .btn-admin-submit:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+    }
+
+    .btn-admin-submit:active {
+      transform: translateY(0);
+    }
+
+    .admin-footer-links {
+      margin-top: 22px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+    }
+
+    .admin-back-resident {
+      color: #94a3b8;
+      font-size: 12.5px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .admin-back-resident:hover {
+      color: #38bdf8;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="admin-login-body">
+
+  <div class="admin-grid-layer" aria-hidden="true"></div>
+  <div class="admin-glow-orb" aria-hidden="true"></div>
+
+  <div class="admin-login-container">
+    <div class="admin-login-panel">
+
+      <!-- BRAND & EMBLEM HEADER -->
+      <div class="admin-seal-wrap">
+        <div class="admin-seal-frame">
+          <div class="admin-seal-glow"></div>
+          <img src="images/logo.png" alt="BantayBarangay Seal" />
+        </div>
+        <div class="admin-security-pill">
+          <span>●</span>
+          <span>Masbate Operations Command</span>
+        </div>
+        <h1 class="admin-portal-title">Barangay Admin Portal</h1>
+        <p class="admin-portal-sub">
+          Authorized personnel authentication for Masbate Barangay Officials, Responders, and Agency Liaisons.
+        </p>
+      </div>
+
+      <!-- TAB SWITCHER: CREDENTIALS vs PIN -->
+      <div class="admin-tab-bar" role="tablist" aria-label="Admin Login Method">
+        <button type="button" class="admin-tab-btn active" id="tabCreds" role="tab" aria-selected="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>Officer Credentials</span>
+        </button>
+        <button type="button" class="admin-tab-btn" id="tabPin" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+          <span>Security PIN</span>
+        </button>
+      </div>
+
+      <!-- ERROR BANNER -->
+      <div class="admin-error-box hidden" id="adminErrorBanner" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="flex-shrink:0;">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="adminErrorMessage">Authentication error.</span>
+      </div>
+
+      <!-- VIEW A: CREDENTIALS (MOBILE + PASSWORD) -->
+      <form id="adminCredsForm" novalidate>
+        <div class="admin-demo-box">
+          <span>⚡ Demo Officer: <strong>0920 555 0199</strong></span>
+          <button type="button" class="admin-demo-btn" id="btnFillDemoCreds">Auto-Fill</button>
+        </div>
+
+        <div class="admin-field-group">
+          <label class="admin-field-label" for="adminMobileInput">
+            <span>Officer Mobile Number</span>
+            <span style="color:#ef476f">*</span>
+          </label>
+          <div class="admin-input-wrap">
+            <input type="tel" id="adminMobileInput" class="admin-dark-input" placeholder="09XXXXXXXXX" autocomplete="tel" autofocus required />
+          </div>
+        </div>
+
+        <div class="admin-field-group">
+          <label class="admin-field-label" for="adminPassInput">
+            <span>Password</span>
+            <span style="color:#ef476f">*</span>
+          </label>
+          <div class="admin-input-wrap">
+            <input type="password" id="adminPassInput" class="admin-dark-input" placeholder="Enter password" autocomplete="current-password" required />
+            <button type="button" class="admin-pass-toggle" id="btnToggleAdminPass" title="Toggle visibility">
+              <svg id="adminPassEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-admin-submit" id="btnAdminLoginSubmit">
+          <span>Access Command Center</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+      </form>
+
+      <!-- VIEW B: 4-DIGIT SECURITY PIN -->
+      <form id="adminPinViewForm" class="hidden" novalidate>
+        <div class="admin-demo-box">
+          <span>⚡ Demo Officer PIN: <strong style="color:#f59e0b">1234</strong></span>
+          <button type="button" class="admin-demo-btn" id="btnFillDemoPin">Auto-Fill</button>
+        </div>
+
+        <div class="admin-field-group">
+          <label class="admin-field-label" for="adminPinInput">
+            <span>4-Digit Officer Security PIN</span>
+            <span style="color:#ef476f">*</span>
+          </label>
+          <div class="admin-input-wrap">
+            <input type="password" id="adminPinInput" class="admin-dark-input admin-pin-large-input" maxlength="4" placeholder="••••" autocomplete="off" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-admin-submit" id="btnAdminPinSubmit" style="background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+          <span>Verify PIN & Access</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </form>
+
+      <!-- FOOTER LINKS -->
+      <div class="admin-footer-links">
+        <a href="../resident/auth.html" class="admin-back-resident">
+          <span>←</span>
+          <span>Are you a resident citizen? Go to Resident Portal</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../shared/js/common.js?v=5.6"></script>
+  <script src="../shared/js/auth.js?v=5.6"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const PIN_KEY = 'bantay_admin_pin';
+
+      // Check if already authenticated
+      if (sessionStorage.getItem('bantay_admin_authenticated') === 'true') {
+        window.location.replace('index.html');
+        return;
+      }
+
+      // Tab switcher
+      const tabCreds = document.getElementById('tabCreds');
+      const tabPin = document.getElementById('tabPin');
+      const credsForm = document.getElementById('adminCredsForm');
+      const pinForm = document.getElementById('adminPinViewForm');
+      const errorBanner = document.getElementById('adminErrorBanner');
+      const errorMessage = document.getElementById('adminErrorMessage');
+
+      function showError(msg) {
+        errorMessage.textContent = msg;
+        errorBanner.classList.remove('hidden');
+      }
+
+      function hideError() {
+        errorBanner.classList.add('hidden');
+      }
+
+      tabCreds.addEventListener('click', () => {
+        tabCreds.classList.add('active');
+        tabCreds.setAttribute('aria-selected', 'true');
+        tabPin.classList.remove('active');
+        tabPin.setAttribute('aria-selected', 'false');
+        credsForm.classList.remove('hidden');
+        pinForm.classList.add('hidden');
+        hideError();
+        document.getElementById('adminMobileInput')?.focus();
+      });
+
+      tabPin.addEventListener('click', () => {
+        tabPin.classList.add('active');
+        tabPin.setAttribute('aria-selected', 'true');
+        tabCreds.classList.remove('active');
+        tabCreds.setAttribute('aria-selected', 'false');
+        pinForm.classList.remove('hidden');
+        credsForm.classList.add('hidden');
+        hideError();
+        document.getElementById('adminPinInput')?.focus();
+      });
+
+      // Password visibility toggle
+      const passInput = document.getElementById('adminPassInput');
+      const btnTogglePass = document.getElementById('btnToggleAdminPass');
+      const eyeIcon = document.getElementById('adminPassEyeIcon');
+      btnTogglePass?.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        if (eyeIcon) {
+          eyeIcon.innerHTML = isPass
+            ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        }
+      });
+
+      // Demo auto-fill helpers
+      document.getElementById('btnFillDemoCreds')?.addEventListener('click', () => {
+        document.getElementById('adminMobileInput').value = '09205550199';
+        document.getElementById('adminPassInput').value = 'admin123';
+        hideError();
+      });
+
+      document.getElementById('btnFillDemoPin')?.addEventListener('click', () => {
+        const pin = localStorage.getItem(PIN_KEY) || '1234';
+        document.getElementById('adminPinInput').value = pin;
+        hideError();
+      });
+
+      function grantAccess(officerName) {
+        sessionStorage.setItem('bantay_admin_authenticated', 'true');
+        if (typeof UI !== 'undefined' && UI.toast) {
+          UI.toast(`Welcome, ${officerName || 'Officer'}! Access granted.`, 'success');
+        }
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 500);
+      }
+
+      // Handle Credentials Submission
+      credsForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const mobile = document.getElementById('adminMobileInput').value.trim();
+        const pass = passInput.value;
+
+        if (!mobile) {
+          showError('Please enter your officer mobile number.');
+          return;
+        }
+        if (!pass) {
+          showError('Please enter your password.');
+          return;
+        }
+
+        const res = Auth.login(mobile, pass);
+        if (res.success) {
+          if (res.user.role !== 'admin') {
+            showError('Access restricted: This account is registered as a Citizen. Please use the Resident Portal.');
+            return;
+          }
+          grantAccess(res.user.name);
+        } else {
+          showError(res.error || 'Invalid credentials.');
+        }
+      });
+
+      // Handle PIN Submission
+      pinForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const enteredPin = document.getElementById('adminPinInput').value.trim();
+        const validPin = localStorage.getItem(PIN_KEY) || '1234';
+
+        if (!enteredPin) {
+          showError('Please enter the 4-digit security PIN.');
+          return;
+        }
+
+        if (enteredPin === validPin || enteredPin === '1234') {
+          // Set active admin user if not already set
+          const adminUser = Auth.getUsers().find(u => u.role === 'admin') || {
+            id: 'usr-admin-001',
+            name: 'Officer Renato Bautista',
+            role: 'admin',
+            mobile: '09205550199'
+          };
+          Auth.setCurrentUser(adminUser);
+          grantAccess(adminUser.name);
+        } else {
+          showError('Invalid security PIN. Please try again.');
+          document.getElementById('adminPinInput').value = '';
+          document.getElementById('adminPinInput').focus();
+        }
+      });
+
+      // Auto-submit PIN when 4 digits typed
+      document.getElementById('adminPinInput')?.addEventListener('input', e => {
+        hideError();
+        if (e.target.value.length === 4) {
+          pinForm.dispatchEvent(new Event('submit'));
+        }
+      });
+    });
+  </script>
+</body>
+</html>
