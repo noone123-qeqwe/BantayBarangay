@@ -478,6 +478,22 @@ body.auth-body {
   color: #0284c7;
 }
 
+/* ── APP VERSION INDICATOR (BELOW AUTH FORMS) ──────────── */
+.auth-form-version {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.auth-form-version-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.02em;
+}
+
 /* ── TRUST BADGE FOOTER ──────────────────────────────────── */
 .auth-trust-footer {
   margin-top: 24px;
