@@ -202,14 +202,18 @@ function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
     // Default routes
     let safePath = pathname;
     if (isDedicatedAdmin) {
-        if (safePath === '/' || safePath === '' || safePath === '/index.html') {
-            safePath = '/admin/index.html';
-        } else if (safePath === '/login' || safePath === '/login.html') {
+        if (safePath === '/' || safePath === '' || safePath === '/login' || safePath === '/login.html') {
             safePath = '/admin/login.html';
-        } else if (safePath === '/admin' || safePath === '/admin/') {
+        } else if (safePath === '/index.html' || safePath === '/admin' || safePath === '/admin/') {
             safePath = '/admin/index.html';
         } else if (safePath === '/admin/login' || safePath === '/admin/login.html') {
             safePath = '/admin/login.html';
+        } else if (safePath === '/admin/index.html') {
+            safePath = '/admin/index.html';
+        } else if (safePath === '/auth' || safePath === '/auth.html' || safePath.startsWith('/resident')) {
+            // Guard: On dedicated admin server, redirect resident pages directly to admin login
+            res.writeHead(302, { Location: '/login.html' });
+            return res.end();
         } else if (safePath.startsWith('/css/') || safePath.startsWith('/js/') || safePath.startsWith('/images/')) {
             safePath = '/admin' + safePath;
         }
@@ -528,41 +532,65 @@ function createRequestHandler(isDedicatedAdmin = false) {
     };
 }
 
-// Resident Portal & API Server (Port 3000)
-const server = http.createServer(createRequestHandler(false));
+// Auto-detect if this service instance is designated as the Admin portal:
+// 1. Explicit IS_ADMIN=true / ADMIN_PORT / --admin
+// 2. Render service name or hostname containing 'admin' (e.g. bantaybarangay-admin)
+const IS_ADMIN_SERVICE = 
+    process.env.IS_ADMIN === 'true' ||
+    process.argv.includes('--admin') ||
+    (process.env.RENDER_SERVICE_NAME && /admin/i.test(process.env.RENDER_SERVICE_NAME)) ||
+    (process.env.RENDER_EXTERNAL_HOSTNAME && /admin/i.test(process.env.RENDER_EXTERNAL_HOSTNAME)) ||
+    (process.env.RENDER_EXTERNAL_URL && /admin/i.test(process.env.RENDER_EXTERNAL_URL));
 
-// Dedicated Admin Command Portal Server (Port 3001)
+// Primary HTTP Server (Port from env or 3000)
+const server = http.createServer(createRequestHandler(IS_ADMIN_SERVICE));
+
+// Dedicated Admin Server helper instance
 const adminServer = http.createServer(createRequestHandler(true));
 server.adminServer = adminServer;
 
 // Ensure DB is initialized before starting
 db.initDb(false);
 
-const isStandalone = process.env.STANDALONE === 'true' || process.argv.includes('--standalone');
+const isStandalone = process.env.STANDALONE === 'true' || process.argv.includes('--standalone') || IS_ADMIN_SERVICE;
 
 if (require.main === module) {
-    server.listen(PORT, () => {
-        console.log('==========================================================');
-        console.log(`🚀 BantayBarangay Resident Server:  http://localhost:${PORT}`);
-        console.log(`   • Citizen Portal:    http://localhost:${PORT}/resident`);
-        console.log(`   • Citizen Login:     http://localhost:${PORT}/resident/auth.html`);
-        console.log(`   • REST API:          http://localhost:${PORT}/api/reports`);
-        if (isStandalone) {
-            console.log(`   • Standalone Mode:   Citizen Service Only`);
-            if (process.env.ADMIN_URL) {
-                console.log(`   • Linked Admin URL:  ${process.env.ADMIN_URL}`);
+    if (IS_ADMIN_SERVICE) {
+        server.listen(PORT, () => {
+            console.log('==========================================================');
+            console.log(`🛡️  BantayBarangay Admin Server running on port ${PORT}`);
+            console.log(`   • Admin Login:       http://localhost:${PORT}/login.html`);
+            console.log(`   • Command Center:    http://localhost:${PORT}/index.html`);
+            console.log(`   • REST API:          http://localhost:${PORT}/api/reports`);
+            if (process.env.RESIDENT_URL) {
+                console.log(`   • Linked Resident:   ${process.env.RESIDENT_URL}`);
             }
             console.log('==========================================================');
-        }
-    });
-
-    if (!isStandalone) {
-        adminServer.listen(ADMIN_PORT, () => {
-            console.log(`🛡️  BantayBarangay Admin Server:     http://localhost:${ADMIN_PORT}`);
-            console.log(`   • Admin Login:       http://localhost:${ADMIN_PORT}/login.html`);
-            console.log(`   • Command Center:    http://localhost:${ADMIN_PORT}/`);
-            console.log('==========================================================');
         });
+    } else {
+        server.listen(PORT, () => {
+            console.log('==========================================================');
+            console.log(`🚀 BantayBarangay Resident Server:  http://localhost:${PORT}`);
+            console.log(`   • Citizen Portal:    http://localhost:${PORT}/resident`);
+            console.log(`   • Citizen Login:     http://localhost:${PORT}/resident/auth.html`);
+            console.log(`   • REST API:          http://localhost:${PORT}/api/reports`);
+            if (isStandalone) {
+                console.log(`   • Standalone Mode:   Citizen Service Only`);
+                if (process.env.ADMIN_URL) {
+                    console.log(`   • Linked Admin URL:  ${process.env.ADMIN_URL}`);
+                }
+                console.log('==========================================================');
+            }
+        });
+
+        if (!isStandalone) {
+            adminServer.listen(ADMIN_PORT, () => {
+                console.log(`🛡️  BantayBarangay Admin Server:     http://localhost:${ADMIN_PORT}`);
+                console.log(`   • Admin Login:       http://localhost:${ADMIN_PORT}/login.html`);
+                console.log(`   • Command Center:    http://localhost:${ADMIN_PORT}/`);
+                console.log('==========================================================');
+            });
+        }
     }
 }
 

@@ -20,6 +20,12 @@
       } catch (e) {
         console.warn('Auth check error:', e);
       }
+      // If running on an admin subdomain, service hostname, or admin path
+      if (/admin/i.test(window.location.hostname) || window.location.pathname.startsWith('/admin')) {
+        window.location.replace('admin/login.html' + window.location.search + window.location.hash);
+        return;
+      }
+
       // Not logged in: direct to Login / Create Account first
       window.location.replace('resident/auth.html' + window.location.search + window.location.hash);
     })();
