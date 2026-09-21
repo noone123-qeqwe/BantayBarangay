@@ -10,7 +10,9 @@ Use Node.js 22.5 or later (the project uses the built-in `node:sqlite` module).
 npm start
 ```
 
-Then open `http://localhost:3000/resident` or `http://localhost:3000/admin`.
+Then open:
+- **Resident Portal**: `http://localhost:3000` (or `http://localhost:3000/resident`)
+- **Admin Command Portal**: `http://localhost:3001` (or `http://localhost:3001/login.html`)
 
 To recreate only the local development database and seed records:
 

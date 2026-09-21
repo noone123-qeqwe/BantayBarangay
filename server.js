@@ -31,6 +31,7 @@ const db = require('./database/db.js');
 })();
 
 const PORT = process.env.PORT || 3000;
+const ADMIN_PORT = process.env.ADMIN_PORT || 3001;
 const PUBLIC_DIR = __dirname;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
@@ -195,15 +196,32 @@ function parseBody(req) {
 /**
  * Handle static file serving
  */
-function serveStatic(req, res, pathname) {
+function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
     // Default routes
     let safePath = pathname;
-    if (safePath === '/' || safePath === '') {
-        safePath = '/index.html';
-    } else if (safePath === '/resident' || safePath === '/resident/') {
-        safePath = '/resident/index.html';
-    } else if (safePath === '/admin' || safePath === '/admin/') {
-        safePath = '/admin/index.html';
+    if (isDedicatedAdmin) {
+        if (safePath === '/' || safePath === '' || safePath === '/index.html') {
+            safePath = '/admin/index.html';
+        } else if (safePath === '/login' || safePath === '/login.html') {
+            safePath = '/admin/login.html';
+        } else if (safePath === '/admin' || safePath === '/admin/') {
+            safePath = '/admin/index.html';
+        } else if (safePath === '/admin/login' || safePath === '/admin/login.html') {
+            safePath = '/admin/login.html';
+        } else if (safePath.startsWith('/css/') || safePath.startsWith('/js/') || safePath.startsWith('/images/')) {
+            safePath = '/admin' + safePath;
+        }
+    } else {
+        if (safePath === '/' || safePath === '') {
+            safePath = '/index.html';
+        } else if (safePath === '/resident' || safePath === '/resident/') {
+            safePath = '/resident/index.html';
+        } else if (safePath === '/admin' || safePath === '/admin/' || safePath.startsWith('/admin/')) {
+            const hostOnly = (req.headers.host || 'localhost').split(':')[0];
+            const targetUrl = `http://${hostOnly}:${ADMIN_PORT}${safePath === '/admin' || safePath === '/admin/' ? '/' : safePath.replace(/^\/admin/, '')}`;
+            res.writeHead(302, { Location: targetUrl });
+            return res.end();
+        }
     }
 
     let decodedPath;
@@ -246,18 +264,19 @@ function serveStatic(req, res, pathname) {
 }
 
 /**
- * Main HTTP Request Handler
+ * Factory for creating HTTP Request Handlers
  */
-const server = http.createServer(async (req, res) => {
-    // Handle CORS preflight
-    if (req.method === 'OPTIONS') {
-        res.writeHead(204, {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        });
-        return res.end();
-    }
+function createRequestHandler(isDedicatedAdmin = false) {
+    return async (req, res) => {
+        // Handle CORS preflight
+        if (req.method === 'OPTIONS') {
+            res.writeHead(204, {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            });
+            return res.end();
+        }
 
     const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
     const pathname = parsedUrl.pathname;
@@ -484,13 +503,21 @@ const server = http.createServer(async (req, res) => {
         // ==========================================
         // STATIC FILE SERVING
         // ==========================================
-        serveStatic(req, res, pathname);
+        serveStatic(req, res, pathname, isDedicatedAdmin);
 
     } catch (err) {
         console.error('Server error:', err);
         sendJson(res, 500, { success: false, error: 'Internal Server Error' });
     }
-});
+    };
+}
+
+// Resident Portal & API Server (Port 3000)
+const server = http.createServer(createRequestHandler(false));
+
+// Dedicated Admin Command Portal Server (Port 3001)
+const adminServer = http.createServer(createRequestHandler(true));
+server.adminServer = adminServer;
 
 // Ensure DB is initialized before starting
 db.initDb(false);
@@ -498,11 +525,16 @@ db.initDb(false);
 if (require.main === module) {
     server.listen(PORT, () => {
         console.log('==========================================================');
-        console.log(`🚀 BantayBarangay Server running at http://localhost:${PORT}`);
-        console.log(`   • Resident Portal:   http://localhost:${PORT}/resident`);
-        console.log(`   • Admin Dashboard:   http://localhost:${PORT}/admin`);
+        console.log(`🚀 BantayBarangay Resident Server:  http://localhost:${PORT}`);
+        console.log(`   • Citizen Portal:    http://localhost:${PORT}/resident`);
+        console.log(`   • Citizen Login:     http://localhost:${PORT}/resident/auth.html`);
         console.log(`   • REST API:          http://localhost:${PORT}/api/reports`);
-        console.log(`   • Stats:             http://localhost:${PORT}/api/stats`);
+    });
+
+    adminServer.listen(ADMIN_PORT, () => {
+        console.log(`🛡️  BantayBarangay Admin Server:     http://localhost:${ADMIN_PORT}`);
+        console.log(`   • Admin Login:       http://localhost:${ADMIN_PORT}/login.html`);
+        console.log(`   • Command Center:    http://localhost:${ADMIN_PORT}/`);
         console.log('==========================================================');
     });
 }

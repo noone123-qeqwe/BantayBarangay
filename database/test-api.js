@@ -9,7 +9,7 @@ for (const suffix of ['', '-wal', '-shm']) {
 }
 const server = require('../server.js');
 
-const PORT = 3001; // use separate port for test
+const PORT = process.env.TEST_PORT || 3099; // use separate port for test
 server.listen(PORT, async () => {
     let failures = 0;
     function assert(desc, condition) {
