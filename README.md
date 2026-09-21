@@ -29,7 +29,7 @@ The test suite uses disposable SQLite files, so it does not modify the developme
 ## Demo accounts
 
 - Resident: `09171234567` / `resident123`
-- Admin: `09989876543` / `admin123`
+- Admin: `admin@gmail.com` / `admin123` (or PIN: `1234`)
 
 ## Deployment notes
 

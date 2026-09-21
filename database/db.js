@@ -117,8 +117,8 @@ function initDb(forceFresh = false) {
     // Keep the seeded admin record aligned with the browser demo account after
     // upgrading an existing prototype database.
     db.prepare(`
-        UPDATE users SET mobile = '09205550199'
-        WHERE id = 1 AND name = 'Officer Renato Bautista' AND mobile = '09989876543'
+        UPDATE users SET mobile = '09205550199', email = 'admin@gmail.com'
+        WHERE id = 1 AND name = 'Officer Renato Bautista'
     `).run();
 
     return {
@@ -382,6 +382,16 @@ function getUserByMobile(mobile) {
 }
 
 /**
+ * Lookup user by email address
+ */
+function getUserByEmail(email) {
+    if (!email) return null;
+    const db = getDb();
+    const stmt = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)');
+    return stmt.get(email.trim());
+}
+
+/**
  * Register a new user
  */
 function createUser(userData) {
@@ -514,6 +524,7 @@ module.exports = {
     createReport,
     updateReportStatus,
     getUserByMobile,
+    getUserByEmail,
     createUser,
     updateUserPhone,
     createOtp,

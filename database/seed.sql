@@ -32,7 +32,7 @@ INSERT OR IGNORE INTO puroks (id, name, description) VALUES
 
 -- 4. SEED INITIAL USERS
 INSERT OR IGNORE INTO users (id, name, mobile, email, purok, role, password_hash, phone_verified, created_at) VALUES
-(1, 'Officer Renato Bautista', '09205550199', 'renato.admin@barangay.gov.ph', 'Purok 1', 'admin', 'pbkdf2_admin_hash_demo', 1, '2026-09-10 08:00:00'),
+(1, 'Officer Renato Bautista', '09205550199', 'admin@gmail.com', 'Purok 1', 'admin', 'pbkdf2_admin_hash_demo', 1, '2026-09-10 08:00:00'),
 (2, 'Juan dela Cruz', '09171234567', 'juan.delacruz@gmail.com', 'Purok 1', 'resident', 'pbkdf2_juan_hash_demo', 1, '2026-09-11 09:30:00'),
 (3, 'Maria Santos', '09281234567', 'maria.santos@yahoo.com', 'Purok 2', 'resident', 'pbkdf2_maria_hash_demo', 1, '2026-09-12 14:15:00');
 

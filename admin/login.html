@@ -434,20 +434,20 @@
         <span id="adminErrorMessage">Authentication error.</span>
       </div>
 
-      <!-- VIEW A: CREDENTIALS (MOBILE + PASSWORD) -->
+      <!-- VIEW A: CREDENTIALS (GMAIL + PASSWORD) -->
       <form id="adminCredsForm" novalidate>
         <div class="admin-demo-box">
-          <span>⚡ Demo Officer: <strong>0920 555 0199</strong></span>
+          <span>⚡ Demo Officer: <strong>admin@gmail.com</strong></span>
           <button type="button" class="admin-demo-btn" id="btnFillDemoCreds">Auto-Fill</button>
         </div>
 
         <div class="admin-field-group">
-          <label class="admin-field-label" for="adminMobileInput">
-            <span>Officer Mobile Number</span>
+          <label class="admin-field-label" for="adminEmailInput">
+            <span>Officer Gmail Address</span>
             <span style="color:#ef476f">*</span>
           </label>
           <div class="admin-input-wrap">
-            <input type="tel" id="adminMobileInput" class="admin-dark-input" placeholder="09XXXXXXXXX" autocomplete="tel" autofocus required />
+            <input type="email" id="adminEmailInput" class="admin-dark-input" placeholder="admin@gmail.com" autocomplete="email" autofocus required />
           </div>
         </div>
 
@@ -551,7 +551,7 @@
         credsForm.classList.remove('hidden');
         pinForm.classList.add('hidden');
         hideError();
-        document.getElementById('adminMobileInput')?.focus();
+        document.getElementById('adminEmailInput')?.focus();
       });
 
       tabPin.addEventListener('click', () => {
@@ -581,7 +581,7 @@
 
       // Demo auto-fill helpers
       document.getElementById('btnFillDemoCreds')?.addEventListener('click', () => {
-        document.getElementById('adminMobileInput').value = '09205550199';
+        document.getElementById('adminEmailInput').value = 'admin@gmail.com';
         document.getElementById('adminPassInput').value = 'admin123';
         hideError();
       });
@@ -605,11 +605,11 @@
       // Handle Credentials Submission
       credsForm.addEventListener('submit', e => {
         e.preventDefault();
-        const mobile = document.getElementById('adminMobileInput').value.trim();
+        const email = document.getElementById('adminEmailInput').value.trim();
         const pass = passInput.value;
 
-        if (!mobile) {
-          showError('Please enter your officer mobile number.');
+        if (!email) {
+          showError('Please enter your officer Gmail address.');
           return;
         }
         if (!pass) {
@@ -617,7 +617,7 @@
           return;
         }
 
-        const res = Auth.login(mobile, pass);
+        const res = Auth.login(email, pass);
         if (res.success) {
           if (res.user.role !== 'admin') {
             showError('Access restricted: This account is registered as a Citizen. Please use the Resident Portal.');

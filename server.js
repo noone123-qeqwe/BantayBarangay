@@ -438,15 +438,24 @@ const server = http.createServer(async (req, res) => {
                 }
             }
 
-            // Login with Philippine Mobile
+            // Login with Philippine Mobile or Gmail / Email
             if (pathname === '/api/auth/login' && req.method === 'POST') {
                 const body = await parseBody(req);
-                if (!body.mobile) {
-                    return sendJson(res, 400, { success: false, error: 'Mobile number is required.' });
+                const identifier = (body.email || body.mobile || '').trim();
+                if (!identifier) {
+                    return sendJson(res, 400, { success: false, error: 'Mobile number or Gmail address is required.' });
                 }
-                const user = db.getUserByMobile(body.mobile);
+                let user;
+                if (identifier.includes('@')) {
+                    user = db.getUserByEmail(identifier);
+                    if (!user && (identifier.toLowerCase() === 'admin@gmail.com' || identifier.toLowerCase() === 'renato.admin@gmail.com')) {
+                        user = db.getUserByMobile('09205550199') || db.getUserByMobile('09989876543');
+                    }
+                } else {
+                    user = db.getUserByMobile(identifier);
+                }
                 if (!user) {
-                    return sendJson(res, 404, { success: false, error: 'Account not found with this mobile number.' });
+                    return sendJson(res, 404, { success: false, error: 'Account not found with this mobile or Gmail address.' });
                 }
                 if (!body.password || !db.verifyPassword(body.password, user.password_hash)) {
                     return sendJson(res, 401, { success: false, error: 'Incorrect password.' });
@@ -461,6 +470,7 @@ const server = http.createServer(async (req, res) => {
                         id: user.id,
                         name: user.name,
                         mobile: user.mobile,
+                        email: user.email,
                         role: user.role,
                         purok: user.purok
                     }

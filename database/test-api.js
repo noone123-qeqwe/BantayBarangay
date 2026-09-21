@@ -89,6 +89,11 @@ server.listen(PORT, async () => {
         });
         assert('POST /api/auth/login issues an admin session token', adminLogin.status === 200 && Boolean(adminLogin.data.token));
 
+        const adminGmailLogin = await request('/api/auth/login', { method: 'POST' }, {
+            email: 'admin@gmail.com', password: 'admin123'
+        });
+        assert('POST /api/auth/login authenticates admin via Gmail', adminGmailLogin.status === 200 && adminGmailLogin.data.user.role === 'admin');
+
         // 5. Update report status via API
         const patchRes = await request(`/api/reports/${newReportId}`, {
             method: 'PATCH', headers: { Authorization: `Bearer ${adminLogin.data.token}` }

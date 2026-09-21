@@ -31,7 +31,7 @@ const Auth = (() => {
     {
       id: 'usr-admin-001',
       name: 'Officer Renato Bautista',
-      email: 'admin@barangay.gov.ph',
+      email: 'admin@gmail.com',
       mobile: '09205550199',
       purok: 'Barangay Hall',
       role: 'admin',
@@ -45,6 +45,13 @@ const Auth = (() => {
       const existing = localStorage.getItem(USERS_STORAGE_KEY);
       if (!existing) {
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(SEED_USERS));
+      } else {
+        const users = JSON.parse(existing);
+        const adminUser = users.find(u => u.role === 'admin');
+        if (adminUser && (!adminUser.email || adminUser.email === 'admin@barangay.gov.ph')) {
+          adminUser.email = 'admin@gmail.com';
+          localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+        }
       }
     } catch (e) {
       console.error('Auth initialization error:', e);
@@ -202,22 +209,60 @@ const Auth = (() => {
     };
   }
 
-  // ── PHONE & PASSWORD LOGIN ────────────────────────────────
-  function login(phoneInput, password) {
+  // ── PHONE OR GMAIL & PASSWORD LOGIN ───────────────────────
+  function login(inputVal, password) {
     init();
-    if (!phoneInput || !phoneInput.trim()) {
-      return { success: false, error: 'Please enter your Philippine mobile phone number.' };
+    if (!inputVal || !inputVal.trim()) {
+      return { success: false, error: 'Please enter your mobile phone number or Gmail address.' };
     }
     if (!password) {
       return { success: false, error: 'Please enter your password.' };
     }
 
-    const val = validatePhilippineMobile(phoneInput);
+    const raw = inputVal.trim();
+    const users = getUsers();
+
+    // 1. Check if logging in with email / Gmail
+    if (raw.includes('@')) {
+      const emailLower = raw.toLowerCase();
+      let user = users.find(u => (u.email || '').toLowerCase() === emailLower);
+      if (!user && (emailLower === 'admin@gmail.com' || emailLower === 'renato.admin@gmail.com' || emailLower === 'admin@barangay.gov.ph')) {
+        user = users.find(u => u.role === 'admin');
+      }
+
+      if (!user) {
+        return {
+          success: false,
+          error: `No account registered with ${raw}. Please check your Gmail address.`,
+          notFound: true
+        };
+      }
+
+      const expectedPassword = user.password || (user.role === 'admin' ? 'admin123' : 'resident123');
+      if (password !== expectedPassword) {
+        return {
+          success: false,
+          error: 'Incorrect password. Please try again.'
+        };
+      }
+
+      loginUserSession(user);
+      if (typeof API !== 'undefined') {
+        API.login(user.mobile || raw, password).catch(() => {});
+      }
+      return {
+        success: true,
+        user: sanitizeUser(user),
+        email: raw
+      };
+    }
+
+    // 2. Otherwise validate as Philippine mobile
+    const val = validatePhilippineMobile(raw);
     if (!val.isValid) {
       return { success: false, error: val.error };
     }
 
-    const users = getUsers();
     const digits = val.cleaned;
 
     let user = users.find(u => {
@@ -246,7 +291,7 @@ const Auth = (() => {
     // Keep the optional SQLite API in sync with the browser session. The UI can
     // still run offline, while server-backed admin updates require this token.
     if (typeof API !== 'undefined') {
-      API.login(phoneInput, password).catch(() => {});
+      API.login(raw, password).catch(() => {});
     }
     return {
       success: true,
