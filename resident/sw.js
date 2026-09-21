@@ -3,7 +3,7 @@
    Provides offline caching, fast asset loading, and network resilience.
    ───────────────────────────────────────────────────────────── */
 
-const CACHE_NAME = 'bantay-pwa-v2.0.0';
+const CACHE_NAME = 'bantay-pwa-v2.0.1';
 
 const PRECACHE_ASSETS = [
   './mobile.html',

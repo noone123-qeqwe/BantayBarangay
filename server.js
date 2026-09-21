@@ -232,7 +232,9 @@ function serveStatic(req, res, pathname) {
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
         const headers = {
             'Content-Type': contentType,
-            'Cache-Control': 'no-cache'
+            'Cache-Control': (ext === '.html' || filePath.endsWith('sw.js'))
+                ? 'no-cache, no-store, must-revalidate'
+                : 'no-cache'
         };
         if (ext === '.apk') {
             headers['Content-Disposition'] = 'attachment; filename="BantayBarangay.apk"';
