@@ -503,7 +503,7 @@
 
       <!-- FOOTER LINKS -->
       <div class="admin-footer-links">
-        <a href="http://localhost:3000/" class="admin-back-resident">
+        <a href="http://localhost:3000/" class="admin-back-resident" id="linkToResidentPortal">
           <span>←</span>
           <span>Are you a resident citizen? Go to Resident Portal (Port 3000)</span>
         </a>
@@ -519,6 +519,21 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const PIN_KEY = 'bantay_admin_pin';
+
+      // Dynamic cross-portal navigation config
+      fetch('/api/config')
+        .then(r => r.json())
+        .then(res => {
+          if (res?.data?.residentUrl) {
+            const resLink = document.getElementById('linkToResidentPortal');
+            if (resLink) {
+              resLink.href = res.data.residentUrl;
+              const isLocal = res.data.residentUrl.includes('localhost');
+              resLink.innerHTML = `<span>←</span><span>Are you a resident citizen? Go to Resident Portal${isLocal ? ' (Port 3000)' : ''}</span>`;
+            }
+          }
+        })
+        .catch(() => {});
 
       // Check if already authenticated
       if (sessionStorage.getItem('bantay_admin_authenticated') === 'true') {

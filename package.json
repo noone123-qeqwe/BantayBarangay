@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:resident": "node server.js --standalone",
+    "start:admin": "node server-admin.js",
     "build": "node scripts/build-apk.js",
     "db:init": "node database/init-db.js",
     "db:reset": "node database/init-db.js --force",

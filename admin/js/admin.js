@@ -8,6 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
     Reports.init();
   }
 
+  // Dynamic cross-portal navigation config
+  fetch('/api/config')
+    .then(r => r.json())
+    .then(res => {
+      if (res?.data?.residentUrl) {
+        const retLink = document.getElementById('linkReturnToResident');
+        if (retLink) {
+          retLink.href = res.data.residentUrl;
+          const isLocal = res.data.residentUrl.includes('localhost');
+          retLink.textContent = `← Return to Resident Portal${isLocal ? ' (Port 3000)' : ''}`;
+        }
+      }
+    })
+    .catch(() => {});
+
   // ── 1. CONFIG & SETTINGS STORAGE ──────────────────────────
   const SETTINGS_KEY = 'bantay_admin_settings';
   const OFFICER_PROFILE_KEY = 'bantay_officer_profile';

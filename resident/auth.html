@@ -589,6 +589,22 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       checkMobileMode();
+
+      // Dynamic cross-portal navigation config
+      fetch('/api/config')
+        .then(r => r.json())
+        .then(res => {
+          if (res?.data?.adminUrl) {
+            const adminLink = document.getElementById('linkToAdminPortal');
+            if (adminLink) {
+              adminLink.href = res.data.adminUrl;
+              const isLocal = res.data.adminUrl.includes('localhost');
+              adminLink.innerHTML = `<span>Barangay Official or Command Staff?</span><span style="color:#0284c7;">Admin Portal ${isLocal ? '(Port 3001) ' : ''}→</span>`;
+            }
+          }
+        })
+        .catch(() => {});
+
       // ════ AUTO-REDIRECT OR LOGOUT HANDLING ════════════════════
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('logout') === 'true') {

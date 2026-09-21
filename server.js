@@ -32,6 +32,8 @@ const db = require('./database/db.js');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PORT = process.env.ADMIN_PORT || 3001;
+const ADMIN_URL = process.env.ADMIN_URL || `http://localhost:${ADMIN_PORT}`;
+const RESIDENT_URL = process.env.RESIDENT_URL || `http://localhost:${PORT}`;
 const PUBLIC_DIR = __dirname;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
@@ -218,7 +220,8 @@ function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
             safePath = '/resident/index.html';
         } else if (safePath === '/admin' || safePath === '/admin/' || safePath.startsWith('/admin/')) {
             const hostOnly = (req.headers.host || 'localhost').split(':')[0];
-            const targetUrl = `http://${hostOnly}:${ADMIN_PORT}${safePath === '/admin' || safePath === '/admin/' ? '/' : safePath.replace(/^\/admin/, '')}`;
+            const targetBase = process.env.ADMIN_URL || `http://${hostOnly}:${ADMIN_PORT}`;
+            const targetUrl = targetBase.replace(/\/$/, '') + (safePath === '/admin' || safePath === '/admin/' ? '/' : safePath.replace(/^\/admin/, ''));
             res.writeHead(302, { Location: targetUrl });
             return res.end();
         }
@@ -287,6 +290,19 @@ function createRequestHandler(isDedicatedAdmin = false) {
         // REST API ROUTES (/api/*)
         // ==========================================
         if (pathname.startsWith('/api/')) {
+            // Portal configuration endpoint (exposes cross-portal URLs for deployment)
+            if (pathname === '/api/config' && req.method === 'GET') {
+                const hostOnly = (req.headers.host || 'localhost').split(':')[0];
+                return sendJson(res, 200, {
+                    success: true,
+                    data: {
+                        adminUrl: process.env.ADMIN_URL || `http://${hostOnly}:${ADMIN_PORT}`,
+                        residentUrl: process.env.RESIDENT_URL || `http://${hostOnly}:${PORT}`,
+                        isDedicatedAdmin
+                    }
+                });
+            }
+
             // App version check endpoint for auto-update detection
             if (pathname === '/api/version' && req.method === 'GET') {
                 return sendJson(res, 200, {
@@ -522,6 +538,8 @@ server.adminServer = adminServer;
 // Ensure DB is initialized before starting
 db.initDb(false);
 
+const isStandalone = process.env.STANDALONE === 'true' || process.argv.includes('--standalone');
+
 if (require.main === module) {
     server.listen(PORT, () => {
         console.log('==========================================================');
@@ -529,14 +547,26 @@ if (require.main === module) {
         console.log(`   • Citizen Portal:    http://localhost:${PORT}/resident`);
         console.log(`   • Citizen Login:     http://localhost:${PORT}/resident/auth.html`);
         console.log(`   • REST API:          http://localhost:${PORT}/api/reports`);
+        if (isStandalone) {
+            console.log(`   • Standalone Mode:   Citizen Service Only`);
+            if (process.env.ADMIN_URL) {
+                console.log(`   • Linked Admin URL:  ${process.env.ADMIN_URL}`);
+            }
+            console.log('==========================================================');
+        }
     });
 
-    adminServer.listen(ADMIN_PORT, () => {
-        console.log(`🛡️  BantayBarangay Admin Server:     http://localhost:${ADMIN_PORT}`);
-        console.log(`   • Admin Login:       http://localhost:${ADMIN_PORT}/login.html`);
-        console.log(`   • Command Center:    http://localhost:${ADMIN_PORT}/`);
-        console.log('==========================================================');
-    });
+    if (!isStandalone) {
+        adminServer.listen(ADMIN_PORT, () => {
+            console.log(`🛡️  BantayBarangay Admin Server:     http://localhost:${ADMIN_PORT}`);
+            console.log(`   • Admin Login:       http://localhost:${ADMIN_PORT}/login.html`);
+            console.log(`   • Command Center:    http://localhost:${ADMIN_PORT}/`);
+            console.log('==========================================================');
+        });
+    }
 }
 
 module.exports = server;
+module.exports.createRequestHandler = createRequestHandler;
+module.exports.serveStatic = serveStatic;
+module.exports.adminServer = adminServer;
