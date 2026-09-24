@@ -1206,6 +1206,16 @@
                document.referrer.includes('android-app://');
       }
 
+      // Check if the APK file exists in the downloads folder
+      async function checkApkFileExists() {
+        try {
+          const response = await fetch('../downloads/BantayBarangay.apk', { method: 'HEAD' });
+          return response.ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
       function isDownloaded() {
         try {
           return localStorage.getItem(STORAGE_KEY_DOWNLOADED) === 'true';
@@ -1248,6 +1258,14 @@
 
       // Initial check on load
       updateInstallUIState();
+
+      // Check if APK file actually exists on the server
+      checkApkFileExists().then(apkExists => {
+        if (apkExists && !isStandaloneMode()) {
+          markAsDownloaded();
+          updateInstallUIState();
+        }
+      });
 
       // "Deleted the app? Download again" button:
       // Clears the downloaded flag and reveals the full download card
