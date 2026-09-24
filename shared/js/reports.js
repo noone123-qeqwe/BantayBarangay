@@ -278,7 +278,11 @@ const Reports = (() => {
         // Keep reports still waiting in the local outbox; a slow initial API load
         // must never erase a report that was saved while offline.
         const remoteIds = new Set(mapped.map(report => report.id));
-        save([...mapped, ...existing.filter(report => !remoteIds.has(report.id))]);
+        const merged = [...mapped, ...existing.filter(report => !remoteIds.has(report.id))];
+        const existingRaw = localStorage.getItem(STORAGE_KEY) || '[]';
+        if (JSON.stringify(merged) !== existingRaw) {
+          save(merged);
+        }
       }
     } catch (e) {
       console.warn('API sync deferred, using local cached data.');

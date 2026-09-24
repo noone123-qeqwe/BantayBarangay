@@ -782,6 +782,8 @@ const Auth = (() => {
     changePhoneNumber,
     getSettings,
     updateSettings,
+    setCurrentUser: loginUserSession,
+    loginUserSession,
     logout,
     onAuthChange
   };

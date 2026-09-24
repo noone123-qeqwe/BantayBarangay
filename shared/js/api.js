@@ -23,8 +23,13 @@ const API = (() => {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
   }
 
+  let lastServerCheck = 0;
   async function checkServer() {
-    if (serverAvailable !== null) return serverAvailable;
+    const now = Date.now();
+    if (serverAvailable !== null && (now - lastServerCheck < (serverAvailable ? 15000 : 3000))) {
+      return serverAvailable;
+    }
+    lastServerCheck = now;
     try {
       const res = await fetch(`${BASE_URL}/api/health`, { method: 'GET', signal: AbortSignal.timeout(1500) });
       serverAvailable = res.ok;

@@ -305,6 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Track known report IDs to detect newly arrived reports
   let knownReportIds = new Set();
   let newlyArrivedIds = new Set();
+  let lastSyncTime = Date.now();
 
   function seedKnownReportIds() {
     const all = Reports.getAll ? Reports.getAll() : [];
@@ -315,41 +316,69 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupAutoRefresh() {
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
     if (adminSettings.autoUpdate) {
+      // Initial refresh immediately
+      checkForIncomingReports();
+      
+      // Then poll at configured interval (default 5 seconds)
       autoRefreshTimer = setInterval(() => {
         checkForIncomingReports();
       }, adminSettings.pollInterval || 5000);
     }
   }
 
+  let isCheckingReports = false;
+  let checkQueued = false;
+
   async function checkForIncomingReports() {
-    // 1. If online and API available, sync from server first
-    if (typeof Reports.syncFromApi === 'function') {
-      try {
-        await Reports.syncFromApi();
-      } catch {}
+    if (isCheckingReports) {
+      checkQueued = true;
+      return;
     }
+    isCheckingReports = true;
 
-    // 2. Fetch current reports
-    const all = Reports.getAll ? Reports.getAll() : [];
-    const incoming = [];
-
-    all.forEach(r => {
-      if (!knownReportIds.has(r.id)) {
-        incoming.push(r);
-        knownReportIds.add(r.id);
-        newlyArrivedIds.add(r.id);
+    try {
+      // 1. If online and API available, sync from server first
+      if (typeof Reports.syncFromApi === 'function') {
+        try {
+          await Reports.syncFromApi();
+        } catch (e) {
+          console.warn('API sync warning:', e);
+        }
       }
-    });
 
-    if (incoming.length > 0) {
-      // Incoming reports detected!
-      handleNewIncomingReports(incoming);
-    }
+      // 2. Fetch current reports from local storage (now refreshed from API)
+      const all = Reports.getAll ? Reports.getAll() : [];
+      const incoming = [];
+      let hasChanges = false;
 
-    // Update stats counts and active complaints table
-    renderStats();
-    if (activeView === 'complaints') {
-      renderManageTable();
+      all.forEach(r => {
+        if (!knownReportIds.has(r.id)) {
+          incoming.push(r);
+          knownReportIds.add(r.id);
+          newlyArrivedIds.add(r.id);
+          hasChanges = true;
+        }
+      });
+
+      if (incoming.length > 0) {
+        // Incoming reports detected!
+        handleNewIncomingReports(incoming);
+      }
+
+      // Update stats counts and active complaints table
+      renderStats();
+      if (activeView === 'complaints') {
+        renderManageTable();
+      }
+
+      // Track last sync time for debugging
+      lastSyncTime = Date.now();
+    } finally {
+      isCheckingReports = false;
+      if (checkQueued) {
+        checkQueued = false;
+        setTimeout(checkForIncomingReports, 200);
+      }
     }
   }
 
@@ -357,20 +386,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Play audio chime
     playChimeAlert();
 
-    // 2. Show live banner & toast alert
+    // 2. Show live banner & toast alert with more detail
     const latest = newReports[0];
-    const msg = `New complaint received: #${latest.id} (${latest.category}) from ${latest.reporter || 'Resident'}`;
+    const count = newReports.length;
+    const msg = count > 1 
+      ? `${count} new complaints received: #${latest.id} + more`
+      : `New complaint received: #${latest.id} (${latest.category}) from ${latest.reporter || 'Resident'}`;
 
     if (newReportBanner && bannerReportText) {
       bannerReportText.textContent = `${msg}. Added to complaints list automatically.`;
       newReportBanner.classList.remove('hidden');
+      
+      // Auto-dismiss banner after 8 seconds
+      setTimeout(() => {
+        if (!newReportBanner.classList.contains('hidden')) {
+          newReportBanner.classList.add('hidden');
+        }
+      }, 8000);
     }
 
     if (adminSettings.toastAlert) {
       UI.toast(`🔔 ${msg}`, 'info');
     }
 
-    // 3. Clear new row highlight after 6 seconds
+    // 3. Highlight new rows and clear highlight after 6 seconds
     setTimeout(() => {
       newReports.forEach(r => newlyArrivedIds.delete(r.id));
       document.querySelectorAll('.new-complaint-highlight').forEach(el => {
@@ -404,12 +443,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const settingToggle = document.getElementById('settingAutoUpdate');
     if (settingToggle) settingToggle.checked = !!adminSettings.autoUpdate;
+    
+    // Visual indicator of refresh status
+    if (adminSettings.autoUpdate) {
+      document.querySelectorAll('.auto-refresh-indicator').forEach(el => {
+        el.classList.add('active');
+      });
+    } else {
+      document.querySelectorAll('.auto-refresh-indicator').forEach(el => {
+        el.classList.remove('active');
+      });
+    }
   }
 
   // Cross-Tab BroadcastChannel & Window Storage Event Listeners
+  // These ensure the admin panel updates when new reports are submitted from other tabs
   window.addEventListener('storage', e => {
-    if (e.key === 'bantaybarangay_reports') {
-      checkForIncomingReports();
+    if (e.key === 'bantaybarangay_reports' || e.key === 'bantaybarangay_pending_report_sync') {
+      // Defer update to avoid race conditions
+      setTimeout(() => {
+        checkForIncomingReports();
+      }, 100);
     }
   });
 
@@ -417,13 +471,21 @@ document.addEventListener('DOMContentLoaded', () => {
     checkForIncomingReports();
   });
 
+  // Listen for custom events from other frames/windows
+  document.addEventListener('bantay_report_submitted', () => {
+    checkForIncomingReports();
+  });
+
   if (typeof BroadcastChannel !== 'undefined') {
     try {
       const bc = new BroadcastChannel('bantay_reports_channel');
-      bc.onmessage = () => {
+      bc.onmessage = (event) => {
+        console.log('[BroadcastChannel] New report event:', event.data);
         checkForIncomingReports();
       };
-    } catch {}
+    } catch (e) {
+      console.warn('BroadcastChannel not available:', e);
+    }
   }
 
   // ── 7. COMPLAINTS KPI METRICS & PILL COUNTS ───────────────

@@ -1478,6 +1478,21 @@ function initApp() {
       }
     });
 
+    // Notify other tabs and windows (especially admin portal) about the new report
+    try {
+      // Dispatch custom event for same-window listeners
+      window.dispatchEvent(new CustomEvent('bantay_report_submitted', { detail: { report } }));
+      
+      // Use BroadcastChannel for cross-tab communication
+      if (typeof BroadcastChannel !== 'undefined') {
+        try {
+          const bc = new BroadcastChannel('bantay_reports_channel');
+          bc.postMessage({ type: 'report_submitted', report: report.id, timestamp: Date.now() });
+          bc.close();
+        } catch (e) {}
+      }
+    } catch (e) {}
+
     resetForm();
     UI.showSuccess();
 

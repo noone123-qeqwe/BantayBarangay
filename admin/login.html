@@ -829,13 +829,17 @@
 
         if (enteredPin === validPin || enteredPin === '1234') {
           // Set active admin user if not already set
-          const adminUser = Auth.getUsers().find(u => u.role === 'admin') || {
+          const adminUser = (typeof Auth !== 'undefined' && Auth.getUsers ? Auth.getUsers().find(u => u.role === 'admin') : null) || {
             id: 'usr-admin-001',
             name: 'Officer Renato Bautista',
             role: 'admin',
             mobile: '09205550199'
           };
-          Auth.setCurrentUser(adminUser);
+          if (typeof Auth !== 'undefined' && typeof Auth.setCurrentUser === 'function') {
+            Auth.setCurrentUser(adminUser);
+          } else {
+            localStorage.setItem('bantay_current_user', JSON.stringify(adminUser));
+          }
           grantAccess(adminUser.name);
         } else {
           showError('Invalid security PIN. Please try again.');
