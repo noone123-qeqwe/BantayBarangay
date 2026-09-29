@@ -150,3 +150,25 @@ INSERT OR IGNORE INTO report_timeline (report_id, status, note, officer_name, ag
 -- BB-005 Timeline
 ('BB-005', 'pending', 'Unscheduled area-wide blackout reported by public market residents.', 'Resident Elena Mendoza', 'Barangay Portal', '2026-09-17 08:30:00'),
 ('BB-005', 'under_review', 'MASELCO substation operators checking Masbate Feeder circuit breaker trip.', 'Officer Renato Bautista', 'MASELCO', '2026-09-17 09:15:00');
+
+-- 7. SEED GRID SAFETY ADVISORIES
+INSERT OR IGNORE INTO advisories (id, title, content, severity, agency, active, created_at) VALUES
+(
+    'ADV-001',
+    'Scheduled Feeder Maintenance — Tara & Quezon Street Corridors',
+    'MASELCO technical crews will perform preventive pole re-tensioning and tree branch clearance along Tara and Quezon St. power corridors on Saturday from 8:00 AM to 12:00 PM. Affected puroks: Purok 1 & Purok 3.',
+    'advisory',
+    'MASELCO',
+    1,
+    '2026-09-17 07:00:00'
+),
+(
+    'ADV-002',
+    'Heavy Wind Hazard Notice — Masbate Port & Coastal Purok 2',
+    'High coastal winds detected along Masbate Port. Residents are advised to avoid staying near leaning utility poles or low-hanging overhead cables. Report any sparking equipment immediately.',
+    'warning',
+    'MASELCO',
+    1,
+    '2026-09-18 10:00:00'
+);
+

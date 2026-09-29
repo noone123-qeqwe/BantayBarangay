@@ -90,6 +90,23 @@ const API = (() => {
       body: JSON.stringify(updateData)
     }),
 
+    deleteReport: (id) => request(`/api/reports/${id}`, {
+      method: 'DELETE'
+    }),
+
+    // Advisories
+    getAdvisories: (all = false) => request(`/api/advisories${all ? '?all=true' : ''}`),
+    createAdvisory: (data) => request('/api/advisories', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }),
+    deleteAdvisory: (id) => request(`/api/advisories/${id}`, {
+      method: 'DELETE'
+    }),
+
+    // Diagnostics
+    getDiagnostics: () => request('/api/diagnostics'),
+
     // Auth & OTP
     sendOtp: (mobile, purpose = 'registration') => request('/api/auth/send-otp', {
       method: 'POST',
@@ -112,6 +129,15 @@ const API = (() => {
     }).then(result => {
       if (result.success && result.token) setAuthToken(result.token);
       return result;
+    }),
+
+    getMe: () => request('/api/auth/me'),
+
+    logout: () => request('/api/auth/logout', {
+      method: 'POST'
+    }).then(res => {
+      clearAuthToken();
+      return res;
     })
   };
 })();

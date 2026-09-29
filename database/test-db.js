@@ -15,11 +15,20 @@ const {
     getReportById,
     createReport,
     updateReportStatus,
+    deleteReport,
     getUserByMobile,
+    getUserById,
     createUser,
     updateUserPhone,
     createOtp,
     verifyOtp,
+    saveSession,
+    getSession,
+    deleteSession,
+    cleanExpiredSessions,
+    getAdvisories,
+    createAdvisory,
+    deleteAdvisory,
     getLookups
 } = require('./db.js');
 
@@ -143,6 +152,55 @@ const inProgressReports = getAllReports({ status: 'in_progress' });
 assert('Filters reports by status', inProgressReports.every(r => r.status === 'in_progress'));
 const purok4Reports = getAllReports({ purok: 'Purok 4' });
 assert('Filters reports by purok', purok4Reports.some(r => r.id === newReport.id));
+
+// 7. Agency Filtering & Pagination
+console.log('\n7. Testing Agency Filtering & Pagination:');
+const maselcoReports = getAllReports({ agency: 'MASELCO' });
+assert('Filters reports by agency MASELCO', maselcoReports.length > 0 && maselcoReports.every(r => r.agency_id === 'MASELCO' || (r.agency_name && r.agency_name.includes('MASELCO'))));
+const pagedReports = getAllReports({ limit: 2, offset: 0 });
+assert('Pagination limit returns 2 reports', pagedReports.length === 2);
+const pagedOffsetReports = getAllReports({ limit: 2, offset: 1 });
+assert('Pagination offset returns different first item', pagedOffsetReports[0].id !== pagedReports[0].id);
+
+// 8. Persistent Sessions Management
+console.log('\n8. Testing Persistent SQLite Sessions:');
+const testToken = 'test_token_' + Date.now();
+saveSession(testToken, newUser.id, 'resident', Date.now() + 3600 * 1000);
+const retrievedSession = getSession(testToken);
+assert('Session saved and retrieved from DB', retrievedSession && retrievedSession.user_id === newUser.id && retrievedSession.name === newUser.name);
+deleteSession(testToken);
+assert('Session deleted successfully', getSession(testToken) === null);
+
+// 9. Power Outage & Grid Safety Advisories
+console.log('\n9. Testing Power Outage & Grid Safety Advisories:');
+const initialAdvisories = getAdvisories();
+assert('Seeded advisories retrieved', initialAdvisories.length >= 2);
+const newAdvisory = createAdvisory({
+    title: 'Emergency High-Voltage Line Splicing Notice',
+    content: 'Temporary 30-minute power interruption scheduled for emergency conductor repair.',
+    severity: 'warning',
+    agency: 'MASELCO'
+});
+assert('Advisory created with ID', newAdvisory && newAdvisory.id.startsWith('ADV-'));
+assert('Advisory contains valid title', newAdvisory.title === 'Emergency High-Voltage Line Splicing Notice');
+const deletedAdv = deleteAdvisory(newAdvisory.id);
+assert('Advisory deleted successfully', deletedAdv === true);
+
+// 10. Report Permanent Deletion
+console.log('\n10. Testing Permanent Report Deletion:');
+const tempReport = createReport({
+    category_id: 'outage',
+    description: 'Temporary report for deletion testing',
+    address: 'Test Street Purok 1',
+    purok: 'Purok 1',
+    severity: 'low',
+    reporter_name: 'Test Resident',
+    reporter_mobile: '09171112233'
+});
+assert('Temp report created for deletion', tempReport && Boolean(tempReport.id));
+const deleteSuccess = deleteReport(tempReport.id);
+assert('Report deleted from database', deleteSuccess === true);
+assert('Deleted report can no longer be retrieved', getReportById(tempReport.id) === null);
 
 console.log('\n==========================================================');
 if (failures === 0) {

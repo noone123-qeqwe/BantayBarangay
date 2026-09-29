@@ -140,14 +140,56 @@ const MIME_TYPES = {
 };
 
 /**
- * Helper to send JSON responses
+ * Zero-Dependency Sliding Window Rate Limiter
  */
-function sendJson(res, statusCode, data) {
+const rateLimits = new Map();
+
+function checkRateLimit(key, maxRequests, windowMs) {
+    const now = Date.now();
+    let record = rateLimits.get(key);
+    if (!record || now > record.resetTime) {
+        record = { count: 1, resetTime: now + windowMs };
+        rateLimits.set(key, record);
+        return { allowed: true, retryAfterSec: 0 };
+    }
+    record.count++;
+    if (record.count > maxRequests) {
+        const retryAfterSec = Math.max(1, Math.ceil((record.resetTime - now) / 1000));
+        return { allowed: false, retryAfterSec };
+    }
+    return { allowed: true, retryAfterSec: 0 };
+}
+
+function getClientIp(req) {
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) return forwarded.split(',')[0].trim();
+    return req.socket ? (req.socket.remoteAddress || '127.0.0.1') : '127.0.0.1';
+}
+
+setInterval(() => {
+    const now = Date.now();
+    for (const [key, record] of rateLimits.entries()) {
+        if (now > record.resetTime) rateLimits.delete(key);
+    }
+    try {
+        db.cleanExpiredSessions();
+    } catch (_) {}
+}, 10 * 60 * 1000).unref();
+
+/**
+ * Helper to send JSON responses with HTTP Security Headers
+ */
+function sendJson(res, statusCode, data, extraHeaders = {}) {
     res.writeHead(statusCode, {
         'Content-Type': 'application/json; charset=UTF-8',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'SAMEORIGIN',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        ...extraHeaders
     });
     res.end(JSON.stringify(data));
 }
@@ -155,19 +197,41 @@ function sendJson(res, statusCode, data) {
 function createSession(user) {
     const token = crypto.randomBytes(32).toString('base64url');
     const expiresAt = Date.now() + SESSION_TTL_MS;
+    try {
+        db.saveSession(token, user.id, user.role, expiresAt);
+    } catch (e) {
+        console.warn('Session DB persistence deferred:', e.message);
+    }
     sessions.set(token, { userId: user.id, role: user.role, expiresAt });
     return { token, expires_at: new Date(expiresAt).toISOString() };
 }
 
-function requireAdmin(req) {
+function getSessionFromToken(req) {
     const authorization = req.headers.authorization || '';
-    const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
-    const session = sessions.get(token);
+    const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : '';
+    if (!token) return null;
+
+    let session = sessions.get(token);
     if (!session || session.expiresAt <= Date.now()) {
-        if (token) sessions.delete(token);
-        return null;
+        const dbSession = db.getSession(token);
+        if (dbSession) {
+            session = {
+                userId: dbSession.user_id,
+                role: dbSession.role,
+                expiresAt: new Date(dbSession.expires_at).getTime()
+            };
+            sessions.set(token, session);
+        } else {
+            if (token) sessions.delete(token);
+            return null;
+        }
     }
-    return session.role === 'admin' ? session : null;
+    return session;
+}
+
+function requireAdmin(req) {
+    const session = getSessionFromToken(req);
+    return (session && session.role === 'admin') ? session : null;
 }
 
 /**
@@ -257,6 +321,9 @@ function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
         const headers = {
             'Content-Type': contentType,
+            'X-Content-Type-Options': 'nosniff',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Referrer-Policy': 'strict-origin-when-cross-origin',
             'Cache-Control': (ext === '.html' || filePath.endsWith('sw.js'))
                 ? 'no-cache, no-store, must-revalidate'
                 : 'no-cache'
@@ -294,6 +361,26 @@ function createRequestHandler(isDedicatedAdmin = false) {
         // REST API ROUTES (/api/*)
         // ==========================================
         if (pathname.startsWith('/api/')) {
+            const startReqTime = Date.now();
+            res.on('finish', () => {
+                const durationMs = Date.now() - startReqTime;
+                if (!IS_PRODUCTION || res.statusCode >= 400) {
+                    console.log(`[API] ${req.method} ${pathname} ${res.statusCode} (${durationMs}ms)`);
+                }
+            });
+
+            // General API Rate Limiting (300 requests/minute per IP)
+            const clientIp = getClientIp(req);
+            if (pathname !== '/api/health') {
+                const globalLimit = checkRateLimit(`api:${clientIp}`, 300, 60 * 1000);
+                if (!globalLimit.allowed) {
+                    return sendJson(res, 429, {
+                        success: false,
+                        error: 'Rate limit exceeded. Please wait a moment before sending more requests.'
+                    }, { 'Retry-After': String(globalLimit.retryAfterSec) });
+                }
+            }
+
             // Portal configuration endpoint (exposes cross-portal URLs for deployment)
             if (pathname === '/api/config' && req.method === 'GET') {
                 const hostOnly = (req.headers.host || 'localhost').split(':')[0];
@@ -325,7 +412,36 @@ function createRequestHandler(isDedicatedAdmin = false) {
                     status: 'online',
                     app: 'BantayBarangay API',
                     version: '2.0.0',
+                    uptime_seconds: Math.floor(process.uptime()),
+                    database: 'connected (SQLite WAL)',
                     timestamp: new Date().toISOString()
+                });
+            }
+
+            // System diagnostics (uptime, memory, active sessions, database metrics)
+            if (pathname === '/api/diagnostics' && req.method === 'GET') {
+                const mem = process.memoryUsage();
+                return sendJson(res, 200, {
+                    success: true,
+                    timestamp: new Date().toISOString(),
+                    uptime_seconds: Math.floor(process.uptime()),
+                    node_version: process.version,
+                    memory: {
+                        heapUsedMB: Math.round((mem.heapUsed / 1024 / 1024) * 10) / 10,
+                        heapTotalMB: Math.round((mem.heapTotal / 1024 / 1024) * 10) / 10,
+                        rssMB: Math.round((mem.rss / 1024 / 1024) * 10) / 10
+                    },
+                    sessions: {
+                        active_in_memory: sessions.size
+                    },
+                    rate_limits: {
+                        active_buckets: rateLimits.size
+                    },
+                    database: {
+                        status: 'operational',
+                        journal_mode: 'WAL',
+                        total_reports: db.getStats().total
+                    }
                 });
             }
 
@@ -347,13 +463,29 @@ function createRequestHandler(isDedicatedAdmin = false) {
                     const reports = db.getAllReports({
                         status: query.status,
                         category: query.category,
+                        agency: query.agency,
                         purok: query.purok,
-                        search: query.search
+                        search: query.search,
+                        limit: query.limit,
+                        offset: query.offset
                     });
-                    return sendJson(res, 200, { success: true, count: reports.length, data: reports });
+                    return sendJson(res, 200, {
+                        success: true,
+                        count: reports.length,
+                        limit: query.limit ? Number(query.limit) : null,
+                        offset: query.offset ? Number(query.offset) : 0,
+                        data: reports
+                    });
                 }
 
                 if (req.method === 'POST') {
+                    const postLimit = checkRateLimit(`report-create:${clientIp}`, 15, 60 * 1000);
+                    if (!postLimit.allowed) {
+                        return sendJson(res, 429, {
+                            success: false,
+                            error: 'You are submitting reports too quickly. Please wait a minute before filing another report.'
+                        }, { 'Retry-After': String(postLimit.retryAfterSec) });
+                    }
                     const body = await parseBody(req);
                     try {
                         const newReport = db.createReport(body);
@@ -372,7 +504,7 @@ function createRequestHandler(isDedicatedAdmin = false) {
                 }
             }
 
-            // Single report & status updates (/api/reports/:id)
+            // Single report & status updates & delete (/api/reports/:id)
             const reportMatch = pathname.match(/^\/api\/reports\/([A-Za-z0-9\-]+)$/);
             if (reportMatch) {
                 const reportId = reportMatch[1];
@@ -396,11 +528,81 @@ function createRequestHandler(isDedicatedAdmin = false) {
                         return sendJson(res, 400, { success: false, error: err.message });
                     }
                 }
+
+                if (req.method === 'DELETE') {
+                    if (!requireAdmin(req)) {
+                        return sendJson(res, 401, { success: false, error: 'Administrator authentication is required to delete reports.' });
+                    }
+                    const deleted = db.deleteReport(reportId);
+                    if (!deleted) {
+                        return sendJson(res, 404, { success: false, error: `Report ${reportId} not found.` });
+                    }
+                    return sendJson(res, 200, { success: true, message: `Report ${reportId} deleted successfully.` });
+                }
             }
 
-            // Send OTP
+            // Grid Safety & Power Advisories (/api/advisories)
+            if (pathname === '/api/advisories') {
+                if (req.method === 'GET') {
+                    const onlyActive = query.all === 'true' ? false : true;
+                    const advisories = db.getAdvisories(onlyActive);
+                    return sendJson(res, 200, { success: true, count: advisories.length, data: advisories });
+                }
+
+                if (req.method === 'POST') {
+                    if (!requireAdmin(req)) {
+                        return sendJson(res, 401, { success: false, error: 'Administrator authentication is required to publish advisories.' });
+                    }
+                    const body = await parseBody(req);
+                    try {
+                        const advisory = db.createAdvisory(body);
+                        return sendJson(res, 201, { success: true, message: 'Advisory published successfully.', data: advisory });
+                    } catch (err) {
+                        return sendJson(res, 400, { success: false, error: err.message });
+                    }
+                }
+            }
+
+            const advisoryMatch = pathname.match(/^\/api\/advisories\/([A-Za-z0-9\-]+)$/);
+            if (advisoryMatch) {
+                const advId = advisoryMatch[1];
+                if (req.method === 'DELETE') {
+                    if (!requireAdmin(req)) {
+                        return sendJson(res, 401, { success: false, error: 'Administrator authentication is required to delete advisories.' });
+                    }
+                    const deleted = db.deleteAdvisory(advId);
+                    if (!deleted) {
+                        return sendJson(res, 404, { success: false, error: `Advisory ${advId} not found.` });
+                    }
+                    return sendJson(res, 200, { success: true, message: `Advisory ${advId} deleted successfully.` });
+                }
+            }
+
+            // Send OTP (With Anti-Abuse Rate Limiting)
             if (pathname === '/api/auth/send-otp' && req.method === 'POST') {
                 const body = await parseBody(req);
+                const rawMobile = String(body.mobile || '').replace(/\D/g, '');
+                
+                // IP Rate limit: max 12 OTPs per 10 mins
+                const ipOtpLimit = checkRateLimit(`otp-ip:${clientIp}`, 12, 10 * 60 * 1000);
+                if (!ipOtpLimit.allowed) {
+                    return sendJson(res, 429, {
+                        success: false,
+                        error: 'Too many OTP requests from this network. Please wait a few minutes before trying again.'
+                    }, { 'Retry-After': String(ipOtpLimit.retryAfterSec) });
+                }
+
+                // Phone Rate limit: max 4 OTPs per 3 mins
+                if (rawMobile) {
+                    const phoneOtpLimit = checkRateLimit(`otp-phone:${rawMobile}`, 4, 3 * 60 * 1000);
+                    if (!phoneOtpLimit.allowed) {
+                        return sendJson(res, 429, {
+                            success: false,
+                            error: 'Too many verification codes requested for this phone number. Please wait 3 minutes before trying again.'
+                        }, { 'Retry-After': String(phoneOtpLimit.retryAfterSec) });
+                    }
+                }
+
                 try {
                     const otp = db.createOtp(body.mobile, body.purpose || 'registration');
                     const response = {
@@ -497,6 +699,8 @@ function createRequestHandler(isDedicatedAdmin = false) {
                     return sendJson(res, 404, { success: false, error: 'Account not found with this mobile or Gmail address.' });
                 }
                 if (!body.password || !db.verifyPassword(body.password, user.password_hash)) {
+                    // Record failed attempt
+                    checkRateLimit(`failed-login:${clientIp}`, 10, 5 * 60 * 1000);
                     return sendJson(res, 401, { success: false, error: 'Incorrect password.' });
                 }
                 const session = createSession(user);
@@ -514,6 +718,41 @@ function createRequestHandler(isDedicatedAdmin = false) {
                         purok: user.purok
                     }
                 });
+            }
+
+            // Get Current Authenticated Profile (/api/auth/me)
+            if (pathname === '/api/auth/me' && req.method === 'GET') {
+                const session = getSessionFromToken(req);
+                if (!session) {
+                    return sendJson(res, 401, { success: false, error: 'Authentication required.' });
+                }
+                const user = db.getUserById(session.userId);
+                if (!user) {
+                    return sendJson(res, 404, { success: false, error: 'User profile not found.' });
+                }
+                return sendJson(res, 200, {
+                    success: true,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        mobile: user.mobile,
+                        email: user.email,
+                        role: user.role,
+                        purok: user.purok,
+                        phone_verified: user.phone_verified
+                    }
+                });
+            }
+
+            // Invalidate Session Token (/api/auth/logout)
+            if (pathname === '/api/auth/logout' && req.method === 'POST') {
+                const authorization = req.headers.authorization || '';
+                const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : '';
+                if (token) {
+                    sessions.delete(token);
+                    db.deleteSession(token);
+                }
+                return sendJson(res, 200, { success: true, message: 'Logged out successfully.' });
             }
 
             // Unmatched API endpoint

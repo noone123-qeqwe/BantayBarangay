@@ -108,13 +108,43 @@ CREATE TABLE IF NOT EXISTS report_timeline (
 );
 
 -- ----------------------------------------------------------
--- INDEXES FOR PERFORMANCE
+-- 8. SESSIONS (Persistent Authentication Sessions)
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS sessions (
+    token TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    role TEXT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ----------------------------------------------------------
+-- 9. ADVISORIES (Power Outage & Grid Safety Advisories)
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS advisories (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    severity TEXT NOT NULL DEFAULT 'info' CHECK(severity IN ('info', 'advisory', 'warning', 'critical')),
+    agency TEXT NOT NULL DEFAULT 'MASELCO',
+    active INTEGER NOT NULL DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ----------------------------------------------------------
+-- INDEXES FOR PERFORMANCE & CONCURRENCY
 -- ----------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_users_mobile ON users(mobile);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
 CREATE INDEX IF NOT EXISTS idx_reports_category ON reports(category_id);
+CREATE INDEX IF NOT EXISTS idx_reports_agency ON reports(agency_id);
 CREATE INDEX IF NOT EXISTS idx_reports_purok ON reports(purok);
 CREATE INDEX IF NOT EXISTS idx_reports_created ON reports(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_timeline_report ON report_timeline(report_id);
 CREATE INDEX IF NOT EXISTS idx_otp_mobile ON verification_otps(mobile, is_verified);
+CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
+CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_advisories_active ON advisories(active, created_at DESC);

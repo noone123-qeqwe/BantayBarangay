@@ -85,6 +85,8 @@ function initDb(forceFresh = false) {
     if (forceFresh) {
         // Drop existing tables in correct dependency order
         db.exec(`
+            DROP TABLE IF EXISTS sessions;
+            DROP TABLE IF EXISTS advisories;
             DROP TABLE IF EXISTS report_timeline;
             DROP TABLE IF EXISTS reports;
             DROP TABLE IF EXISTS verification_otps;
@@ -195,6 +197,10 @@ function getAllReports(filters = {}) {
         query += ' AND r.category_id = ?';
         params.push(filters.category);
     }
+    if (filters.agency && filters.agency !== 'all') {
+        query += ' AND (r.agency_id = ? OR a.name LIKE ?)';
+        params.push(filters.agency, `%${filters.agency}%`);
+    }
     if (filters.purok && filters.purok !== 'all') {
         query += ' AND r.purok = ?';
         params.push(filters.purok);
@@ -206,6 +212,16 @@ function getAllReports(filters = {}) {
     }
 
     query += ' ORDER BY r.created_at DESC';
+
+    // Support pagination (limit & offset)
+    const limitNum = Number(filters.limit);
+    const offsetNum = Number(filters.offset);
+    if (Number.isInteger(limitNum) && limitNum > 0) {
+        const safeLimit = Math.min(limitNum, 500);
+        const safeOffset = Number.isInteger(offsetNum) && offsetNum >= 0 ? offsetNum : 0;
+        query += ' LIMIT ? OFFSET ?';
+        params.push(safeLimit, safeOffset);
+    }
 
     const stmt = db.prepare(query);
     const reports = stmt.all(...params);
@@ -372,6 +388,18 @@ function updateReportStatus(id, updateData) {
 }
 
 /**
+ * Permanently delete a report and its cascade timeline records
+ */
+function deleteReport(id) {
+    const db = getDb();
+    const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(id);
+    if (!existing) return false;
+    db.prepare('DELETE FROM report_timeline WHERE report_id = ?').run(id);
+    const result = db.prepare('DELETE FROM reports WHERE id = ?').run(id);
+    return result.changes > 0;
+}
+
+/**
  * Lookup user by Philippine mobile number (e.g. '09171234567')
  */
 function getUserByMobile(mobile) {
@@ -389,6 +417,16 @@ function getUserByEmail(email) {
     const db = getDb();
     const stmt = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)');
     return stmt.get(email.trim());
+}
+
+/**
+ * Lookup user by ID without sensitive password hash
+ */
+function getUserById(id) {
+    if (!id) return null;
+    const db = getDb();
+    const stmt = db.prepare('SELECT id, name, mobile, email, purok, role, phone_verified, created_at FROM users WHERE id = ?');
+    return stmt.get(id);
 }
 
 /**
@@ -503,6 +541,104 @@ function verifyOtp(mobile, otpCode, purpose = 'registration') {
     return { valid: true, message: 'Phone number verified successfully.' };
 }
 
+// ── SESSION MANAGEMENT (PERSISTENT SQLite STORAGE) ───────────
+
+/**
+ * Save or refresh an active session token in SQLite
+ */
+function saveSession(token, userId, role, expiresAt) {
+    const db = getDb();
+    const expiresIso = typeof expiresAt === 'number' ? new Date(expiresAt).toISOString() : String(expiresAt);
+    const stmt = db.prepare(`
+        INSERT OR REPLACE INTO sessions (token, user_id, role, expires_at, created_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `);
+    stmt.run(token, userId, role, expiresIso);
+}
+
+/**
+ * Retrieve session by token with user metadata
+ */
+function getSession(token) {
+    if (!token) return null;
+    const db = getDb();
+    const stmt = db.prepare(`
+        SELECT s.token, s.user_id, s.role, s.expires_at,
+               u.name, u.mobile, u.email, u.purok
+        FROM sessions s
+        JOIN users u ON s.user_id = u.id
+        WHERE s.token = ?
+    `);
+    const session = stmt.get(token);
+    if (!session) return null;
+    if (new Date(session.expires_at).getTime() <= Date.now()) {
+        deleteSession(token);
+        return null;
+    }
+    return session;
+}
+
+/**
+ * Invalidate a session token
+ */
+function deleteSession(token) {
+    if (!token) return;
+    const db = getDb();
+    db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
+}
+
+/**
+ * Clean up expired sessions from the database
+ */
+function cleanExpiredSessions() {
+    const db = getDb();
+    const nowIso = new Date().toISOString();
+    return db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(nowIso);
+}
+
+// ── POWER OUTAGE & GRID SAFETY ADVISORIES ────────────────────
+
+/**
+ * Retrieve advisories list
+ */
+function getAdvisories(onlyActive = true) {
+    const db = getDb();
+    const query = onlyActive 
+        ? 'SELECT * FROM advisories WHERE active = 1 ORDER BY created_at DESC' 
+        : 'SELECT * FROM advisories ORDER BY created_at DESC';
+    return db.prepare(query).all();
+}
+
+/**
+ * Create a new advisory notice
+ */
+function createAdvisory(data) {
+    const db = getDb();
+    const title = requireText(data.title, 'Title', 200);
+    const content = requireText(data.content, 'Content', 2000);
+    const severity = data.severity || 'info';
+    const validSeverities = new Set(['info', 'advisory', 'warning', 'critical']);
+    if (!validSeverities.has(severity)) throw new Error('Invalid advisory severity. Use info, advisory, warning, or critical.');
+    const agency = data.agency || 'MASELCO';
+    const id = data.id || `ADV-${Date.now().toString(36).toUpperCase()}`;
+
+    const stmt = db.prepare(`
+        INSERT INTO advisories (id, title, content, severity, agency, active, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `);
+    stmt.run(id, title, content, severity, agency);
+    return db.prepare('SELECT * FROM advisories WHERE id = ?').get(id);
+}
+
+/**
+ * Delete or deactivate an advisory
+ */
+function deleteAdvisory(id) {
+    const db = getDb();
+    const result = db.prepare('DELETE FROM advisories WHERE id = ?').run(id);
+    return result.changes > 0;
+}
+
 /**
  * Get lookup data for forms (categories, puroks, agencies)
  */
@@ -523,13 +659,22 @@ module.exports = {
     getReportById,
     createReport,
     updateReportStatus,
+    deleteReport,
     getUserByMobile,
     getUserByEmail,
+    getUserById,
     createUser,
     updateUserPhone,
     createOtp,
     verifyOtp,
-    getLookups
-    ,normalizeMobile
-    ,verifyPassword
+    saveSession,
+    getSession,
+    deleteSession,
+    cleanExpiredSessions,
+    getAdvisories,
+    createAdvisory,
+    deleteAdvisory,
+    getLookups,
+    normalizeMobile,
+    verifyPassword
 };

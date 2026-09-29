@@ -457,6 +457,10 @@ const Reports = (() => {
   function remove(id) {
     const all = getAll().filter(r => r.id !== id);
     save(all);
+
+    if (typeof API !== 'undefined' && API.deleteReport) {
+      API.deleteReport(id).catch(err => console.warn('SQLite API delete deferred:', err));
+    }
   }
 
   // ── FILTER ────────────────────────────────────────────────

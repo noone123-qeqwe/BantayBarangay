@@ -37,9 +37,9 @@ server.listen(PORT, async () => {
                 res.on('data', chunk => data += chunk);
                 res.on('end', () => {
                     try {
-                        resolve({ status: res.statusCode, data: JSON.parse(data) });
+                        resolve({ status: res.statusCode, headers: res.headers, data: JSON.parse(data) });
                     } catch (e) {
-                        resolve({ status: res.statusCode, raw: data });
+                        resolve({ status: res.statusCode, headers: res.headers, raw: data });
                     }
                 });
             });
@@ -135,6 +135,70 @@ server.listen(PORT, async () => {
             mobile: '09171234567'
         });
         assert('POST /api/auth/login rejects missing password', rejectedLogin.status === 401);
+
+        // 9. HTTP Security Headers
+        assert('HTTP security header nosniff present', health.headers['x-content-type-options'] === 'nosniff');
+        assert('HTTP security header SAMEORIGIN present', health.headers['x-frame-options'] === 'SAMEORIGIN');
+
+        // 10. Authenticated Profile & Session Check (/api/auth/me)
+        const meRes = await request('/api/auth/me', {
+            headers: { Authorization: `Bearer ${loginRes.data.token}` }
+        });
+        assert('GET /api/auth/me returns authenticated resident profile', meRes.status === 200 && meRes.data.user.name === 'Juan dela Cruz');
+
+        // 11. Backend Agency Filtering & Pagination
+        const agencyRes = await request('/api/reports?agency=MASELCO');
+        assert('GET /api/reports?agency=MASELCO filters correctly', agencyRes.status === 200 && agencyRes.data.data.every(r => r.agency_id === 'MASELCO'));
+
+        const pageRes = await request('/api/reports?limit=2&offset=0');
+        assert('GET /api/reports?limit=2 honors pagination limit', pageRes.status === 200 && pageRes.data.data.length === 2 && pageRes.data.limit === 2);
+
+        // 12. Advisories API
+        const advisoriesRes = await request('/api/advisories');
+        assert('GET /api/advisories returns list of advisories', advisoriesRes.status === 200 && Array.isArray(advisoriesRes.data.data) && advisoriesRes.data.data.length >= 2);
+
+        const newAdvRes = await request('/api/advisories', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${adminLogin.data.token}` }
+        }, {
+            title: 'Substation Transformer Testing Notice',
+            content: 'Preventive oil sampling at Masbate Substation on Friday morning.',
+            severity: 'advisory',
+            agency: 'MASELCO'
+        });
+        assert('POST /api/advisories creates new advisory notice', newAdvRes.status === 201 && newAdvRes.data.data.id.startsWith('ADV-'));
+
+        const deleteAdvRes = await request(`/api/advisories/${newAdvRes.data.data.id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${adminLogin.data.token}` }
+        });
+        assert('DELETE /api/advisories/:id removes advisory', deleteAdvRes.status === 200 && deleteAdvRes.data.success === true);
+
+        // 13. Report Permanent Deletion (/api/reports/:id)
+        const deleteReportRes = await request(`/api/reports/${newReportId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${adminLogin.data.token}` }
+        });
+        assert('DELETE /api/reports/:id deletes report with admin authorization', deleteReportRes.status === 200 && deleteReportRes.data.success === true);
+
+        const reGetDeleted = await request(`/api/reports/${newReportId}`);
+        assert('GET /api/reports/:id confirms report was deleted (404)', reGetDeleted.status === 404);
+
+        // 14. Diagnostics Endpoint
+        const diagRes = await request('/api/diagnostics');
+        assert('GET /api/diagnostics returns operational metrics', diagRes.status === 200 && diagRes.data.database.status === 'operational' && Boolean(diagRes.data.memory));
+
+        // 15. Session Logout (/api/auth/logout)
+        const logoutRes = await request('/api/auth/logout', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${loginRes.data.token}` }
+        });
+        assert('POST /api/auth/logout invalidates session', logoutRes.status === 200 && logoutRes.data.success === true);
+
+        const meAfterLogout = await request('/api/auth/me', {
+            headers: { Authorization: `Bearer ${loginRes.data.token}` }
+        });
+        assert('GET /api/auth/me rejects invalidated token (401)', meAfterLogout.status === 401);
 
         console.log('\n==========================================================');
         if (failures === 0) {
