@@ -9,4 +9,4 @@ scratch/
 .env
 uploads/*
 !uploads/.gitkeep
-
+.vscode/

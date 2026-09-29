@@ -790,29 +790,135 @@ function initApp() {
   }
 
   // ── UPDATE ACCURACY BADGE UI ──────────────────────────────────
-  function updateGpsBadge(acc) {
+  // ── UPDATE ACCURACY BADGE UI ──────────────────────────────────
+  function updateGpsBadge(acc, sampleCount = 0) {
     const badge = document.getElementById('gpsAccuracyBadge');
     if (!badge) return;
-    badge.classList.remove('hidden', 'acc-high', 'acc-medium', 'acc-coarse');
+    badge.classList.remove('hidden', 'acc-ultra', 'acc-high', 'acc-medium', 'acc-coarse');
     let level = 'acc-high';
     let icon = '🎯';
-    let text = `Precision GPS: ±${acc}m (Satellite Lock)`;
-    if (acc > 70) {
-      level = 'acc-coarse';
-      icon = '⚠️';
-      text = `Coarse Location: ±${acc}m (Indoors or IP estimate)`;
-    } else if (acc > 25) {
+    const sampleSuffix = sampleCount > 1 ? ` (${sampleCount} GNSS fixes averaged)` : '';
+    let text = `Precision GPS: ±${acc}m${sampleSuffix}`;
+
+    if (acc <= 6) {
+      level = 'acc-ultra';
+      icon = '🎯';
+      text = `Ultra-Precision GNSS: ±${acc}m (Multi-Satellite Lock)${sampleSuffix}`;
+    } else if (acc <= 15) {
+      level = 'acc-high';
+      icon = '🛰️';
+      text = `High Precision GPS: ±${acc}m (Satellite Lock)${sampleSuffix}`;
+    } else if (acc <= 35) {
       level = 'acc-medium';
       icon = '📍';
-      text = `Good Accuracy: ±${acc}m (Cell/Wi-Fi assisted)`;
+      text = `Good Accuracy: ±${acc}m (Cell/Wi-Fi Assisted)${sampleSuffix}`;
+    } else {
+      level = 'acc-coarse';
+      icon = '⚠️';
+      text = `Coarse Location: ±${acc}m (Acquiring Satellites...)${sampleSuffix}`;
     }
+
     badge.classList.add(level);
     badge.innerHTML = `<span class="gps-accuracy-icon">${icon}</span> <span>${text}</span>`;
   }
 
-  // ── HIGH-ACCURACY PROGRESSIVE GPS DETECTION ───────────────────
+  // ── HIGH-PRECISION MULTI-SAMPLE GNSS ENGINE ───────────────────
   let activeGpsWatchId = null;
   let activeGpsTimeoutTimer = null;
+  let activeGpsEarlyExitTimer = null;
+  let isGpsAcquiring = false;
+
+  /**
+   * Computes the Inverse-Variance Weighted Centroid & Standard Error of GPS fixes.
+   * Discards multipath spikes and coarse outliers.
+   * @param {GeolocationPosition[]} fixes
+   */
+  function computeOptimalGpsEstimate(fixes) {
+    if (!fixes || fixes.length === 0) return null;
+    if (fixes.length === 1) {
+      return {
+        lat: parseFloat(fixes[0].coords.latitude.toFixed(6)),
+        lng: parseFloat(fixes[0].coords.longitude.toFixed(6)),
+        accuracy: Math.round(fixes[0].coords.accuracy),
+        altitude: fixes[0].coords.altitude ? Math.round(fixes[0].coords.altitude) : null,
+        altitudeAccuracy: fixes[0].coords.altitudeAccuracy ? Math.round(fixes[0].coords.altitudeAccuracy) : null,
+        heading: fixes[0].coords.heading || null,
+        speed: fixes[0].coords.speed || null,
+        sampleCount: 1
+      };
+    }
+
+    // 1. Sort ascending by accuracy (tightest fixes first)
+    const sorted = [...fixes].sort((a, b) => a.coords.accuracy - b.coords.accuracy);
+    const bestAcc = sorted[0].coords.accuracy;
+
+    // 2. Outlier rejection:
+    // Once tight fixes are present, filter out fixes > 2.2x worse or > 40m
+    const maxAllowedAcc = bestAcc <= 15 ? Math.max(bestAcc * 2.2, 20) : Math.max(bestAcc * 2.5, 60);
+    let validFixes = sorted.filter(f => f.coords.accuracy <= maxAllowedAcc);
+    if (validFixes.length === 0) validFixes = [sorted[0]];
+
+    // 3. Inverse-Variance Weighting (WLS Maximum Likelihood Estimation):
+    // Weight w = 1 / (accuracy^2).
+    let totalWeight = 0;
+    let weightedLat = 0;
+    let weightedLng = 0;
+
+    for (const f of validFixes) {
+      const acc = Math.max(f.coords.accuracy, 1);
+      const w = 1 / (acc * acc);
+      totalWeight += w;
+      weightedLat += f.coords.latitude * w;
+      weightedLng += f.coords.longitude * w;
+    }
+
+    const estLat = weightedLat / totalWeight;
+    const estLng = weightedLng / totalWeight;
+
+    // Filter spatial outliers: discard any sample that is > 35m from the computed centroid
+    const filteredSpatial = validFixes.filter(f => {
+      const dKm = distanceInKm(f.coords.latitude, f.coords.longitude, estLat, estLng);
+      return (dKm * 1000) <= 35;
+    });
+
+    let finalLat = estLat;
+    let finalLng = estLng;
+    let finalSampleCount = validFixes.length;
+
+    // If spatial outliers were dropped, re-evaluate centroid on tightly clustered fixes
+    if (filteredSpatial.length >= 1 && filteredSpatial.length < validFixes.length) {
+      let refinedWeight = 0;
+      let refinedLat = 0;
+      let refinedLng = 0;
+      for (const f of filteredSpatial) {
+        const acc = Math.max(f.coords.accuracy, 1);
+        const w = 1 / (acc * acc);
+        refinedWeight += w;
+        refinedLat += f.coords.latitude * w;
+        refinedLng += f.coords.longitude * w;
+      }
+      finalLat = refinedLat / refinedWeight;
+      finalLng = refinedLng / refinedWeight;
+      finalSampleCount = filteredSpatial.length;
+    }
+
+    // Standard error of weighted mean = 1 / sqrt(totalWeight)
+    const se = Math.round(1 / Math.sqrt(totalWeight));
+    const refinedAcc = Math.max(2, Math.min(Math.round(bestAcc), Math.max(se, Math.round(bestAcc * 0.82))));
+
+    const bestSample = validFixes[0];
+
+    return {
+      lat: parseFloat(finalLat.toFixed(6)),
+      lng: parseFloat(finalLng.toFixed(6)),
+      accuracy: refinedAcc,
+      altitude: bestSample.coords.altitude ? Math.round(bestSample.coords.altitude) : null,
+      altitudeAccuracy: bestSample.coords.altitudeAccuracy ? Math.round(bestSample.coords.altitudeAccuracy) : null,
+      heading: bestSample.coords.heading || null,
+      speed: bestSample.coords.speed || null,
+      sampleCount: finalSampleCount
+    };
+  }
 
   function runHighAccuracyGps() {
     if (!navigator.geolocation) {
@@ -824,82 +930,9 @@ function initApp() {
     const addrInput = document.getElementById('reportAddressInput');
     const origBtnHtml = btn ? btn.innerHTML : '';
 
-    if (btn) {
-      btn.disabled = true;
-      btn.classList.add('loading');
-      btn.innerHTML = `<span class="spinner-border" style="width:13px;height:13px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite;margin-right:6px"></span> Acquiring high-precision GNSS…`;
-    }
-    UI.toast('Locking onto satellite GNSS… Filtering precision coordinates.', 'info');
-
-    let bestFix = null;
     let collectedFixes = [];
-
-    function applyPosition(pos, isFinal = false) {
-      if (!pos || !pos.coords) return;
-      collectedFixes.push(pos);
-
-      if (!bestFix || pos.coords.accuracy < bestFix.coords.accuracy) {
-        bestFix = pos;
-      }
-
-      // Multi-sample satellite convergence filtering:
-      // If we have collected multiple tight fixes (<= 25m), compute weighted average coordinate
-      const highQualityFixes = collectedFixes.filter(f => f.coords.accuracy <= 25);
-      let targetLat, targetLng, targetAcc;
-
-      if (highQualityFixes.length >= 2) {
-        let totalWeight = 0;
-        let weightedLat = 0;
-        let weightedLng = 0;
-        highQualityFixes.forEach(f => {
-          const w = 1 / Math.max(f.coords.accuracy, 1);
-          totalWeight += w;
-          weightedLat += f.coords.latitude * w;
-          weightedLng += f.coords.longitude * w;
-        });
-        targetLat = weightedLat / totalWeight;
-        targetLng = weightedLng / totalWeight;
-        targetAcc = Math.min(...highQualityFixes.map(f => f.coords.accuracy));
-      } else {
-        targetLat = bestFix.coords.latitude;
-        targetLng = bestFix.coords.longitude;
-        targetAcc = Math.round(bestFix.coords.accuracy);
-      }
-
-      const formattedLat = parseFloat(targetLat.toFixed(6));
-      const formattedLng = parseFloat(targetLng.toFixed(6));
-      const roundedAcc = Math.round(targetAcc);
-
-      selectedLocation.lat = formattedLat;
-      selectedLocation.lng = formattedLng;
-      selectedLocation.accuracy = roundedAcc;
-      selectedLocation.hasGps = true;
-      updateGpsBadge(roundedAcc);
-
-      if (isFinal) {
-        cleanGpsWatch();
-        if (btn) {
-          btn.disabled = false;
-          btn.classList.remove('loading');
-          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Re-detect GPS`;
-        }
-
-        UI.toast(`GPS locked with high precision (±${roundedAcc}m accuracy)`, roundedAcc <= 20 ? 'success' : 'info');
-
-        reverseGeocode(formattedLat, formattedLng).then(resolvedAddr => {
-          const gpsDetail = `(GPS: ${formattedLat.toFixed(6)}, ${formattedLng.toFixed(6)}, ±${roundedAcc}m)`;
-          const finalAddr = resolvedAddr ? `${resolvedAddr} ${gpsDetail}` : `Masbate Incident Location ${gpsDetail}`;
-          if (addrInput) {
-            addrInput.value = finalAddr;
-            selectedLocation.address = finalAddr;
-            document.getElementById('err-address')?.classList.add('hidden');
-          }
-          saveDraft();
-          renderPossibleReports();
-          syncMapMarker(formattedLat, formattedLng, finalAddr);
-        });
-      }
-    }
+    let bestFix = null;
+    let consecutiveTightFixes = 0;
 
     function cleanGpsWatch() {
       if (activeGpsWatchId !== null) {
@@ -910,51 +943,154 @@ function initApp() {
         clearTimeout(activeGpsTimeoutTimer);
         activeGpsTimeoutTimer = null;
       }
+      if (activeGpsEarlyExitTimer !== null) {
+        clearTimeout(activeGpsEarlyExitTimer);
+        activeGpsEarlyExitTimer = null;
+      }
+      isGpsAcquiring = false;
+    }
+
+    // If already acquiring and user clicks again, instantly finalize with current best estimate
+    if (isGpsAcquiring && collectedFixes.length > 0) {
+      finalizeFix();
+      return;
     }
 
     cleanGpsWatch();
+    isGpsAcquiring = true;
+
+    if (btn) {
+      btn.classList.add('loading');
+      btn.innerHTML = `<span class="spinner-border" style="width:13px;height:13px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite;margin-right:6px"></span> Acquiring GNSS Satellites…`;
+    }
+    UI.toast('Connecting to GNSS satellites… Multi-sample accuracy refinement active.', 'info');
+
+    function finalizeFix() {
+      cleanGpsWatch();
+      const estimate = computeOptimalGpsEstimate(collectedFixes);
+      if (!estimate) {
+        if (btn) {
+          btn.classList.remove('loading');
+          btn.innerHTML = origBtnHtml || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Auto-Detect High-Accuracy GPS`;
+        }
+        UI.toast('Could not lock GNSS satellites. Please check permissions or use "Pinpoint on Map".', 'error');
+        return;
+      }
+
+      selectedLocation.lat = estimate.lat;
+      selectedLocation.lng = estimate.lng;
+      selectedLocation.accuracy = estimate.accuracy;
+      selectedLocation.altitude = estimate.altitude;
+      selectedLocation.altitudeAccuracy = estimate.altitudeAccuracy;
+      selectedLocation.heading = estimate.heading;
+      selectedLocation.speed = estimate.speed;
+      selectedLocation.hasGps = true;
+
+      updateGpsBadge(estimate.accuracy, estimate.sampleCount);
+
+      if (btn) {
+        btn.classList.remove('loading');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Re-detect GPS (±${estimate.accuracy}m)`;
+      }
+
+      const toastType = estimate.accuracy <= 10 ? 'success' : estimate.accuracy <= 25 ? 'info' : 'warning';
+      UI.toast(`GNSS Lock Established (±${estimate.accuracy}m precision across ${estimate.sampleCount} fixes)`, toastType);
+
+      reverseGeocode(estimate.lat, estimate.lng).then(resolvedAddr => {
+        const gpsDetail = `(GPS: ${estimate.lat.toFixed(6)}, ${estimate.lng.toFixed(6)}, ±${estimate.accuracy}m)`;
+        const finalAddr = resolvedAddr ? `${resolvedAddr} ${gpsDetail}` : `Masbate Incident Location ${gpsDetail}`;
+        if (addrInput) {
+          addrInput.value = finalAddr;
+          selectedLocation.address = finalAddr;
+          document.getElementById('err-address')?.classList.add('hidden');
+        }
+        saveDraft();
+        renderPossibleReports();
+        syncMapMarker(estimate.lat, estimate.lng, finalAddr);
+      });
+    }
+
+    function onFixReceived(pos) {
+      if (!pos || !pos.coords) return;
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const acc = pos.coords.accuracy;
+
+      // Validate bounds within the Philippines (lat 4.5 - 21.5, lng 116.5 - 127.5)
+      if (lat < 4.5 || lat > 21.5 || lng < 116.5 || lng > 127.5) return;
+
+      // Filter multipath teleportation anomaly
+      if (collectedFixes.length > 0) {
+        const last = collectedFixes[collectedFixes.length - 1];
+        const distM = distanceInKm(last.coords.latitude, last.coords.longitude, lat, lng) * 1000;
+        const timeDiffSec = Math.max((pos.timestamp - last.timestamp) / 1000, 0.1);
+        if (distM > 45 && (distM / timeDiffSec) > 35) {
+          console.warn('[GPS] Discarding multipath jump spike:', distM, 'm');
+          return;
+        }
+      }
+
+      collectedFixes.push(pos);
+      if (!bestFix || acc < bestFix.coords.accuracy) {
+        bestFix = pos;
+      }
+
+      const currentEstimate = computeOptimalGpsEstimate(collectedFixes);
+      if (currentEstimate) {
+        updateGpsBadge(currentEstimate.accuracy, currentEstimate.sampleCount);
+
+        if (btn) {
+          btn.innerHTML = `<span class="spinner-border" style="width:12px;height:12px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite;margin-right:6px"></span> Lock Fix: ±${currentEstimate.accuracy}m [Tap to finish]`;
+        }
+
+        // Fast-path lock: Ultra precision <= 5m with at least 2 samples
+        if (currentEstimate.accuracy <= 5) {
+          consecutiveTightFixes++;
+          if (consecutiveTightFixes >= 2) {
+            finalizeFix();
+            return;
+          }
+        }
+
+        // Convergence check: >= 4 samples with accuracy <= 14m
+        if (collectedFixes.length >= 4 && currentEstimate.accuracy <= 14) {
+          if (!activeGpsEarlyExitTimer) {
+            activeGpsEarlyExitTimer = setTimeout(() => {
+              if (isGpsAcquiring) finalizeFix();
+            }, 1200);
+          }
+        }
+      }
+    }
 
     // 1. High-accuracy watch to acquire satellite locks
     try {
       activeGpsWatchId = navigator.geolocation.watchPosition(
-        pos => {
-          applyPosition(pos, false);
-          // If accuracy <= 8m, that's top tier GNSS lock: finalize quickly!
-          if (pos.coords.accuracy <= 8) {
-            applyPosition(pos, true);
-          }
-        },
+        onFixReceived,
         err => {
-          console.warn('High-accuracy GPS watch warning:', err);
+          console.warn('[GPS] Watch warning:', err.message);
         },
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
       );
     } catch (e) {
-      console.warn('watchPosition failed:', e);
+      console.warn('[GPS] watchPosition failed:', e);
     }
 
-    // 2. Timeout settling period: finalize with best fix or fallback to single-shot
+    // 2. Hardware kick-start via concurrent high-accuracy single shot
+    try {
+      navigator.geolocation.getCurrentPosition(
+        onFixReceived,
+        err => console.warn('[GPS] Initial poll warning:', err.message),
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    } catch (_) {}
+
+    // 3. Master settling timeout: finalize with optimal centroid after 12 seconds
     activeGpsTimeoutTimer = setTimeout(() => {
-      if (bestFix) {
-        applyPosition(bestFix, true);
-      } else {
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            applyPosition(pos, true);
-          },
-          err => {
-            cleanGpsWatch();
-            if (btn) {
-              btn.disabled = false;
-              btn.classList.remove('loading');
-              btn.innerHTML = origBtnHtml || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Auto-Detect GPS`;
-            }
-            UI.toast('Could not detect GPS. Please check location permissions or use "Pinpoint on Map".', 'error');
-          },
-          { enableHighAccuracy: false, timeout: 6000 }
-        );
+      if (isGpsAcquiring) {
+        finalizeFix();
       }
-    }, 3500);
+    }, 12000);
   }
 
   // GEOLOCATE BUTTON LISTENER
@@ -1251,20 +1387,69 @@ function initApp() {
   });
 
   document.getElementById('btnMapLocateMe')?.addEventListener('click', () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        const lat = parseFloat(pos.coords.latitude.toFixed(6));
-        const lng = parseFloat(pos.coords.longitude.toFixed(6));
-        if (pinpointMap) {
-          pinpointMap.setView([lat, lng], 18);
-          if (pinpointMarker) pinpointMarker.setLatLng([lat, lng]);
-          if (pinpointCircle) {
-            pinpointCircle.setLatLng([lat, lng]);
-            pinpointCircle.setRadius(Math.min(pos.coords.accuracy || 10, 30));
+    if (!navigator.geolocation) {
+      UI.toast('Geolocation is not supported by your browser.', 'error');
+      return;
+    }
+    const locateBtn = document.getElementById('btnMapLocateMe');
+    const origHtml = locateBtn ? locateBtn.innerHTML : '';
+    if (locateBtn) {
+      locateBtn.disabled = true;
+      locateBtn.innerHTML = `<span class="spinner-border" style="width:12px;height:12px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite"></span> Acquiring…`;
+    }
+    UI.toast('Locking high-accuracy GPS on map… Hold still for satellite fix.', 'info');
+
+    let mapWatchId = null;
+    let bestAcc = 9999;
+    const locateTimer = setTimeout(() => {
+      if (mapWatchId !== null) navigator.geolocation.clearWatch(mapWatchId);
+      if (locateBtn) {
+        locateBtn.disabled = false;
+        locateBtn.innerHTML = origHtml;
+      }
+    }, 10000);
+
+    try {
+      mapWatchId = navigator.geolocation.watchPosition(
+        pos => {
+          const lat = parseFloat(pos.coords.latitude.toFixed(6));
+          const lng = parseFloat(pos.coords.longitude.toFixed(6));
+          const acc = Math.round(pos.coords.accuracy || 10);
+
+          if (acc <= bestAcc || acc <= 15) {
+            bestAcc = acc;
+            if (pinpointMap) {
+              pinpointMap.setView([lat, lng], Math.max(pinpointMap.getZoom(), 18));
+              if (pinpointMarker) pinpointMarker.setLatLng([lat, lng]);
+              if (pinpointCircle) {
+                pinpointCircle.setLatLng([lat, lng]);
+                pinpointCircle.setRadius(acc);
+                pinpointCircle.setStyle({
+                  color: acc <= 8 ? '#10b981' : acc <= 25 ? '#38bdf8' : '#f59e0b',
+                  fillColor: acc <= 8 ? '#10b981' : acc <= 25 ? '#38bdf8' : '#f59e0b',
+                  fillOpacity: 0.16
+                });
+              }
+              onPinMoved(lat, lng);
+            }
+            if (acc <= 6) {
+              clearTimeout(locateTimer);
+              if (mapWatchId !== null) navigator.geolocation.clearWatch(mapWatchId);
+              if (locateBtn) {
+                locateBtn.disabled = false;
+                locateBtn.innerHTML = origHtml;
+              }
+            }
           }
-          onPinMoved(lat, lng);
-        }
-      }, null, { enableHighAccuracy: true, timeout: 8000 });
+        },
+        err => console.warn('[Map GPS] watch warning:', err.message),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    } catch (e) {
+      if (locateBtn) {
+        locateBtn.disabled = false;
+        locateBtn.innerHTML = origHtml;
+      }
     }
   });
 

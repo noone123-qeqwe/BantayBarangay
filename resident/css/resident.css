@@ -3919,6 +3919,13 @@ button.nav-item {
   transition: all 0.25s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
+.gps-accuracy-badge.acc-ultra {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(52, 211, 153, 0.7);
+  color: #6ee7b7;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+  animation: gpsPulseUltra 2s ease-in-out infinite;
+}
 .gps-accuracy-badge.acc-high {
   background: rgba(16, 185, 129, 0.15);
   border-color: rgba(16, 185, 129, 0.4);
@@ -3933,6 +3940,15 @@ button.nav-item {
   background: rgba(245, 158, 11, 0.15);
   border-color: rgba(245, 158, 11, 0.4);
   color: #fbbf24;
+}
+
+@keyframes gpsPulseUltra {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.65);
+  }
 }
 
 .pinpoint-map-dialog {
