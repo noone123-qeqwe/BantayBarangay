@@ -23,16 +23,16 @@ const Reports = (() => {
 
   function apiPayload(report) {
     const catMap = {
-      'Toppled / Leaning Utility Pole': 'electric', 'Snapped / Downed Power Lines': 'electric',
-      'Low-Hanging Wires': 'electric', 'Tangled or Crossed Lines': 'electric',
-      'Broken Crossarm / Insulator': 'electric', 'Blown Transformer': 'electric',
-      'Transformer Oil Leak / Smoking': 'electric', 'Sparking / Arcing Transformer': 'electric',
-      'Service Drop Disconnection': 'electric', 'Service Wire Sparking / Short Circuit': 'electric',
-      'Damaged Electric Meter Box': 'electric', 'Total Blackout (Area-wide)': 'electric',
-      'Rotational Brownout / Load Shedding': 'electric', 'Low Voltage / Fluctuating Power': 'electric',
-      'Unscheduled Interruption (Cause Unknown)': 'electric', 'Tree Branches Entangled in Wires': 'electric',
-      'Tree Branch Fell on Lines': 'electric', 'Broken Electric Post': 'electric', 'Pothole': 'pothole',
-      'Clogged Drainage': 'drainage', 'Busted Streetlight': 'streetlight'
+      'Toppled / Leaning Utility Pole': 'line_pole', 'Snapped / Downed Power Lines': 'line_pole',
+      'Low-Hanging Wires': 'line_pole', 'Tangled or Crossed Lines': 'line_pole',
+      'Broken Crossarm / Insulator': 'line_pole', 'Blown Transformer': 'transformer',
+      'Transformer Oil Leak / Smoking': 'transformer', 'Sparking / Arcing Transformer': 'transformer',
+      'Service Drop Disconnection': 'service_drop', 'Service Wire Sparking / Short Circuit': 'service_drop',
+      'Damaged Electric Meter Box': 'service_drop', 'Total Blackout (Area-wide)': 'outage',
+      'Rotational Brownout / Load Shedding': 'outage', 'Low Voltage / Fluctuating Power': 'outage',
+      'Unscheduled Interruption (Cause Unknown)': 'outage', 'Tree Branches Entangled in Wires': 'vegetation_hazard',
+      'Tree Branch Fell on Lines': 'vegetation_hazard', 'Broken Electric Post': 'line_pole',
+      'General Electrical Hazard': 'electric'
     };
     return {
       id: report.id,
@@ -140,10 +140,10 @@ const Reports = (() => {
       id: 'BB-004',
       category: 'Toppled / Leaning Utility Pole',
       description: 'Utility pole tilted at 40 degrees following soil erosion along Airport Road near Brgy. Ibingay. Successfully restabilized and guy-wires retensioned.',
-      photo: 'images/sample-pothole-before.jpg',
-      resolutionPhoto: 'images/sample-pothole-after.jpg',
+      photo: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600&auto=format&fit=crop&q=80',
+      resolutionPhoto: null,
       location: { lat: 12.3700, lng: 123.6240, address: 'Airport Road, Barangay Ibingay, Masbate City' },
-      agency: 'DPWH',
+      agency: 'MASELCO',
       severity: 'High',
       reporter: 'Juan dela Cruz',
       reporterPhone: '09171234567',
@@ -156,9 +156,9 @@ const Reports = (() => {
       updatedAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
       timeline: [
         { status: 'Pending', note: 'Hazardous leaning pole reported near airport corridor', date: new Date(Date.now() - 48 * 3600 * 1000).toISOString() },
-        { status: 'Under Review', note: 'Joint inspection by DPWH Masbate 1st DEO and MASELCO', date: new Date(Date.now() - 36 * 3600 * 1000).toISOString(), officer: 'Engr. Bautista', agency: 'DPWH' },
+        { status: 'Under Review', note: 'Joint inspection by MASELCO linemen and Barangay Tanod', date: new Date(Date.now() - 36 * 3600 * 1000).toISOString(), officer: 'Engr. Bautista', agency: 'MASELCO' },
         { status: 'In Progress', note: 'Excavation and pole realignment underway', date: new Date(Date.now() - 30 * 3600 * 1000).toISOString(), agency: 'MASELCO' },
-        { status: 'Resolved', note: 'Pole concrete base reinforced and guy-wires secured. Safe for traffic.', date: new Date(Date.now() - 24 * 3600 * 1000).toISOString(), officer: 'Engr. Bautista', agency: 'DPWH' }
+        { status: 'Resolved', note: 'Pole concrete base reinforced and guy-wires secured. Safe for traffic.', date: new Date(Date.now() - 24 * 3600 * 1000).toISOString(), officer: 'Engr. Bautista', agency: 'MASELCO' }
       ]
     },
     {
@@ -221,12 +221,21 @@ const Reports = (() => {
     }
   ];
 
-  // ── LOAD / SAVE ───────────────────────────────────────────
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return null;
+      const nonElectric = ['pothole', 'drainage', 'baha', 'flood', 'crime', 'sidewalk', 'water leak', 'street light', 'streetlight'];
+      const filtered = parsed.filter(r => {
+        const cat = (r.category || '').toLowerCase();
+        return !nonElectric.some(term => cat.includes(term));
+      });
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+      }
+      return filtered;
     } catch { return null; }
   }
 
@@ -293,7 +302,7 @@ const Reports = (() => {
     const existing = load();
     if (!existing || !existing.length || existing.some(r => {
       const c = (r.category || '').toLowerCase();
-      return c.includes('pothole') || c.includes('drainage') || c.includes('streetlight');
+      return c.includes('pothole') || c.includes('drainage') || c.includes('streetlight') || c.includes('crime') || c.includes('water');
     })) {
       save(SEED);
     }

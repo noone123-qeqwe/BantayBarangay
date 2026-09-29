@@ -9,89 +9,89 @@ const Reports = (() => {
   const SEED = [
     {
       id: 'BB-001',
-      category: 'Pothole',
-      description: 'Large pothole on the main road near the barangay hall entrance. Approximately 40cm wide and 15cm deep. Several motorcycles have already lost balance here.',
+      category: 'Blown Transformer',
+      description: 'Loud explosion followed by smoke from pole-mounted transformer unit near Masbate City Hall. Localized blackout affecting surrounding commercial stores.',
       photo: null,
-      location: { lat: 14.5995, lng: 120.9842, address: 'Barangay Hall Entrance, Main Road' },
-      agency: 'DPWH',
-      severity: 'High',
+      location: { lat: 12.3713, lng: 123.6306, address: 'Quezon St. near Masbate City Hall, Brgy. Centro, Masbate City' },
+      agency: 'MASELCO',
+      severity: 'Critical',
       reporter: 'Juan dela Cruz',
-      status: 'In Progress',
-      createdAt: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
+      status: 'Pending',
+      createdAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
       timeline: [
-        { status: 'Pending', note: 'Report submitted by resident', date: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString() },
-        { status: 'Under Review', note: 'DPWH notified and scheduled inspection', date: new Date(Date.now() - 3 * 24 * 3600 * 1000).toISOString() },
-        { status: 'In Progress', note: 'Road crew dispatched. Work expected to be done by Friday.', date: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString() }
+        { status: 'Pending', note: 'Report submitted by citizen via BantayBarangay', date: new Date(Date.now() - 2 * 3600 * 1000).toISOString() }
       ]
     },
     {
       id: 'BB-002',
-      category: 'Busted Streetlight',
-      description: 'Three consecutive streetlights on Rizal Street have been out for two weeks. Very dark at night — residents are afraid to walk there.',
+      category: 'Snapped / Downed Power Lines',
+      description: 'Live power cable snapped during heavy squall wind and is dangling dangerously across Zurbito Street near the port passenger terminal.',
       photo: null,
-      location: { lat: 14.6005, lng: 120.9825, address: 'Rizal Street, near Sari-Sari Store' },
+      location: { lat: 12.3745, lng: 123.6335, address: 'Zurbito St., near Masbate Port (Bapor Area), Masbate City' },
       agency: 'MASELCO',
-      severity: 'Medium',
+      severity: 'Critical',
       reporter: 'Maria Santos',
-      status: 'Under Review',
-      createdAt: new Date(Date.now() - 10 * 24 * 3600 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 6 * 24 * 3600 * 1000).toISOString(),
+      status: 'In Progress',
+      createdAt: new Date(Date.now() - 6 * 3600 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 1 * 3600 * 1000).toISOString(),
       timeline: [
-        { status: 'Pending', note: 'Report submitted', date: new Date(Date.now() - 10 * 24 * 3600 * 1000).toISOString() },
-        { status: 'Under Review', note: 'MASELCO team reviewing work order', date: new Date(Date.now() - 6 * 24 * 3600 * 1000).toISOString() }
+        { status: 'Pending', note: 'Report filed by resident. Severe electrocution hazard.', date: new Date(Date.now() - 6 * 3600 * 1000).toISOString() },
+        { status: 'Under Review', note: 'Forwarded to MASELCO emergency dispatch and Barangay Tanod for perimeter cordoning', date: new Date(Date.now() - 4 * 3600 * 1000).toISOString(), officer: 'Renato Bautista', agency: 'Barangay' },
+        { status: 'In Progress', note: 'MASELCO bucket truck crew on-site. Power isolated; splicing cable.', date: new Date(Date.now() - 1 * 3600 * 1000).toISOString(), officer: 'Engr. D. Almario', agency: 'MASELCO' }
       ]
     },
     {
       id: 'BB-003',
-      category: 'Clogged Drainage',
-      description: 'Drainage along Mabini Street is completely blocked with garbage and silt. Flooding occurs every rainfall. Water reaches knee-level on the sidewalk.',
+      category: 'Tree Branch Fell on Lines',
+      description: 'Heavy balete tree branch snapped and is resting directly on the primary lines along Tara Street near Tugbo River spillway. Arcing seen during gusts.',
       photo: null,
-      location: { lat: 14.5982, lng: 120.9860, address: 'Mabini Street, near elementary school' },
-      agency: 'Barangay',
+      location: { lat: 12.3650, lng: 123.6290, address: 'Tara St. near Tugbo River spillway, Masbate City' },
+      agency: 'MASELCO',
       severity: 'Critical',
       reporter: 'Pedro Reyes',
-      status: 'Pending',
-      createdAt: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
+      status: 'Under Review',
+      createdAt: new Date(Date.now() - 12 * 3600 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 5 * 3600 * 1000).toISOString(),
       timeline: [
-        { status: 'Pending', note: 'Report submitted. Urgent due to school proximity.', date: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString() }
+        { status: 'Pending', note: 'Reported by resident. High risk of line snapping.', date: new Date(Date.now() - 12 * 3600 * 1000).toISOString() },
+        { status: 'Under Review', note: 'Barangay chainsaw crew requested; awaiting line grounding by MASELCO', date: new Date(Date.now() - 5 * 3600 * 1000).toISOString(), officer: 'Tanod Commander Vargas', agency: 'Barangay' }
       ]
     },
     {
       id: 'BB-004',
-      category: 'Broken Electric Post',
-      description: 'Electric post leaning dangerously over the road after a truck hit it. Wires are sagging and sparking at night.',
+      category: 'Toppled / Leaning Utility Pole',
+      description: 'Utility pole tilted at 40 degrees following soil erosion along Airport Road near Brgy. Ibingay. Successfully restabilized and guy-wires retensioned.',
       photo: null,
-      location: { lat: 14.5970, lng: 120.9850, address: 'Junction of Bonifacio and Luna St.' },
+      location: { lat: 12.3700, lng: 123.6240, address: 'Airport Road, Barangay Ibingay, Masbate City' },
       agency: 'MASELCO',
-      severity: 'Critical',
-      reporter: 'Anonymous',
+      severity: 'High',
+      reporter: 'Juan dela Cruz',
       status: 'Resolved',
-      createdAt: new Date(Date.now() - 15 * 24 * 3600 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 8 * 24 * 3600 * 1000).toISOString(),
+      createdAt: new Date(Date.now() - 48 * 3600 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
       timeline: [
-        { status: 'Pending', note: 'Reported as emergency', date: new Date(Date.now() - 15 * 24 * 3600 * 1000).toISOString() },
-        { status: 'Under Review', note: 'MASELCO emergency team contacted', date: new Date(Date.now() - 14 * 24 * 3600 * 1000).toISOString() },
-        { status: 'In Progress', note: 'Post being replaced', date: new Date(Date.now() - 12 * 24 * 3600 * 1000).toISOString() },
-        { status: 'Resolved', note: 'New electric post installed. Area safe.', date: new Date(Date.now() - 8 * 24 * 3600 * 1000).toISOString() }
+        { status: 'Pending', note: 'Hazardous leaning pole reported near airport corridor', date: new Date(Date.now() - 48 * 3600 * 1000).toISOString() },
+        { status: 'Under Review', note: 'Joint inspection by MASELCO and Barangay Tanod', date: new Date(Date.now() - 36 * 3600 * 1000).toISOString(), officer: 'Engr. Bautista', agency: 'MASELCO' },
+        { status: 'In Progress', note: 'Excavation and pole realignment underway', date: new Date(Date.now() - 30 * 3600 * 1000).toISOString(), agency: 'MASELCO' },
+        { status: 'Resolved', note: 'Pole concrete base reinforced and guy-wires secured. Safe for traffic.', date: new Date(Date.now() - 24 * 3600 * 1000).toISOString(), officer: 'Engr. Bautista', agency: 'MASELCO' }
       ]
     },
     {
       id: 'BB-005',
-      category: 'Crime / Public Safety',
-      description: 'Report of repeated motorcycle helmet theft and suspicious individuals loitering late at night near the public market perimeter.',
+      category: 'Total Blackout (Area-wide)',
+      description: 'Complete power outage across the public market district and surrounding residential puroks without scheduled advisory.',
       photo: null,
       location: { lat: 12.3725, lng: 123.6310, address: 'Public Market Perimeter, Purok 5 Market Zone, Masbate City' },
-      agency: 'Barangay',
-      severity: 'Medium',
+      agency: 'MASELCO',
+      severity: 'High',
       reporter: 'Elena Mendoza',
       status: 'Under Review',
-      createdAt: new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString(),
+      createdAt: new Date(Date.now() - 1 * 3600 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - 1 * 3600 * 1000).toISOString(),
       timeline: [
-        { status: 'Pending', note: 'Incident report filed by resident', date: new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString() },
-        { status: 'Under Review', note: 'Forwarded to Barangay Tanod & PNP Masbate for night patrol schedule', date: new Date(Date.now() - 12 * 3600 * 1000).toISOString() }
+        { status: 'Pending', note: 'Unscheduled area blackout reported by 32 residents', date: new Date(Date.now() - 1 * 3600 * 1000).toISOString() },
+        { status: 'Under Review', note: 'MASELCO substation operators checking Masbate Feeder circuit breaker trip', date: new Date(Date.now() - 30 * 60 * 1000).toISOString(), agency: 'MASELCO' }
       ]
     }
   ];
@@ -101,7 +101,17 @@ const Reports = (() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return null;
+      const nonElectric = ['pothole', 'drainage', 'baha', 'flood', 'crime', 'sidewalk', 'water leak', 'street light', 'streetlight'];
+      const filtered = parsed.filter(r => {
+        const cat = (r.category || '').toLowerCase();
+        return !nonElectric.some(term => cat.includes(term));
+      });
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+      }
+      return filtered;
     } catch { return null; }
   }
 
@@ -110,7 +120,13 @@ const Reports = (() => {
   }
 
   function init() {
-    if (!load()) save(SEED);
+    const existing = load();
+    if (!existing || !existing.length || existing.some(r => {
+      const c = (r.category || '').toLowerCase();
+      return c.includes('pothole') || c.includes('drainage') || c.includes('streetlight') || c.includes('crime') || c.includes('water');
+    })) {
+      save(SEED);
+    }
   }
 
   // ── GETTERS ───────────────────────────────────────────────

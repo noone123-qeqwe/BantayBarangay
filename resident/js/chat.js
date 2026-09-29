@@ -154,23 +154,23 @@
       }
 
       const welcomeHtml = `
-        👋 <strong>Mabuhay, ${userName}!</strong> I am your <strong>BantayBarangay AI Assistant</strong>.
+        👋 <strong>Mabuhay, ${userName}!</strong> I am your <strong>BantayBarangay Electrical Safety Assistant</strong>.
         <br><br>
-        I am here 24/7 to help you with civic concerns in Masbate:
+        I am here 24/7 to assist with electrical infrastructure &amp; power concerns in Masbate:
         <ul style="margin:6px 0 8px 16px;padding:0;font-size:12.5px;color:var(--text-secondary);">
-          <li>🕳️ Report potholes, broken posts, drainage & crime</li>
-          <li>🔍 Track status of your submitted reports (e.g. <em>BB-001</em>)</li>
-          <li>⚡ MASELCO power outages & line maintenance</li>
-          <li>📞 Emergency hotlines (Police, Fire, Hospital, CDRRMO)</li>
+          <li>⚡ Downed wires, leaning utility poles, &amp; sparking lines</li>
+          <li>💥 Blown transformers &amp; substation equipment failures</li>
+          <li>🔌 Total blackouts &amp; rotational power interruptions</li>
+          <li>🌳 Tree branches entangled in power lines</li>
         </ul>
         How may I help you today? Feel free to ask in English or Tagalog!
       `;
 
       this.pushMessage('bot', welcomeHtml, [
-        { label: '🕳️ Report Pothole', action: 'quickReport:Pothole' },
-        { label: '⚡ Report Electric Post', action: 'quickReport:Broken Electric Post' },
-        { label: '🌊 Report Drainage', action: 'quickReport:Clogged Drainage' },
-        { label: '🔍 Track My Reports', action: 'view:myreports' }
+        { label: '⚡ Downed Power Line', action: 'quickReport:Snapped / Downed Power Lines' },
+        { label: '💥 Blown Transformer', action: 'quickReport:Blown Transformer' },
+        { label: '🗼 Leaning Utility Pole', action: 'quickReport:Toppled / Leaning Utility Pole' },
+        { label: '🔌 Area Blackout', action: 'quickReport:Total Blackout (Area-wide)' }
       ]);
     },
 
@@ -369,81 +369,75 @@
         }
       }
 
-      // 2. POTHOLE / ROAD DAMAGE / LUBAK
+      // 2. POTHOLE / ROAD DAMAGE / LUBAK (Redirect to DPWH, offer electrical hazard options)
       if (q.includes('pothole') || q.includes('lubak') || q.includes('kalsada') || q.includes('asphalt') || q.includes('semento') || q.includes('crack') || q.includes('road')) {
         return {
           textHtml: `
-            🕳️ <strong>Potholes and Road Damage</strong><br>
-            Road hazards in Masbate City are automatically routed to the <strong>DPWH Masbate 1st DEO</strong> and the <strong>Masbate City Engineering Office</strong>.
+            ℹ️ <strong>BantayBarangay is dedicated strictly to Electrical Infrastructure &amp; Power Grid Hazards</strong>.
             <br><br>
-            Crews require a photo and street address/purok for fast dispatch. Would you like to file a road hazard report now?
+            Road surfacing, potholes, and civil roadworks are handled directly by the <strong>DPWH Masbate 1st DEO</strong> (Hotline: <strong>(056) 333-2575</strong>) and City Engineering.
+            <br><br>
+            If road damage has exposed underground cables or caused a utility pole to tilt or collapse along the roadway, file an electrical hazard report:
           `,
           actions: [
-            { label: '🕳️ File Pothole Report', action: 'quickReport:Pothole' }
+            { label: '🗼 Report Leaning Pole', action: 'quickReport:Toppled / Leaning Utility Pole' },
+            { label: '⚡ Report Downed Wire', action: 'quickReport:Snapped / Downed Power Lines' }
           ]
         };
       }
 
-      // 3. ELECTRIC HAZARD / POWER INTERRUPTIONS / MASELCO / POSTE
-      if (q.includes('electric') || q.includes('post') || q.includes('poste') || q.includes('kuryente') || q.includes('maselco') || q.includes('brownout') || q.includes('kawayan') || q.includes('wire') || q.includes('kord') || q.includes('transformer')) {
+      // 3. ELECTRIC HAZARD / POWER INTERRUPTIONS / MASELCO / POSTE / TRANSFORMER / WIRE
+      if (q.includes('electric') || q.includes('post') || q.includes('poste') || q.includes('kuryente') || q.includes('maselco') || q.includes('brownout') || q.includes('blackout') || q.includes('wire') || q.includes('kord') || q.includes('transformer') || q.includes('spark') || q.includes('substation') || q.includes('voltage') || q.includes('meter') || q.includes('ilaw')) {
         return {
           textHtml: `
-            ⚡ <strong>Broken Electric Post & Power Line Hazards</strong><br>
-            Electrical infrastructure hazards and power outages are routed to <strong>MASELCO (Masbate Electric Cooperative)</strong>.
+            ⚡ <strong>Electrical Infrastructure &amp; Power Hazards (MASELCO)</strong><br>
+            Reports for power lines, leaning utility poles, blown transformers, and outages are dispatched directly to <strong>MASELCO (Masbate Electric Cooperative)</strong>.
             <br><br>
-            ⚠️ <em>Safety Caution: Keep at least 10 meters away from sagging or sparking live wires!</em>
+            ⚠️ <em>CRITICAL SAFETY WARNING: Maintain at least 10 meters distance from downed, sparking, or low-hanging power cables. Do NOT touch wet surfaces near electrical wires.</em>
             <br><br>
-            MASELCO 24/7 Hotline: <strong>(056) 333-2283</strong>
+            MASELCO 24/7 Hotline: <strong>(056) 333-2244</strong> / <strong>0917-333-6273</strong>
           `,
           actions: [
-            { label: '⚡ File Electrical Hazard Report', action: 'quickReport:Broken Electric Post' },
-            { label: '📞 Call MASELCO', action: 'dial:0563332283' }
+            { label: '⚡ Downed Power Lines', action: 'quickReport:Snapped / Downed Power Lines' },
+            { label: '💥 Blown Transformer', action: 'quickReport:Blown Transformer' },
+            { label: '🗼 Leaning Pole', action: 'quickReport:Toppled / Leaning Utility Pole' },
+            { label: '🔌 Area Outage', action: 'quickReport:Total Blackout (Area-wide)' },
+            { label: '📞 Call MASELCO', action: 'dial:0563332244' }
           ]
         };
       }
 
-      // 4. CLOGGED DRAINAGE / KANAL / FLOOD / BAHA
-      if (q.includes('drainage') || q.includes('kanal') || q.includes('baha') || q.includes('flood') || q.includes('canal') || q.includes('clog') || q.includes('bara')) {
+      // 4. CLOGGED DRAINAGE / KANAL / FLOOD / BAHA / WATER
+      if (q.includes('drainage') || q.includes('kanal') || q.includes('baha') || q.includes('flood') || q.includes('canal') || q.includes('clog') || q.includes('bara') || q.includes('tubig')) {
         return {
           textHtml: `
-            🌊 <strong>Clogged Drainage & Flood Hazards</strong><br>
-            Blocked canals, overflowing culverts, and stagnant residential waterways are handled by the <strong>Barangay Quick Response Crew</strong> and <strong>City Drainage Maintenance</strong>.
+            ℹ️ <strong>BantayBarangay is dedicated strictly to Electrical Infrastructure &amp; Power Grid Hazards</strong>.
             <br><br>
-            Reporting early helps prevent street flooding during heavy monsoon rains!
+            For municipal drainage and flood management, please coordinate with the <strong>Masbate CDRRMO</strong> or local Barangay Hall.
+            <br><br>
+            ⚠️ <strong>Electrical Flood Hazard Alert</strong>: If rising floodwaters submerge electric meter boxes, ground transformers, or touch dangling live wires, submit an emergency report immediately to disconnect power!
           `,
           actions: [
-            { label: '🌊 File Drainage Report', action: 'quickReport:Clogged Drainage' }
+            { label: '⚡ Report Submerged / Downed Wire', action: 'quickReport:Snapped / Downed Power Lines' },
+            { label: '📞 Call MASELCO Emergency', action: 'dial:0563332244' }
           ]
         };
       }
 
-      // 5. BUSTED STREETLIGHT / DILIM / ILAW SA POSTE
-      if (q.includes('streetlight') || q.includes('street light') || q.includes('ilaw') || q.includes('dilim') || q.includes('busted') || q.includes('lamp') || q.includes('madilim')) {
+      // 5. CRIME & PUBLIC SAFETY
+      if (q.includes('crime') || q.includes('pulis') || q.includes('police') || q.includes('tanod') || q.includes('nakaw') || q.includes('theft') || q.includes('away') || q.includes('gulo') || q.includes('safety') || q.includes('droga') || q.includes('holdap')) {
         return {
           textHtml: `
-            💡 <strong>Busted Streetlight / Street Lighting</strong><br>
-            Non-working public streetlamps are handled by the <strong>Barangay Street Lighting Operations</strong> team.
+            🚨 <strong>Law Enforcement Notice</strong><br>
+            BantayBarangay is an electrical infrastructure portal. For peace and order, disturbances, or criminal emergencies, please contact law enforcement directly:
             <br><br>
-            Please note the Purok and the nearest house or electrical post number so the maintenance crew can easily spot the bulb.
+            • <strong>PNP Masbate City Police</strong>: <strong>(056) 333-2222</strong> / <strong>0998-598-6011</strong><br>
+            • <strong>National Emergency</strong>: <strong>911</strong><br>
+            • <strong>Barangay Tanod Desk</strong>: <strong>(056) 333-2199</strong>
           `,
           actions: [
-            { label: '💡 File Streetlight Report', action: 'quickReport:Busted Streetlight' }
-          ]
-        };
-      }
-
-      // 6. CRIME & PUBLIC SAFETY / PULIS / TANOD / AWAY / NAKAWAN
-      if (q.includes('crime') || q.includes('pulis') || q.includes('police') || q.includes('tanod') || q.includes('nakaw') || q.includes('theft') || q.includes('away') || q.includes('gulo') || q.includes('safety') || q.includes('droga') || q.includes('ingay') || q.includes('holdap')) {
-        return {
-          textHtml: `
-            🚨 <strong>Crime & Public Safety Concerns</strong><br>
-            Reports involving community safety, disturbances, vandalism, or theft are immediately dispatched to the <strong>Barangay Tanod Duty Desk</strong> and the <strong>PNP Masbate City Police Station</strong>.
-            <br><br>
-            🚨 <strong>For Active In-Progress Emergencies</strong>, dial PNP directly: <strong>(056) 333-2222</strong> or <strong>117</strong>.
-          `,
-          actions: [
-            { label: '🚨 File Safety Report', action: 'quickReport:Crime / Public Safety' },
-            { label: '📞 Call PNP Masbate', action: 'dial:0563332222' }
+            { label: '📞 Call PNP Masbate', action: 'dial:0563332222' },
+            { label: '📞 Call 911', action: 'dial:911' }
           ]
         };
       }
@@ -540,10 +534,10 @@
       if (q.includes('hello') || q.includes('hi') || q.includes('kamusta') || q.includes('mabuhay') || q.includes('good morning') || q.includes('good afternoon') || q.includes('good evening')) {
         return {
           textHtml: `
-            👋 Hello! How can I assist you with your barangay concern today? You can ask me how to file a report, check hotlines, or look up a report code like <strong>BB-001</strong>.
+            👋 Hello! How can I assist you with Masbate electrical infrastructure today? You can report an outage, downed line, leaning pole, or look up a report code like <strong>BB-001</strong>.
           `,
           actions: [
-            { label: '🕳️ Report a Problem', action: 'view:report' },
+            { label: '⚡ Report Electrical Hazard', action: 'view:report' },
             { label: '🔍 Track Reports', action: 'view:myreports' }
           ]
         };
@@ -554,15 +548,15 @@
         textHtml: `
           I understand you have a concern about: <em>"${this.escapeHtml(rawQuery)}"</em>.
           <br><br>
-          Here are the main civic services I can assist you with right now:
+          BantayBarangay is dedicated strictly to electrical infrastructure and power incident reporting. Here are the electrical services I can assist you with right now:
         `,
         actions: [
-          { label: '🕳️ Road / Pothole', action: 'quickReport:Pothole' },
-          { label: '⚡ Electric Hazard', action: 'quickReport:Broken Electric Post' },
-          { label: '🌊 Drainage / Flood', action: 'quickReport:Clogged Drainage' },
-          { label: '💡 Streetlight', action: 'quickReport:Busted Streetlight' },
-          { label: '🚨 Crime / Safety', action: 'quickReport:Crime / Public Safety' },
-          { label: '📞 Emergency Hotlines', action: 'dial:0563332222' }
+          { label: '⚡ Downed Power Lines', action: 'quickReport:Snapped / Downed Power Lines' },
+          { label: '💥 Blown Transformer', action: 'quickReport:Blown Transformer' },
+          { label: '🗼 Leaning Utility Pole', action: 'quickReport:Toppled / Leaning Utility Pole' },
+          { label: '🔌 Area Blackout', action: 'quickReport:Total Blackout (Area-wide)' },
+          { label: '🌳 Branch on Lines', action: 'quickReport:Tree Branch Fell on Lines' },
+          { label: '📞 Call MASELCO', action: 'dial:0563332244' }
         ]
       };
     }

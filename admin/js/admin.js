@@ -630,11 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'Low Voltage / Fluctuating Power': '📉',
     'Unscheduled Interruption (Cause Unknown)': '❓',
     'Tree Branches Entangled in Wires': '🌿',
-    'Tree Branch Fell on Lines': '🌳',
-    'Pothole': '🕳️',
-    'Busted Streetlight': '💡',
-    'Clogged Drainage': '🌊',
-    'Water Pipe Leak': '💧'
+    'Tree Branch Fell on Lines': '🌳'
   };
 
   function getCategoryIcon(cat) {

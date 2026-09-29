@@ -65,12 +65,9 @@ const UI = (() => {
       return { svg: '<line x1="12" y1="2" x2="12" y2="22"/><line x1="5" y1="6" x2="19" y2="6"/><line x1="7" y1="10" x2="17" y2="10"/><path d="M5 6l7 8 7-8"/>', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' };
     }
     
-    // Legacy fallbacks
+    // Electrical and generic fallbacks
     const icons = {
-      'Pothole': { svg: '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>', color: '#f4a261', bg: 'rgba(244,162,97,0.12)' },
       'Broken Electric Post': { svg: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', color: '#ffd23f', bg: 'rgba(255,210,63,0.1)' },
-      'Clogged Drainage': { svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', color: '#1b9aaa', bg: 'rgba(27,154,170,0.12)' },
-      'Busted Streetlight': { svg: '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>', color: '#b46eff', bg: 'rgba(180,110,255,0.1)' },
       'Other': { svg: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>', color: '#38bdf8', bg: 'rgba(56,189,248,0.12)' }
     };
     const d = icons[category] || icons['Other'];
@@ -282,11 +279,7 @@ const UI = (() => {
     animateCount('dStatResolved', s.resolved);
 
     const cats = Reports.getCategoryCounts();
-    setCount('cc-pothole', cats['Pothole'] || 0);
-    setCount('cc-electric', cats['Broken Electric Post'] || 0);
-    setCount('cc-drainage', cats['Clogged Drainage'] || 0);
-    setCount('cc-streetlight', cats['Busted Streetlight'] || 0);
-    setCount('cc-crime', cats['Crime / Public Safety'] || 0);
+    setCount('cc-electric', (cats['Broken Electric Post'] || 0) + (cats['Toppled / Leaning Utility Pole'] || 0));
     setCount('cc-other', cats['Other'] || 0);
   }
 

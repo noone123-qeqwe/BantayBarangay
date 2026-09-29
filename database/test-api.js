@@ -70,8 +70,8 @@ server.listen(PORT, async () => {
 
         // 4. Create new report via API
         const createRes = await request('/api/reports', { method: 'POST' }, {
-            category_id: 'drainage',
-            description: 'Canal overflow on 5th street corner',
+            category_id: 'outage',
+            description: 'Unscheduled power blackout on 5th street corner',
             address: '5th Street corner Narra',
             purok: 'Purok 2',
             severity: 'medium',

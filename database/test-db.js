@@ -44,7 +44,7 @@ assert('Total reports count is >= 4', stats.total >= 4);
 assert('Active reports equals pending + under_review + in_progress', stats.active === (stats.pending + stats.under_review + stats.in_progress));
 const lookups = getLookups();
 assert('Seeded agencies (DPWH, LGU, MASELCO, PNP, BARANGAY)', lookups.agencies.length >= 4);
-assert('Seeded categories (Pothole, Electric, Drainage, Streetlight, Crime, etc.)', lookups.categories.length >= 6);
+assert('Seeded categories (Line & Pole, Transformer, Service Drop, Outage, etc.)', lookups.categories.length >= 5);
 assert('Seeded puroks', lookups.puroks.length >= 5);
 
 // 2. User & Philippine Mobile Operations
@@ -106,8 +106,8 @@ assert('Cannot reuse already verified OTP', reusedVerify.valid === false);
 // 4. Report Creation and Auto-ID
 console.log('\n4. Testing Report Filing & Auto-ID:');
 const newReport = createReport({
-    category_id: 'pothole',
-    description: 'Fresh test pothole near community basketball court',
+    category_id: 'line_pole',
+    description: 'Fresh test leaning electric post near community basketball court',
     address: 'Purok 4 Basketball Court Road',
     purok: 'Purok 4',
     severity: 'high',
@@ -116,16 +116,16 @@ const newReport = createReport({
     reporter_mobile: newUser.mobile
 });
 assert('Auto-generated report ID format BB-XXX', /^BB-\d{3}$/.test(newReport.id));
-assert('Report default agency assigned to DPWH for pothole', newReport.agency_id === 'DPWH');
+assert('Report default agency assigned to MASELCO for line/pole issue', newReport.agency_id === 'MASELCO');
 assert('Initial timeline event created', newReport.timeline && newReport.timeline.length >= 1);
 
 // 5. Report Status Update and Timeline Audit Trail
 console.log('\n5. Testing Status Update and Timeline Audit Trail:');
 const updatedReport = updateReportStatus(newReport.id, {
     status: 'in_progress',
-    note: 'Inspection team on site assessing road foundation depth.',
-    officer_name: 'Engr. Tolentino',
-    agency: 'DPWH'
+    note: 'Inspection team on site assessing pole foundation depth.',
+    officer_name: 'Engr. Almario',
+    agency: 'MASELCO'
 });
 assert('Status updated to in_progress', updatedReport.status === 'in_progress');
 assert('Timeline contains 2 audit records', updatedReport.timeline.length === 2);

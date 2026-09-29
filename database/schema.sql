@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS agencies (
 -- 2. CATEGORIES (Infrastructure Issue Types)
 -- ----------------------------------------------------------
 CREATE TABLE IF NOT EXISTS categories (
-    id TEXT PRIMARY KEY,                       -- e.g. 'pothole', 'electric', 'drainage', 'streetlight'
+    id TEXT PRIMARY KEY,                       -- e.g. 'line_pole', 'transformer', 'service_drop', 'outage', 'vegetation_hazard', 'electric'
     name TEXT NOT NULL,                        -- Human readable title
     icon TEXT NOT NULL,                        -- Icon or emoji
     default_agency TEXT,                       -- References agencies(id)
