@@ -137,12 +137,15 @@ const MIME_TYPES = {
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
     '.svg': 'image/svg+xml',
     '.ico': 'image/x-icon',
     '.woff2': 'font/woff2',
     '.woff': 'font/woff',
     '.ttf': 'font/ttf',
-    '.apk': 'application/vnd.android.package-archive'
+    '.apk': 'application/vnd.android.package-archive',
+    '.csv': 'text/csv; charset=UTF-8'
 };
 
 /**
@@ -240,6 +243,74 @@ function requireAdmin(req) {
     return (session && session.role === 'admin') ? session : null;
 }
 
+// ── Photo / File Upload Engine ──────────────────────────────
+const UPLOAD_DIR = path.join(PUBLIC_DIR, 'uploads');
+if (!fs.existsSync(UPLOAD_DIR)) {
+    try {
+        fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+    } catch (_) {}
+}
+
+/**
+ * Validates and saves an uploaded image (from Base64 or Data URI)
+ * @param {string} payload - Base64 string or Data URI
+ * @param {string} [originalFilename]
+ * @returns {{ url: string, filename: string, size: number, mimeType: string, uploaded_at: string }}
+ */
+function saveUploadedImage(payload, originalFilename = '') {
+    let mimeType = 'image/jpeg';
+    let base64Data = String(payload || '').trim();
+
+    if (base64Data.startsWith('data:')) {
+        const match = base64Data.match(/^data:([^;]+);base64,(.+)$/s);
+        if (match) {
+            mimeType = match[1].toLowerCase();
+            base64Data = match[2];
+        }
+    }
+
+    base64Data = base64Data.replace(/\s+/g, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length === 0) {
+        throw new Error('Image data is empty or invalid base64.');
+    }
+    if (buffer.length > 5 * 1024 * 1024) {
+        throw new Error('Image file exceeds the 5MB size limit.');
+    }
+
+    let ext = '.jpg';
+    if (buffer.length >= 3 && buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+        ext = '.jpg';
+        mimeType = 'image/jpeg';
+    } else if (buffer.length >= 4 && buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+        ext = '.png';
+        mimeType = 'image/png';
+    } else if (buffer.length >= 3 && buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
+        ext = '.gif';
+        mimeType = 'image/gif';
+    } else if (buffer.length >= 12 && buffer.subarray(0, 4).toString('ascii') === 'RIFF' && buffer.subarray(8, 12).toString('ascii') === 'WEBP') {
+        ext = '.webp';
+        mimeType = 'image/webp';
+    } else {
+        throw new Error('Unsupported image format. Allowed formats: JPG, PNG, WebP, GIF.');
+    }
+
+    const uniqueId = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}`;
+    const filename = `${uniqueId}${ext}`;
+    const filePath = path.join(UPLOAD_DIR, filename);
+
+    fs.writeFileSync(filePath, buffer);
+
+    return {
+        url: `/uploads/${filename}`,
+        filename,
+        size: buffer.length,
+        mimeType,
+        uploaded_at: new Date().toISOString()
+    };
+}
+
 /**
  * Helper to parse request body as JSON
  */
@@ -332,6 +403,7 @@ function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
 
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+        const isUpload = relativePath.startsWith('uploads') || relativePath.startsWith('uploads\\') || relativePath.startsWith('uploads/');
         const headers = {
             'Content-Type': contentType,
             'X-Content-Type-Options': 'nosniff',
@@ -339,7 +411,7 @@ function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
             'Referrer-Policy': 'strict-origin-when-cross-origin',
             'Cache-Control': (ext === '.html' || filePath.endsWith('sw.js'))
                 ? 'no-cache, no-store, must-revalidate'
-                : 'no-cache'
+                : (isUpload ? 'public, max-age=86400' : 'no-cache')
         };
         if (ext === '.apk') {
             headers['Content-Disposition'] = 'attachment; filename="BantayBarangay.apk"';
@@ -492,6 +564,49 @@ function createRequestHandler(isDedicatedAdmin = false) {
                 return sendJson(res, 200, { success: true, data: lookups });
             }
 
+            // Reports CSV / JSON Export (/api/reports/export)
+            if (pathname === '/api/reports/export' && req.method === 'GET') {
+                const reports = db.getAllReports({
+                    status: query.status,
+                    category: query.category,
+                    agency: query.agency,
+                    purok: query.purok,
+                    reporter_id: query.reporter_id,
+                    reporter_mobile: query.reporter_mobile,
+                    search: query.search
+                });
+
+                const session = getSessionFromToken(req);
+                const isAdmin = session && session.role === 'admin';
+                const format = (query.format || 'csv').toLowerCase();
+
+                if (format === 'json') {
+                    const sanitized = reports.map(r => ({
+                        ...r,
+                        reporter_mobile: isAdmin ? r.reporter_mobile : (r.reporter_mobile && r.reporter_mobile.length >= 7 ? r.reporter_mobile.slice(0, 4) + '****' + r.reporter_mobile.slice(-3) : r.reporter_mobile)
+                    }));
+                    return sendJson(res, 200, {
+                        success: true,
+                        count: sanitized.length,
+                        data: sanitized
+                    });
+                }
+
+                const csv = db.generateReportsCsv(reports, isAdmin);
+                const dateStr = new Date().toISOString().slice(0, 10);
+                const filename = `bantaybarangay-reports-${dateStr}.csv`;
+
+                res.writeHead(200, {
+                    'Content-Type': 'text/csv; charset=UTF-8',
+                    'Content-Disposition': `attachment; filename="${filename}"`,
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                    'X-Content-Type-Options': 'nosniff'
+                });
+                return res.end(csv);
+            }
+
             // Reports collection (GET list / POST create)
             if (pathname === '/api/reports') {
                 if (req.method === 'GET') {
@@ -500,6 +615,8 @@ function createRequestHandler(isDedicatedAdmin = false) {
                         category: query.category,
                         agency: query.agency,
                         purok: query.purok,
+                        reporter_id: query.reporter_id,
+                        reporter_mobile: query.reporter_mobile,
                         search: query.search,
                         limit: query.limit,
                         offset: query.offset
@@ -638,8 +755,19 @@ function createRequestHandler(isDedicatedAdmin = false) {
                     }
                 }
 
+                const purpose = body.purpose || 'registration';
+                if (purpose === 'reset_password') {
+                    const user = db.getUserByMobile(body.mobile);
+                    if (!user) {
+                        return sendJson(res, 404, {
+                            success: false,
+                            error: 'No registered account was found with this phone number.'
+                        });
+                    }
+                }
+
                 try {
-                    const otp = db.createOtp(body.mobile, body.purpose || 'registration');
+                    const otp = db.createOtp(body.mobile, purpose);
                     const response = {
                         success: true,
                         message: `Verification code sent to ${otp.mobile}`,
@@ -682,6 +810,42 @@ function createRequestHandler(isDedicatedAdmin = false) {
                     return sendJson(res, 400, { success: false, error: result.error });
                 }
                 return sendJson(res, 200, { success: true, message: result.message });
+            }
+
+            // Password Reset with OTP (/api/auth/reset-password)
+            if (pathname === '/api/auth/reset-password' && req.method === 'POST') {
+                const resetLimit = checkRateLimit(`reset-pwd:${clientIp}`, 6, 10 * 60 * 1000);
+                if (!resetLimit.allowed) {
+                    return sendJson(res, 429, {
+                        success: false,
+                        error: 'Too many password reset attempts. Please wait 10 minutes before trying again.'
+                    }, { 'Retry-After': String(resetLimit.retryAfterSec) });
+                }
+
+                const body = await parseBody(req);
+                if (!body.mobile || !body.otp_code || !body.new_password) {
+                    return sendJson(res, 400, {
+                        success: false,
+                        error: 'Mobile number, verification code, and new password are required.'
+                    });
+                }
+
+                try {
+                    const result = db.resetPasswordWithOtp(body.mobile, body.otp_code, body.new_password);
+                    if (result.userId) {
+                        for (const [token, sess] of sessions.entries()) {
+                            if (sess.userId === result.userId) {
+                                sessions.delete(token);
+                            }
+                        }
+                    }
+                    return sendJson(res, 200, {
+                        success: true,
+                        message: result.message
+                    });
+                } catch (err) {
+                    return sendJson(res, 400, { success: false, error: err.message });
+                }
             }
 
             // Register Account
@@ -777,6 +941,65 @@ function createRequestHandler(isDedicatedAdmin = false) {
                         phone_verified: user.phone_verified
                     }
                 });
+            }
+
+            // Update Current Authenticated Profile (/api/auth/profile or /api/auth/me)
+            if ((pathname === '/api/auth/profile' || pathname === '/api/auth/me') && (req.method === 'PATCH' || req.method === 'PUT')) {
+                const session = getSessionFromToken(req);
+                if (!session) {
+                    return sendJson(res, 401, { success: false, error: 'Authentication required to update profile.' });
+                }
+
+                const body = await parseBody(req);
+                try {
+                    const updated = db.updateUserProfile(session.userId, body);
+                    return sendJson(res, 200, {
+                        success: true,
+                        message: 'Profile updated successfully.',
+                        user: {
+                            id: updated.id,
+                            name: updated.name,
+                            mobile: updated.mobile,
+                            email: updated.email,
+                            role: updated.role,
+                            purok: updated.purok,
+                            phone_verified: updated.phone_verified
+                        }
+                    });
+                } catch (err) {
+                    return sendJson(res, 400, { success: false, error: err.message });
+                }
+            }
+
+            // Photo / Image Upload Endpoint (/api/upload)
+            if (pathname === '/api/upload' && req.method === 'POST') {
+                const uploadLimit = checkRateLimit(`upload:${clientIp}`, 30, 10 * 60 * 1000);
+                if (!uploadLimit.allowed) {
+                    return sendJson(res, 429, {
+                        success: false,
+                        error: 'Upload limit reached. Please wait a few minutes before uploading more photos.'
+                    }, { 'Retry-After': String(uploadLimit.retryAfterSec) });
+                }
+
+                try {
+                    const body = await parseBody(req);
+                    const imagePayload = body.image || body.data || body.file;
+                    if (!imagePayload || typeof imagePayload !== 'string') {
+                        return sendJson(res, 400, {
+                            success: false,
+                            error: 'Image payload is required (base64 string or data URI).'
+                        });
+                    }
+
+                    const result = saveUploadedImage(imagePayload, body.filename);
+                    return sendJson(res, 201, {
+                        success: true,
+                        message: 'Photo uploaded successfully.',
+                        data: result
+                    });
+                } catch (err) {
+                    return sendJson(res, 400, { success: false, error: err.message });
+                }
             }
 
             // Invalidate Session Token (/api/auth/logout)

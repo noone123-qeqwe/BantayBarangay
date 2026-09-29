@@ -7,3 +7,6 @@ database/.test-*.db-wal
 node_modules/
 scratch/
 .env
+uploads/*
+!uploads/.gitkeep
+

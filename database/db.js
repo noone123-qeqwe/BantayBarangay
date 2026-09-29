@@ -76,6 +76,36 @@ function getDb() {
     return dbInstance;
 }
 
+let inTransaction = false;
+
+/**
+ * Execute operations within an atomic SQLite transaction (ACID compliant)
+ * Automatically rolls back changes on any error.
+ * @template T
+ * @param {(db: any) => T} fn
+ * @returns {T}
+ */
+function withTransaction(fn) {
+    const db = getDb();
+    if (inTransaction) {
+        return fn(db);
+    }
+    inTransaction = true;
+    db.exec('BEGIN IMMEDIATE;');
+    try {
+        const result = fn(db);
+        db.exec('COMMIT;');
+        inTransaction = false;
+        return result;
+    } catch (err) {
+        try {
+            db.exec('ROLLBACK;');
+        } catch (_) {}
+        inTransaction = false;
+        throw err;
+    }
+}
+
 /**
  * Initialize the database tables from schema.sql and seed data from seed.sql
  */
@@ -205,6 +235,14 @@ function getAllReports(filters = {}) {
         query += ' AND r.purok = ?';
         params.push(filters.purok);
     }
+    if (filters.reporter_id) {
+        query += ' AND r.reporter_id = ?';
+        params.push(Number(filters.reporter_id));
+    }
+    if (filters.reporter_mobile) {
+        query += ' AND r.reporter_mobile = ?';
+        params.push(normalizeMobile(filters.reporter_mobile));
+    }
     if (filters.search) {
         query += ' AND (r.id LIKE ? OR r.description LIKE ? OR r.address LIKE ? OR r.reporter_name LIKE ?)';
         const term = `%${filters.search}%`;
@@ -282,7 +320,7 @@ function generateReportId() {
 }
 
 /**
- * Create a new infrastructure report
+ * Create a new infrastructure report (Wrapped in SQLite ACID transaction)
  */
 function createReport(data) {
     const db = getDb();
@@ -312,51 +350,53 @@ function createReport(data) {
         if (cat) agencyId = cat.default_agency;
     }
 
-    const insertStmt = db.prepare(`
-        INSERT INTO reports (
-            id, category_id, description, photo_url, latitude, longitude,
-            address, purok, severity, status, agency_id, reporter_id,
-            reporter_name, reporter_mobile, created_at, updated_at
-        ) VALUES (
-            ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?,
-            ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-        )
-    `);
+    return withTransaction((activeDb) => {
+        const insertStmt = activeDb.prepare(`
+            INSERT INTO reports (
+                id, category_id, description, photo_url, latitude, longitude,
+                address, purok, severity, status, agency_id, reporter_id,
+                reporter_name, reporter_mobile, created_at, updated_at
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?,
+                ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+            )
+        `);
 
-    insertStmt.run(
-        id,
-        categoryId,
-        description,
-        optionalText(data.photo_url, 'Photo URL', 2048),
-        latitude,
-        longitude,
-        address,
-        purok,
-        severity,
-        data.status || 'pending',
-        agencyId || 'BARANGAY',
-        data.reporter_id || null,
-        reporterName,
-        reporterMobile
-    );
+        insertStmt.run(
+            id,
+            categoryId,
+            description,
+            optionalText(data.photo_url, 'Photo URL', 2 * 1024 * 1024),
+            latitude,
+            longitude,
+            address,
+            purok,
+            severity,
+            data.status || 'pending',
+            agencyId || 'BARANGAY',
+            data.reporter_id || null,
+            reporterName,
+            reporterMobile
+        );
 
-    // Insert initial timeline entry
-    const timelineStmt = db.prepare(`
-        INSERT INTO report_timeline (report_id, status, note, officer_name, agency, created_at)
-        VALUES (?, 'pending', 'Report filed via BantayBarangay system.', ?, ?, CURRENT_TIMESTAMP)
-    `);
-    timelineStmt.run(
-        id,
-        reporterName,
-        'Barangay Resident Portal'
-    );
+        // Insert initial timeline entry
+        const timelineStmt = activeDb.prepare(`
+            INSERT INTO report_timeline (report_id, status, note, officer_name, agency, created_at)
+            VALUES (?, 'pending', 'Report filed via BantayBarangay system.', ?, ?, CURRENT_TIMESTAMP)
+        `);
+        timelineStmt.run(
+            id,
+            reporterName,
+            'Barangay Resident Portal'
+        );
 
-    return getReportById(id);
+        return getReportById(id);
+    });
 }
 
 /**
- * Update report status and append timeline note
+ * Update report status and append timeline note (Wrapped in SQLite ACID transaction)
  */
 function updateReportStatus(id, updateData) {
     const db = getDb();
@@ -371,32 +411,37 @@ function updateReportStatus(id, updateData) {
     const officerName = optionalText(updateData.officer_name, 'Officer name', 120) || 'Barangay Officer';
     const agencyName = optionalText(updateData.agency, 'Agency name', 160) || 'Barangay Maintenance';
 
-    const updateStmt = db.prepare(`
-        UPDATE reports 
-        SET status = ?, agency_id = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-    `);
-    updateStmt.run(newStatus, newAgency, id);
+    return withTransaction((activeDb) => {
+        const updateStmt = activeDb.prepare(`
+            UPDATE reports 
+            SET status = ?, agency_id = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `);
+        updateStmt.run(newStatus, newAgency, id);
 
-    const timelineStmt = db.prepare(`
-        INSERT INTO report_timeline (report_id, status, note, officer_name, agency, created_at)
-        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-    `);
-    timelineStmt.run(id, newStatus, note, officerName, agencyName);
+        const timelineStmt = activeDb.prepare(`
+            INSERT INTO report_timeline (report_id, status, note, officer_name, agency, created_at)
+            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        `);
+        timelineStmt.run(id, newStatus, note, officerName, agencyName);
 
-    return getReportById(id);
+        return getReportById(id);
+    });
 }
 
 /**
- * Permanently delete a report and its cascade timeline records
+ * Permanently delete a report and its cascade timeline records (Wrapped in SQLite ACID transaction)
  */
 function deleteReport(id) {
     const db = getDb();
     const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(id);
     if (!existing) return false;
-    db.prepare('DELETE FROM report_timeline WHERE report_id = ?').run(id);
-    const result = db.prepare('DELETE FROM reports WHERE id = ?').run(id);
-    return result.changes > 0;
+
+    return withTransaction((activeDb) => {
+        activeDb.prepare('DELETE FROM report_timeline WHERE report_id = ?').run(id);
+        const result = activeDb.prepare('DELETE FROM reports WHERE id = ?').run(id);
+        return result.changes > 0;
+    });
 }
 
 /**
@@ -476,6 +521,138 @@ function updateUserPhone(userId, newMobile) {
     }
     db.prepare('UPDATE users SET mobile = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(cleanMobile, userId);
     return db.prepare('SELECT id, name, mobile, email, purok, role, phone_verified FROM users WHERE id = ?').get(userId);
+}
+
+/**
+ * Update a user's profile information (name, email, purok, password)
+ */
+function updateUserProfile(userId, data) {
+    if (!userId) throw new Error('User ID is required.');
+    const db = getDb();
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+    if (!user) throw new Error('User not found.');
+
+    const updates = [];
+    const params = [];
+
+    if (data.name !== undefined) {
+        const name = requireText(data.name, 'Name', 120);
+        updates.push('name = ?');
+        params.push(name);
+    }
+
+    if (data.email !== undefined) {
+        const email = optionalText(data.email, 'Email', 160);
+        if (email) {
+            const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?) AND id != ?').get(email, userId);
+            if (existing) {
+                throw new Error('This email address is already in use by another account.');
+            }
+            updates.push('email = ?');
+            params.push(email);
+        } else {
+            updates.push('email = NULL');
+        }
+    }
+
+    if (data.purok !== undefined) {
+        const purok = requireText(data.purok, 'Purok', 100);
+        assertLookupExists('puroks', purok, 'purok');
+        updates.push('purok = ?');
+        params.push(purok);
+    }
+
+    // Password change (requires current_password and new_password)
+    if (data.new_password) {
+        if (!data.current_password) {
+            throw new Error('Current password is required to change password.');
+        }
+        if (!verifyPassword(data.current_password, user.password_hash)) {
+            throw new Error('Current password does not match.');
+        }
+        if (String(data.new_password).length < 8) {
+            throw new Error('New password must be at least 8 characters long.');
+        }
+        const newHash = hashPassword(data.new_password);
+        updates.push('password_hash = ?');
+        params.push(newHash);
+    }
+
+    if (updates.length === 0) {
+        return getUserById(userId);
+    }
+
+    updates.push('updated_at = CURRENT_TIMESTAMP');
+    params.push(userId);
+
+    const query = `UPDATE users SET ${updates.join(', ')} WHERE id = ?`;
+    db.prepare(query).run(...params);
+
+    return getUserById(userId);
+}
+
+/**
+ * Reset password using SMS OTP verification
+ */
+function resetPasswordWithOtp(mobile, otpCode, newPassword) {
+    const cleanMobile = normalizeMobile(mobile);
+    if (!newPassword || String(newPassword).length < 8) {
+        throw new Error('New password must be at least 8 characters long.');
+    }
+    const cleanOtp = String(otpCode || '').trim();
+    if (!cleanOtp) {
+        throw new Error('OTP verification code is required.');
+    }
+
+    return withTransaction((db) => {
+        const otpStmt = db.prepare(`
+            SELECT * FROM verification_otps
+            WHERE mobile = ? AND purpose = 'reset_password'
+            ORDER BY created_at DESC LIMIT 1
+        `);
+        const otpRecord = otpStmt.get(cleanMobile);
+
+        if (!otpRecord) {
+            throw new Error('No password reset request found for this mobile number.');
+        }
+
+        const now = Date.now();
+        const expiresTime = new Date(otpRecord.expires_at).getTime();
+
+        if (otpRecord.is_verified === 0) {
+            if (now > expiresTime) {
+                throw new Error('The verification code has expired. Please request a new code.');
+            }
+            if (otpRecord.otp_code !== cleanOtp) {
+                throw new Error('Incorrect verification code.');
+            }
+        } else {
+            const createdTime = new Date(otpRecord.created_at).getTime();
+            if (now - createdTime > 15 * 60 * 1000) {
+                throw new Error('The password reset authorization has expired. Please request a new code.');
+            }
+        }
+
+        const user = db.prepare('SELECT id, name, mobile, role FROM users WHERE mobile = ?').get(cleanMobile);
+        if (!user) {
+            throw new Error('No user account found with this mobile number.');
+        }
+
+        const newHash = hashPassword(newPassword);
+        db.prepare('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(newHash, user.id);
+
+        // Mark OTP as used/verified
+        db.prepare('UPDATE verification_otps SET is_verified = 1 WHERE id = ?').run(otpRecord.id);
+
+        // Invalidate active database sessions for this user for security
+        db.prepare('DELETE FROM sessions WHERE user_id = ?').run(user.id);
+
+        return {
+            success: true,
+            message: 'Password has been successfully reset. Please log in with your new password.',
+            userId: user.id
+        };
+    });
 }
 
 /**
@@ -640,6 +817,71 @@ function deleteAdvisory(id) {
 }
 
 /**
+ * Generate RFC 4180 compliant CSV export for incident reports
+ */
+function generateReportsCsv(reports, isAdmin = false) {
+    const escapeCsv = (val) => {
+        if (val === null || val === undefined) return '""';
+        const str = String(val).replace(/"/g, '""');
+        return `"${str}"`;
+    };
+
+    const headers = [
+        'Report ID',
+        'Category ID',
+        'Category Name',
+        'Severity',
+        'Status',
+        'Purok',
+        'Address',
+        'Assigned Agency',
+        'Reporter Name',
+        'Reporter Mobile',
+        'Latitude',
+        'Longitude',
+        'Has Photo',
+        'Timeline Count',
+        'Latest Note',
+        'Created At',
+        'Updated At'
+    ];
+
+    const lines = [headers.map(escapeCsv).join(',')];
+
+    for (const r of reports) {
+        const latestEvent = r.timeline && r.timeline.length > 0 ? r.timeline[0] : null;
+        let mobile = r.reporter_mobile || '';
+        if (!isAdmin && mobile.length >= 7) {
+            mobile = mobile.slice(0, 4) + '****' + mobile.slice(-3);
+        }
+
+        const row = [
+            r.id,
+            r.category_id,
+            r.category_name || r.category_id,
+            r.severity,
+            r.status,
+            r.purok,
+            r.address,
+            r.agency_name || r.agency_id || 'BARANGAY',
+            r.reporter_name,
+            mobile,
+            r.latitude,
+            r.longitude,
+            r.photo_url ? 'Yes' : 'No',
+            r.timeline ? r.timeline.length : 0,
+            latestEvent ? latestEvent.note : '',
+            r.created_at,
+            r.updated_at
+        ];
+        lines.push(row.map(escapeCsv).join(','));
+    }
+
+    // Prepend UTF-8 BOM so Microsoft Excel automatically parses characters properly
+    return '\uFEFF' + lines.join('\r\n');
+}
+
+/**
  * Get lookup data for forms (categories, puroks, agencies)
  */
 function getLookups() {
@@ -654,6 +896,7 @@ function getLookups() {
 module.exports = {
     getDb,
     initDb,
+    withTransaction,
     getStats,
     getAllReports,
     getReportById,
@@ -665,6 +908,8 @@ module.exports = {
     getUserById,
     createUser,
     updateUserPhone,
+    updateUserProfile,
+    resetPasswordWithOtp,
     createOtp,
     verifyOtp,
     saveSession,
@@ -676,5 +921,6 @@ module.exports = {
     deleteAdvisory,
     getLookups,
     normalizeMobile,
-    verifyPassword
+    verifyPassword,
+    generateReportsCsv
 };

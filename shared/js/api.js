@@ -72,10 +72,25 @@ const API = (() => {
       const params = new URLSearchParams();
       if (filters.status && filters.status !== 'all') params.append('status', filters.status);
       if (filters.category && filters.category !== 'all') params.append('category', filters.category);
+      if (filters.agency && filters.agency !== 'all') params.append('agency', filters.agency);
       if (filters.purok && filters.purok !== 'all') params.append('purok', filters.purok);
+      if (filters.reporter_id) params.append('reporter_id', filters.reporter_id);
+      if (filters.reporter_mobile) params.append('reporter_mobile', filters.reporter_mobile);
       if (filters.search) params.append('search', filters.search);
       const query = params.toString() ? `?${params.toString()}` : '';
       return request(`/api/reports${query}`);
+    },
+
+    getExportReportsUrl: (filters = {}) => {
+      const params = new URLSearchParams();
+      if (filters.status && filters.status !== 'all') params.append('status', filters.status);
+      if (filters.category && filters.category !== 'all') params.append('category', filters.category);
+      if (filters.agency && filters.agency !== 'all') params.append('agency', filters.agency);
+      if (filters.purok && filters.purok !== 'all') params.append('purok', filters.purok);
+      if (filters.search) params.append('search', filters.search);
+      if (filters.format) params.append('format', filters.format);
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return `${BASE_URL}/api/reports/export${query}`;
     },
 
     getReportById: (id) => request(`/api/reports/${id}`),
@@ -132,6 +147,21 @@ const API = (() => {
     }),
 
     getMe: () => request('/api/auth/me'),
+
+    updateProfile: (profileData) => request('/api/auth/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(profileData)
+    }),
+
+    resetPassword: (mobile, otpCode, newPassword) => request('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ mobile, otp_code: otpCode, new_password: newPassword })
+    }),
+
+    uploadPhoto: (imageData, filename = '') => request('/api/upload', {
+      method: 'POST',
+      body: JSON.stringify({ image: imageData, filename })
+    }),
 
     logout: () => request('/api/auth/logout', {
       method: 'POST'

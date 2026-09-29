@@ -10,6 +10,7 @@ for (const suffix of ['', '-wal', '-shm']) {
 const {
     initDb,
     getDb,
+    withTransaction,
     getStats,
     getAllReports,
     getReportById,
@@ -20,6 +21,8 @@ const {
     getUserById,
     createUser,
     updateUserPhone,
+    updateUserProfile,
+    resetPasswordWithOtp,
     createOtp,
     verifyOtp,
     saveSession,
@@ -29,7 +32,9 @@ const {
     getAdvisories,
     createAdvisory,
     deleteAdvisory,
-    getLookups
+    getLookups,
+    verifyPassword,
+    generateReportsCsv
 } = require('./db.js');
 
 initDb(false);
@@ -201,6 +206,98 @@ assert('Temp report created for deletion', tempReport && Boolean(tempReport.id))
 const deleteSuccess = deleteReport(tempReport.id);
 assert('Report deleted from database', deleteSuccess === true);
 assert('Deleted report can no longer be retrieved', getReportById(tempReport.id) === null);
+
+// 11. SQLite Transactions & ACID Rollback
+console.log('\n11. Testing SQLite Transactions & ACID Rollback:');
+const preTxCount = getStats().total;
+let caughtTxError = false;
+try {
+    withTransaction((db) => {
+        db.prepare(`
+            INSERT INTO reports (id, category_id, description, address, purok, severity, status, reporter_name, reporter_mobile)
+            VALUES ('BB-TX-FAIL', 'outage', 'Will be rolled back', 'Purok 1', 'Purok 1', 'low', 'pending', 'Test', '09171234567')
+        `).run();
+        throw new Error('Simulated failure during multi-step operation');
+    });
+} catch (e) {
+    caughtTxError = true;
+}
+assert('withTransaction caught simulated error', caughtTxError === true);
+assert('withTransaction rolled back insert', getReportById('BB-TX-FAIL') === null);
+assert('Total reports unchanged after rollback', getStats().total === preTxCount);
+
+// 12. Password Reset via OTP
+console.log('\n12. Testing Password Reset via OTP:');
+const resetUser = createUser({
+    name: 'Reset Test User',
+    mobile: '09228889900',
+    email: 'reset.test@gmail.com',
+    purok: 'Purok 1',
+    password_hash: 'initialPassword123'
+});
+const resetOtp = createOtp('09228889900', 'reset_password');
+assert('Created reset_password OTP', resetOtp && resetOtp.otp_code.length === 6);
+
+// Reject wrong OTP
+let wrongOtpCaught = false;
+try {
+    resetPasswordWithOtp('09228889900', '000000', 'newPassword456');
+} catch (e) {
+    wrongOtpCaught = true;
+}
+assert('Rejects invalid OTP for password reset', wrongOtpCaught === true);
+
+// Accept valid OTP
+const resetResult = resetPasswordWithOtp('09228889900', resetOtp.otp_code, 'newPassword456');
+assert('Successfully resets password with valid OTP', resetResult.success === true);
+const updatedResetUser = getDb().prepare('SELECT password_hash FROM users WHERE id = ?').get(resetUser.id);
+assert('New password verified against updated hash', verifyPassword('newPassword456', updatedResetUser.password_hash));
+
+// 13. User Profile Update
+console.log('\n13. Testing User Profile Updates:');
+const updatedProfile = updateUserProfile(resetUser.id, {
+    name: 'Updated Name Resident',
+    email: 'updated.email@gmail.com',
+    purok: 'Purok 3'
+});
+assert('Profile name updated', updatedProfile.name === 'Updated Name Resident');
+assert('Profile email updated', updatedProfile.email === 'updated.email@gmail.com');
+assert('Profile purok updated', updatedProfile.purok === 'Purok 3');
+
+// Password change with correct current password
+const passwordChangedUser = updateUserProfile(resetUser.id, {
+    current_password: 'newPassword456',
+    new_password: 'newerPassword789'
+});
+assert('Password updated via profile update', Boolean(passwordChangedUser));
+const freshUserRecord = getDb().prepare('SELECT password_hash FROM users WHERE id = ?').get(resetUser.id);
+assert('New password verified after profile update', verifyPassword('newerPassword789', freshUserRecord.password_hash));
+
+// Reject password change with incorrect current password
+let wrongCurrentCaught = false;
+try {
+    updateUserProfile(resetUser.id, {
+        current_password: 'wrongPassword!',
+        new_password: 'anotherPassword123'
+    });
+} catch (e) {
+    wrongCurrentCaught = true;
+}
+assert('Rejects password update with incorrect current password', wrongCurrentCaught === true);
+
+// 14. Report CSV Export & User Filtering
+console.log('\n14. Testing Report CSV Export & Reporter Filters:');
+const reports = getAllReports();
+const csvOutput = generateReportsCsv(reports, false);
+assert('generateReportsCsv returns UTF-8 BOM', csvOutput.startsWith('\uFEFF'));
+assert('generateReportsCsv includes header columns', csvOutput.includes('Report ID') && csvOutput.includes('Category Name'));
+assert('generateReportsCsv masks mobile for non-admin', csvOutput.includes('****'));
+
+const adminCsvOutput = generateReportsCsv(reports, true);
+assert('generateReportsCsv does not mask mobile for admin', adminCsvOutput.includes('0917'));
+
+const myReports = getAllReports({ reporter_mobile: '09171112222' });
+assert('Filters reports by reporter_mobile', Array.isArray(myReports));
 
 console.log('\n==========================================================');
 if (failures === 0) {

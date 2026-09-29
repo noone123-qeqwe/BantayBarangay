@@ -188,7 +188,74 @@ server.listen(PORT, async () => {
         const diagRes = await request('/api/diagnostics');
         assert('GET /api/diagnostics returns operational metrics', diagRes.status === 200 && diagRes.data.database.status === 'operational' && Boolean(diagRes.data.memory));
 
-        // 15. Session Logout (/api/auth/logout)
+        // 15. Password Reset via API (/api/auth/reset-password)
+        const nonExistentReset = await request('/api/auth/send-otp', { method: 'POST' }, {
+            mobile: '09199990000',
+            purpose: 'reset_password'
+        });
+        assert('POST /api/auth/send-otp rejects reset for unknown mobile (404)', nonExistentReset.status === 404);
+
+        const resetOtpRes = await request('/api/auth/send-otp', { method: 'POST' }, {
+            mobile: '09281234567',
+            purpose: 'reset_password'
+        });
+        assert('POST /api/auth/send-otp issues reset OTP for existing user', resetOtpRes.status === 200 && Boolean(resetOtpRes.data.demo_otp));
+
+        const resetRes = await request('/api/auth/reset-password', { method: 'POST' }, {
+            mobile: '09281234567',
+            otp_code: resetOtpRes.data.demo_otp,
+            new_password: 'brandNewPassword123'
+        });
+        assert('POST /api/auth/reset-password resets password with valid OTP', resetRes.status === 200 && resetRes.data.success === true);
+
+        const newLoginRes = await request('/api/auth/login', { method: 'POST' }, {
+            mobile: '09281234567',
+            password: 'brandNewPassword123'
+        });
+        assert('POST /api/auth/login succeeds with reset password', newLoginRes.status === 200 && newLoginRes.data.user.name === 'Maria Santos');
+
+        // 16. Profile Update via API (/api/auth/profile)
+        const updateProfileRes = await request('/api/auth/profile', {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${loginRes.data.token}` }
+        }, {
+            name: 'Juan Dela Cruz Updated',
+            purok: 'Purok 3'
+        });
+        assert('PATCH /api/auth/profile updates profile details', updateProfileRes.status === 200 && updateProfileRes.data.user.name === 'Juan Dela Cruz Updated');
+
+        const reGetMe = await request('/api/auth/me', {
+            headers: { Authorization: `Bearer ${loginRes.data.token}` }
+        });
+        assert('GET /api/auth/me reflects updated profile name and purok', reGetMe.status === 200 && reGetMe.data.user.name === 'Juan Dela Cruz Updated' && reGetMe.data.user.purok === 'Purok 3');
+
+        // 17. Image / Photo Upload via API (/api/upload)
+        const samplePng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+        const uploadRes = await request('/api/upload', { method: 'POST' }, {
+            image: samplePng,
+            filename: 'incident-evidence.png'
+        });
+        assert('POST /api/upload accepts and saves valid image', uploadRes.status === 201 && uploadRes.data.data.url.startsWith('/uploads/') && uploadRes.data.data.mimeType === 'image/png');
+
+        const uploadedAssetUrl = uploadRes.data.data.url;
+        const assetFetchRes = await request(uploadedAssetUrl);
+        assert('Static asset serving delivers uploaded image (200)', assetFetchRes.status === 200 && assetFetchRes.headers['content-type'] === 'image/png');
+
+        const invalidUpload = await request('/api/upload', { method: 'POST' }, {
+            image: 'not_an_image_at_all'
+        });
+        assert('POST /api/upload rejects invalid image payload (400)', invalidUpload.status === 400);
+
+        // 18. Reports CSV & JSON Export (/api/reports/export)
+        const csvExportRes = await request('/api/reports/export', {
+            headers: { Authorization: `Bearer ${adminLogin.data.token}` }
+        });
+        assert('GET /api/reports/export delivers CSV attachment with text/csv header', csvExportRes.status === 200 && csvExportRes.headers['content-type'].includes('text/csv') && (csvExportRes.raw || '').includes('Report ID'));
+
+        const jsonExportRes = await request('/api/reports/export?format=json');
+        assert('GET /api/reports/export?format=json delivers JSON dataset', jsonExportRes.status === 200 && Array.isArray(jsonExportRes.data.data));
+
+        // 19. Session Logout (/api/auth/logout)
         const logoutRes = await request('/api/auth/logout', {
             method: 'POST',
             headers: { Authorization: `Bearer ${loginRes.data.token}` }
@@ -213,3 +280,4 @@ server.listen(PORT, async () => {
         server.close(() => process.exit(failures === 0 ? 0 : 1));
     }
 });
+
