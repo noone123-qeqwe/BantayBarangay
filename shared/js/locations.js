@@ -344,25 +344,8 @@
   }
 
   // ── MASBATE GEOGRAPHIC REFERENCE COORDINATES ──────────────
-  const MASBATE_COORDINATES = {
-    'Masbate City': {
-      'Centro (Poblacion)': { lat: 12.3713, lng: 123.6306 },
-      'Espinosa': { lat: 12.3745, lng: 123.6335 },
-      'Tugbo': { lat: 12.3650, lng: 123.6290 },
-      'Ibingay': { lat: 12.3700, lng: 123.6240 },
-      'Nursery': { lat: 12.3680, lng: 123.6280 },
-      'Bagumbayan': { lat: 12.3670, lng: 123.6350 },
-      'Kalipay': { lat: 12.3750, lng: 123.6290 },
-      'Pating': { lat: 12.3720, lng: 123.6270 },
-      'Bantigue': { lat: 12.3850, lng: 123.6150 },
-      'Batuhan': { lat: 12.3600, lng: 123.6100 },
-      'Bolo': { lat: 12.3480, lng: 123.6400 },
-      'Cagay': { lat: 12.3550, lng: 123.6180 },
-      'Malinta': { lat: 12.3620, lng: 123.6020 },
-      'Asid': { lat: 12.2850, lng: 123.6050 },
-      'Anas': { lat: 12.3200, lng: 123.6150 },
-      'default': { lat: 12.3713, lng: 123.6306 }
-    },
+  const MUNICIPALITY_COORDINATES = {
+    'Masbate City': { lat: 12.3713, lng: 123.6306 },
     'Mobo': { lat: 12.3275, lng: 123.6811 },
     'Aroroy': { lat: 12.5117, lng: 123.4022 },
     'Baleno': { lat: 12.4419, lng: 123.4900 },
@@ -385,14 +368,48 @@
     'Uson': { lat: 12.2350, lng: 123.7744 }
   };
 
-  function getCoordinates(municipality, barangay) {
-    if (!municipality) municipality = 'Masbate City';
-    const muniEntry = MASBATE_COORDINATES[municipality];
-    if (!muniEntry) return { lat: 12.3713, lng: 123.6306 };
-    if (typeof muniEntry.lat === 'number') return { lat: muniEntry.lat, lng: muniEntry.lng };
-    if (barangay && muniEntry[barangay]) return muniEntry[barangay];
-    return muniEntry.default || { lat: 12.3713, lng: 123.6306 };
-  }
+  const MASBATE_CITY_BARANGAY_COORDS = {
+    'Centro (Poblacion)': { lat: 12.3713, lng: 123.6306 },
+    'Espinosa': { lat: 12.3734, lng: 123.6268 },
+    'Nursery': { lat: 12.3650, lng: 123.6315 },
+    'Tugbo': { lat: 12.3556, lng: 123.6231 },
+    'Ibingay': { lat: 12.3688, lng: 123.6288 },
+    'Bagumbayan': { lat: 12.3770, lng: 123.6320 },
+    'Kalipay': { lat: 12.3742, lng: 123.6351 },
+    'Pating': { lat: 12.3725, lng: 123.6285 },
+    'Bantigue': { lat: 12.3920, lng: 123.6120 },
+    'Anas': { lat: 12.3522, lng: 123.6389 },
+    'Asid': { lat: 12.3245, lng: 123.6111 },
+    'Bapi': { lat: 12.3811, lng: 123.6042 },
+    'Batuhan': { lat: 12.3615, lng: 123.5930 },
+    'Bayombon': { lat: 12.3950, lng: 123.5870 },
+    'Biyong': { lat: 12.3380, lng: 123.6420 },
+    'Bolo': { lat: 12.3450, lng: 123.5780 },
+    'Cagay': { lat: 12.3680, lng: 123.5650 },
+    'Cawayan Exterior': { lat: 12.3880, lng: 123.5720 },
+    'Cawayan Interior': { lat: 12.3790, lng: 123.5600 },
+    'Igang': { lat: 12.3850, lng: 123.5510 },
+    'J.T. Fernandez': { lat: 12.3670, lng: 123.6220 },
+    'Kinamaligan': { lat: 12.3480, lng: 123.6150 },
+    'Maingaran': { lat: 12.3200, lng: 123.5850 },
+    'Malinta': { lat: 12.3580, lng: 123.6080 },
+    'Mapiña': { lat: 12.3330, lng: 123.5920 },
+    'Maynganyane': { lat: 12.3150, lng: 123.6250 },
+    'Pawa': { lat: 12.4020, lng: 123.6010 },
+    'Sinalongan': { lat: 12.3390, lng: 123.5670 },
+    'Titong': { lat: 12.3730, lng: 123.6310 },
+    'Ubongan Dacu': { lat: 12.4120, lng: 123.5890 },
+    'Usab': { lat: 12.3620, lng: 123.6400 }
+  };
+
+  // Structured coordinate map by municipality and barangay
+  const MASBATE_COORDINATES = {
+    'Masbate City': {
+      ...MASBATE_CITY_BARANGAY_COORDS,
+      'default': { lat: 12.3713, lng: 123.6306 }
+    },
+    ...MUNICIPALITY_COORDINATES
+  };
 
   function calcDistanceKm(lat1, lon1, lat2, lon2) {
     const R = 6371;
@@ -404,38 +421,53 @@
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   }
 
+  function isWithinMasbate(lat, lng) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+    // Bounding box enclosing Masbate mainland, Ticao, and Burias islands
+    return lat >= 11.70 && lat <= 13.25 && lng >= 122.85 && lng <= 124.20;
+  }
+
+  function getCoordinates(municipality = 'Masbate City', barangay = '') {
+    if (municipality === 'Masbate City' && MASBATE_CITY_BARANGAY_COORDS[barangay]) {
+      return { ...MASBATE_CITY_BARANGAY_COORDS[barangay] };
+    }
+    if (MUNICIPALITY_COORDINATES[municipality]) {
+      return { ...MUNICIPALITY_COORDINATES[municipality] };
+    }
+    return { lat: 12.3713, lng: 123.6306 };
+  }
+
   function findNearestLocation(lat, lng) {
-    if (typeof lat !== 'number' || typeof lng !== 'number') return null;
+    if (typeof lat !== 'number' || typeof lng !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
     let closest = null;
     let minDistance = Infinity;
 
-    // Check Masbate City barangays first
-    const mc = MASBATE_COORDINATES['Masbate City'];
-    for (const [brgy, coords] of Object.entries(mc)) {
-      if (brgy === 'default') continue;
+    // Check all barangays in Masbate City first
+    for (const [brgy, coords] of Object.entries(MASBATE_CITY_BARANGAY_COORDS)) {
       const d = calcDistanceKm(lat, lng, coords.lat, coords.lng);
       if (d < minDistance) {
         minDistance = d;
         closest = {
           municipality: 'Masbate City',
           barangay: brgy,
+          purok: 'Purok 1',
           distanceKm: d,
-          formatted: `Brgy. ${brgy}, Masbate City`
+          formatted: formatPurokAddress('Purok 1', brgy, 'Masbate City')
         };
       }
     }
 
-    // Check all other municipalities
-    for (const [muni, coords] of Object.entries(MASBATE_COORDINATES)) {
-      if (muni === 'Masbate City') continue;
+    // Check all municipalities
+    for (const [muni, coords] of Object.entries(MUNICIPALITY_COORDINATES)) {
       const d = calcDistanceKm(lat, lng, coords.lat, coords.lng);
       if (d < minDistance) {
         minDistance = d;
         closest = {
           municipality: muni,
           barangay: 'Poblacion',
+          purok: 'Purok 1',
           distanceKm: d,
-          formatted: `Poblacion, ${muni}, Masbate`
+          formatted: formatPurokAddress('Purok 1', 'Poblacion', muni)
         };
       }
     }
@@ -446,13 +478,17 @@
   // Export globally
   const exportObj = {
     DATA: MASBATE_LOCATIONS,
-    COORDINATES: MASBATE_COORDINATES,
+    COORDINATES: MUNICIPALITY_COORDINATES,
+    BARANGAY_COORDINATES: MASBATE_CITY_BARANGAY_COORDS,
+    MASBATE_COORDINATES: MASBATE_COORDINATES,
     getPurokCount,
     formatPurokAddress,
     parsePurokAddress,
     initCascadingLocation,
     getCoordinates,
-    findNearestLocation
+    findNearestLocation,
+    isWithinMasbate,
+    calcDistanceKm
   };
 
   if (typeof window !== 'undefined') {
@@ -465,3 +501,4 @@
     globalThis.MasbateLocations = exportObj;
   }
 })();
+

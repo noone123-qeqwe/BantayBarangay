@@ -467,12 +467,24 @@
     DATA: MASBATE_LOCATIONS,
     COORDINATES: MUNICIPALITY_COORDINATES,
     BARANGAY_COORDINATES: MASBATE_CITY_BARANGAY_COORDS,
+    MASBATE_COORDINATES: {
+      'Masbate City': {
+        ...MASBATE_CITY_BARANGAY_COORDS,
+        'default': { lat: 12.3713, lng: 123.6306 }
+      },
+      ...MUNICIPALITY_COORDINATES
+    },
     getPurokCount,
     formatPurokAddress,
     parsePurokAddress,
     initCascadingLocation,
     getCoordinates,
-    findNearestLocation
+    findNearestLocation,
+    isWithinMasbate: function(lat, lng) {
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+      return lat >= 11.70 && lat <= 13.25 && lng >= 122.85 && lng <= 124.20;
+    },
+    calcDistanceKm
   };
 
   if (typeof window !== 'undefined') {
@@ -485,4 +497,5 @@
     globalThis.MasbateLocations = exportObj;
   }
 })();
+
 

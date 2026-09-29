@@ -745,12 +745,20 @@ function initApp() {
 
   document.getElementById('reporterName')?.addEventListener('input', saveDraft);
 
-  // ── ACCURATE REVERSE GEOCODING HELPER ─────────────────────────
+  // ── ACCURATE REVERSE GEOCODING HELPER WITH IN-MEMORY CACHE ──
+  const geocodeMemoryCache = new Map();
+
   async function reverseGeocode(lat, lng) {
-    // 1. Try Nominatim OpenStreetMap API
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return 'Masbate Province';
+    const cacheKey = `${lat.toFixed(4)},${lng.toFixed(4)}`;
+    if (geocodeMemoryCache.has(cacheKey)) {
+      return geocodeMemoryCache.get(cacheKey);
+    }
+
+    // 1. Try Nominatim OpenStreetMap API with 2.5s network abort
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
         signal: controller.signal,
         headers: { 'Accept-Language': 'en' }
@@ -770,18 +778,27 @@ function initApp() {
             parts.push(bLabel);
           }
           if (muni) parts.push(muni);
-          if (parts.length >= 2) return parts.join(', ');
-          if (data.display_name) return data.display_name.split(',').slice(0, 3).join(', ').trim();
+          if (parts.length >= 2) {
+            const resolved = parts.join(', ');
+            geocodeMemoryCache.set(cacheKey, resolved);
+            return resolved;
+          }
+          if (data.display_name) {
+            const resolved = data.display_name.split(',').slice(0, 3).join(', ').trim();
+            geocodeMemoryCache.set(cacheKey, resolved);
+            return resolved;
+          }
         }
       }
     } catch (e) {
-      // Offline or network timeout - fallback to local Masbate coordinate database
+      // Offline, network timeout, or weak connectivity - instant fallback to local Masbate coordinate database
     }
 
     // 2. Offline / Local fallback using Masbate Locations reference coordinates
     if (typeof MasbateLocations !== 'undefined' && MasbateLocations.findNearestLocation) {
       const nearest = MasbateLocations.findNearestLocation(lat, lng);
-      if (nearest) {
+      if (nearest && nearest.formatted) {
+        geocodeMemoryCache.set(cacheKey, nearest.formatted);
         return nearest.formatted;
       }
     }
@@ -790,14 +807,13 @@ function initApp() {
   }
 
   // ── UPDATE ACCURACY BADGE UI ──────────────────────────────────
-  // ── UPDATE ACCURACY BADGE UI ──────────────────────────────────
-  function updateGpsBadge(acc, sampleCount = 0) {
+  function updateGpsBadge(acc, sampleCount = 0, isFallback = false) {
     const badge = document.getElementById('gpsAccuracyBadge');
     if (!badge) return;
     badge.classList.remove('hidden', 'acc-ultra', 'acc-high', 'acc-medium', 'acc-coarse');
     let level = 'acc-high';
     let icon = '🎯';
-    const sampleSuffix = sampleCount > 1 ? ` (${sampleCount} GNSS fixes averaged)` : '';
+    const sampleSuffix = sampleCount > 1 ? ` (${sampleCount} GNSS fixes)` : '';
     let text = `Precision GPS: ±${acc}m${sampleSuffix}`;
 
     if (acc <= 6) {
@@ -811,30 +827,230 @@ function initApp() {
     } else if (acc <= 35) {
       level = 'acc-medium';
       icon = '📍';
-      text = `Good Accuracy: ±${acc}m (Cell/Wi-Fi Assisted)${sampleSuffix}`;
+      text = isFallback
+        ? `Cell/Wi-Fi Assisted: ±${acc}m (Low Satellite Signal)${sampleSuffix}`
+        : `Good Accuracy: ±${acc}m${sampleSuffix}`;
     } else {
       level = 'acc-coarse';
-      icon = '⚠️';
-      text = `Coarse Location: ±${acc}m (Acquiring Satellites...)${sampleSuffix}`;
+      icon = '📡';
+      text = isFallback
+        ? `Low GPS Signal: ±${acc}m (Cellular/Network Fallback)`
+        : `Low Satellite Signal: ±${acc}m (Indoors/Obstructed)`;
     }
 
     badge.classList.add(level);
     badge.innerHTML = `<span class="gps-accuracy-icon">${icon}</span> <span>${text}</span>`;
   }
 
+  // ── LOW-SIGNAL INTERACTIVE ASSISTANCE WIDGET ─────────────────
+  function renderLowSignalAssist(acc, isFallback = false) {
+    const assistEl = document.getElementById('gpsLowSignalAssist');
+    if (!assistEl) return;
+
+    if (acc <= 20 && !isFallback) {
+      assistEl.classList.add('hidden');
+      return;
+    }
+
+    assistEl.classList.remove('hidden');
+
+    const isIndoorOrWeak = acc > 35 || isFallback;
+    const title = isIndoorOrWeak
+      ? `📡 Low GPS Signal Area Detected (±${acc}m)`
+      : `📍 Moderate Accuracy (±${acc}m)`;
+    const desc = isIndoorOrWeak
+      ? 'Weak satellite reception detected (often caused by tin roofing, dense foliage, or indoor shielding). For accurate dispatch, use our High-Resolution Aerial Map to drop the pin on your exact roof/pole, or snap to your barangay center.'
+      : 'Location is acquired, but you can micro-adjust on the aerial satellite map for pole or meter-level precision.';
+
+    assistEl.innerHTML = `
+      <div class="gps-low-signal-header">
+        <span class="gps-low-signal-icon">📡</span>
+        <div class="gps-low-signal-content">
+          <div class="gps-low-signal-title">${title}</div>
+          <div class="gps-low-signal-desc">${desc}</div>
+        </div>
+      </div>
+      <div class="gps-low-signal-actions">
+        <button type="button" class="btn-assist-action btn-assist-pinpoint" id="btnLowSignalPinpoint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          Fine-Tune on Map (±1.5m)
+        </button>
+        <button type="button" class="btn-assist-action btn-assist-snap" id="btnLowSignalSnap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Snap to Barangay
+        </button>
+        <button type="button" class="btn-assist-action btn-assist-retry" id="btnLowSignalRetry">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Retry Outdoors
+        </button>
+      </div>
+    `;
+
+    document.getElementById('btnLowSignalPinpoint')?.addEventListener('click', () => {
+      openPinpointMap();
+    });
+
+    document.getElementById('btnLowSignalSnap')?.addEventListener('click', () => {
+      snapToKnownBarangay();
+    });
+
+    document.getElementById('btnLowSignalRetry')?.addEventListener('click', () => {
+      UI.toast('Step outdoors or near a window for direct sky view.', 'info');
+      runHighAccuracyGps();
+    });
+  }
+
+  function hideLowSignalAssist() {
+    const assistEl = document.getElementById('gpsLowSignalAssist');
+    if (assistEl) assistEl.classList.add('hidden');
+  }
+
+  function snapToKnownBarangay() {
+    // Check if user has chosen a barangay in dropdown or has registered profile
+    let muni = 'Masbate City';
+    let brgy = 'Centro (Poblacion)';
+    let purok = 'Purok 1';
+
+    const mMuni = document.getElementById('pickerMunicipality');
+    const mBrgy = document.getElementById('pickerBarangay');
+    const mPurok = document.getElementById('pickerPurok');
+
+    if (mMuni && mMuni.value) muni = mMuni.value;
+    if (mBrgy && mBrgy.value) brgy = mBrgy.value;
+    if (mPurok && mPurok.value) purok = mPurok.value;
+
+    if (currentUser && currentUser.purok) {
+      if (typeof MasbateLocations !== 'undefined' && MasbateLocations.parsePurokAddress) {
+        const parsed = MasbateLocations.parsePurokAddress(currentUser.purok);
+        if (parsed.municipality) muni = parsed.municipality;
+        if (parsed.barangay) brgy = parsed.barangay;
+        if (parsed.purok) purok = parsed.purok;
+      }
+    }
+
+    if (typeof MasbateLocations !== 'undefined' && MasbateLocations.getCoordinates) {
+      const coords = MasbateLocations.getCoordinates(muni, brgy);
+      selectedLocation.lat = coords.lat;
+      selectedLocation.lng = coords.lng;
+      selectedLocation.accuracy = 15;
+      selectedLocation.hasGps = true;
+      selectedLocation.purok = purok;
+
+      const formatted = MasbateLocations.formatPurokAddress ? MasbateLocations.formatPurokAddress(purok, brgy, muni) : `Brgy. ${brgy}, ${muni}`;
+      const gpsDetail = `(GPS: ${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}, ±15m)`;
+      const finalAddr = `${formatted} ${gpsDetail}`;
+
+      const addrInput = document.getElementById('reportAddressInput');
+      if (addrInput) {
+        addrInput.value = finalAddr;
+        selectedLocation.address = finalAddr;
+        document.getElementById('err-address')?.classList.add('hidden');
+      }
+
+      updateGpsBadge(15);
+      hideLowSignalAssist();
+      syncMapMarker(coords.lat, coords.lng, finalAddr);
+      saveDraft();
+      renderPossibleReports();
+      UI.toast(`Location anchored to ${brgy}, ${muni} (±15m). Tap "Pinpoint on Map" if you wish to adjust to exact pole/house.`, 'success');
+    } else {
+      openSelectBarangay();
+    }
+  }
+
+  // ── 2D RECURSIVE KALMAN FILTER FOR JITTER & MULTIPATH DAMPENING ──
+  class KalmanGpsFilter2D {
+    constructor(driftRate = 2.0) {
+      this.variance = -1; // uninitialized
+      this.lat = 0;
+      this.lng = 0;
+      this.accuracy = 999;
+      this.lastTime = 0;
+      this.driftRate = driftRate;
+    }
+
+    reset() {
+      this.variance = -1;
+      this.lat = 0;
+      this.lng = 0;
+      this.accuracy = 999;
+      this.lastTime = 0;
+    }
+
+    update(lat, lng, accuracy, timestampMs) {
+      const acc = Math.max(1, accuracy);
+      const r = acc * acc; // Measurement variance
+      const now = timestampMs || Date.now();
+
+      if (this.variance < 0) {
+        this.lat = lat;
+        this.lng = lng;
+        this.variance = r;
+        this.accuracy = Math.round(acc);
+        this.lastTime = now;
+        return {
+          lat: parseFloat(this.lat.toFixed(6)),
+          lng: parseFloat(this.lng.toFixed(6)),
+          accuracy: this.accuracy
+        };
+      }
+
+      const dt = Math.max(0.05, Math.min((now - this.lastTime) / 1000, 20));
+      this.lastTime = now;
+
+      // Process noise: spatial variance grows slowly over time
+      this.variance += this.driftRate * dt;
+
+      // Kalman gain
+      const K = this.variance / (this.variance + r);
+
+      // State update
+      this.lat += K * (lat - this.lat);
+      this.lng += K * (lng - this.lng);
+
+      // Covariance update
+      this.variance = Math.max(1, (1 - K) * this.variance);
+      this.accuracy = Math.max(2, Math.round(Math.sqrt(this.variance)));
+
+      return {
+        lat: parseFloat(this.lat.toFixed(6)),
+        lng: parseFloat(this.lng.toFixed(6)),
+        accuracy: this.accuracy
+      };
+    }
+  }
+
   // ── HIGH-PRECISION MULTI-SAMPLE GNSS ENGINE ───────────────────
   let activeGpsWatchId = null;
   let activeGpsTimeoutTimer = null;
   let activeGpsEarlyExitTimer = null;
+  let activeGpsFallbackTimer = null;
   let isGpsAcquiring = false;
+  const activeKalmanFilter = new KalmanGpsFilter2D(2.0);
 
   /**
    * Computes the Inverse-Variance Weighted Centroid & Standard Error of GPS fixes.
-   * Discards multipath spikes and coarse outliers.
+   * Fused with 2D Kalman Filter state for noise-free stability.
    * @param {GeolocationPosition[]} fixes
+   * @param {KalmanGpsFilter2D} kalman
    */
-  function computeOptimalGpsEstimate(fixes) {
-    if (!fixes || fixes.length === 0) return null;
+  function computeOptimalGpsEstimate(fixes, kalman) {
+    if (!fixes || fixes.length === 0) {
+      if (kalman && kalman.variance > 0) {
+        return {
+          lat: parseFloat(kalman.lat.toFixed(6)),
+          lng: parseFloat(kalman.lng.toFixed(6)),
+          accuracy: kalman.accuracy,
+          altitude: null,
+          altitudeAccuracy: null,
+          heading: null,
+          speed: null,
+          sampleCount: 1
+        };
+      }
+      return null;
+    }
+
     if (fixes.length === 1) {
       return {
         lat: parseFloat(fixes[0].coords.latitude.toFixed(6)),
@@ -853,13 +1069,12 @@ function initApp() {
     const bestAcc = sorted[0].coords.accuracy;
 
     // 2. Outlier rejection:
-    // Once tight fixes are present, filter out fixes > 2.2x worse or > 40m
-    const maxAllowedAcc = bestAcc <= 15 ? Math.max(bestAcc * 2.2, 20) : Math.max(bestAcc * 2.5, 60);
+    // Once tight fixes are present, filter out fixes > 2.5x worse or > 60m
+    const maxAllowedAcc = bestAcc <= 15 ? Math.max(bestAcc * 2.2, 25) : Math.max(bestAcc * 2.5, 90);
     let validFixes = sorted.filter(f => f.coords.accuracy <= maxAllowedAcc);
     if (validFixes.length === 0) validFixes = [sorted[0]];
 
     // 3. Inverse-Variance Weighting (WLS Maximum Likelihood Estimation):
-    // Weight w = 1 / (accuracy^2).
     let totalWeight = 0;
     let weightedLat = 0;
     let weightedLng = 0;
@@ -872,21 +1087,26 @@ function initApp() {
       weightedLng += f.coords.longitude * w;
     }
 
-    const estLat = weightedLat / totalWeight;
-    const estLng = weightedLng / totalWeight;
+    let estLat = weightedLat / totalWeight;
+    let estLng = weightedLng / totalWeight;
 
-    // Filter spatial outliers: discard any sample that is > 35m from the computed centroid
+    // 4. Blend with Kalman state if available to eliminate multipath flutter
+    if (kalman && kalman.variance > 0) {
+      estLat = (estLat * 0.6) + (kalman.lat * 0.4);
+      estLng = (estLng * 0.6) + (kalman.lng * 0.4);
+    }
+
+    // Filter spatial outliers: discard any sample that is > 45m from computed centroid
     const filteredSpatial = validFixes.filter(f => {
       const dKm = distanceInKm(f.coords.latitude, f.coords.longitude, estLat, estLng);
-      return (dKm * 1000) <= 35;
+      return (dKm * 1000) <= 45;
     });
 
     let finalLat = estLat;
     let finalLng = estLng;
     let finalSampleCount = validFixes.length;
 
-    // If spatial outliers were dropped, re-evaluate centroid on tightly clustered fixes
-    if (filteredSpatial.length >= 1 && filteredSpatial.length < validFixes.length) {
+    if (filteredSpatial.length >= 2 && filteredSpatial.length < validFixes.length) {
       let refinedWeight = 0;
       let refinedLat = 0;
       let refinedLng = 0;
@@ -904,7 +1124,7 @@ function initApp() {
 
     // Standard error of weighted mean = 1 / sqrt(totalWeight)
     const se = Math.round(1 / Math.sqrt(totalWeight));
-    const refinedAcc = Math.max(2, Math.min(Math.round(bestAcc), Math.max(se, Math.round(bestAcc * 0.82))));
+    const refinedAcc = Math.max(2, Math.min(Math.round(bestAcc), Math.max(se, Math.round(bestAcc * 0.8))));
 
     const bestSample = validFixes[0];
 
@@ -933,6 +1153,10 @@ function initApp() {
     let collectedFixes = [];
     let bestFix = null;
     let consecutiveTightFixes = 0;
+    let hasNetworkFallbackFired = false;
+    let isFallbackFixActive = false;
+
+    activeKalmanFilter.reset();
 
     function cleanGpsWatch() {
       if (activeGpsWatchId !== null) {
@@ -946,6 +1170,10 @@ function initApp() {
       if (activeGpsEarlyExitTimer !== null) {
         clearTimeout(activeGpsEarlyExitTimer);
         activeGpsEarlyExitTimer = null;
+      }
+      if (activeGpsFallbackTimer !== null) {
+        clearTimeout(activeGpsFallbackTimer);
+        activeGpsFallbackTimer = null;
       }
       isGpsAcquiring = false;
     }
@@ -963,17 +1191,18 @@ function initApp() {
       btn.classList.add('loading');
       btn.innerHTML = `<span class="spinner-border" style="width:13px;height:13px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite;margin-right:6px"></span> Acquiring GNSS Satellites…`;
     }
-    UI.toast('Connecting to GNSS satellites… Multi-sample accuracy refinement active.', 'info');
+    UI.toast('Connecting to GNSS satellites… Low-signal Kalman smoothing enabled.', 'info');
 
     function finalizeFix() {
       cleanGpsWatch();
-      const estimate = computeOptimalGpsEstimate(collectedFixes);
+      const estimate = computeOptimalGpsEstimate(collectedFixes, activeKalmanFilter);
       if (!estimate) {
         if (btn) {
           btn.classList.remove('loading');
           btn.innerHTML = origBtnHtml || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Auto-Detect High-Accuracy GPS`;
         }
-        UI.toast('Could not lock GNSS satellites. Please check permissions or use "Pinpoint on Map".', 'error');
+        UI.toast('GPS signal unavailable indoors or shielded. Opening Barangay Selector...', 'warning');
+        openSelectBarangay();
         return;
       }
 
@@ -986,15 +1215,31 @@ function initApp() {
       selectedLocation.speed = estimate.speed;
       selectedLocation.hasGps = true;
 
-      updateGpsBadge(estimate.accuracy, estimate.sampleCount);
+      updateGpsBadge(estimate.accuracy, estimate.sampleCount, isFallbackFixActive);
+      renderLowSignalAssist(estimate.accuracy, isFallbackFixActive);
 
       if (btn) {
         btn.classList.remove('loading');
         btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Re-detect GPS (±${estimate.accuracy}m)`;
       }
 
+      // Check for cell-tower gross displacement (>12km from Masbate if user has known municipality)
+      let alertDisplacement = false;
+      if (typeof MasbateLocations !== 'undefined' && MasbateLocations.isWithinMasbate) {
+        if (!MasbateLocations.isWithinMasbate(estimate.lat, estimate.lng)) {
+          alertDisplacement = true;
+        }
+      }
+
       const toastType = estimate.accuracy <= 10 ? 'success' : estimate.accuracy <= 25 ? 'info' : 'warning';
-      UI.toast(`GNSS Lock Established (±${estimate.accuracy}m precision across ${estimate.sampleCount} fixes)`, toastType);
+      if (alertDisplacement) {
+        UI.toast(`Cell-tower placed you outside Masbate bounds. Please tap "Snap to Barangay" or "Pinpoint on Map".`, 'warning');
+      } else {
+        const msg = estimate.accuracy <= 20
+          ? `GNSS Lock Established (±${estimate.accuracy}m precision across ${estimate.sampleCount} fixes)`
+          : `Low GPS Signal Area: Stabilized at ±${estimate.accuracy}m. You can fine-tune on map.`;
+        UI.toast(msg, toastType);
+      }
 
       reverseGeocode(estimate.lat, estimate.lng).then(resolvedAddr => {
         const gpsDetail = `(GPS: ${estimate.lat.toFixed(6)}, ${estimate.lng.toFixed(6)}, ±${estimate.accuracy}m)`;
@@ -1010,37 +1255,49 @@ function initApp() {
       });
     }
 
-    function onFixReceived(pos) {
+    function onFixReceived(pos, isFallback = false) {
       if (!pos || !pos.coords) return;
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
-      const acc = pos.coords.accuracy;
+      const acc = Math.round(pos.coords.accuracy || 40);
 
       // Validate bounds within the Philippines (lat 4.5 - 21.5, lng 116.5 - 127.5)
       if (lat < 4.5 || lat > 21.5 || lng < 116.5 || lng > 127.5) return;
 
-      // Filter multipath teleportation anomaly
+      if (isFallback) {
+        isFallbackFixActive = true;
+      } else {
+        // High accuracy fix received: clear fallback state
+        isFallbackFixActive = false;
+      }
+
+      // Filter multipath teleportation anomaly (>60m jump with impossible speed >35m/s)
       if (collectedFixes.length > 0) {
         const last = collectedFixes[collectedFixes.length - 1];
         const distM = distanceInKm(last.coords.latitude, last.coords.longitude, lat, lng) * 1000;
         const timeDiffSec = Math.max((pos.timestamp - last.timestamp) / 1000, 0.1);
-        if (distM > 45 && (distM / timeDiffSec) > 35) {
+        if (distM > 60 && (distM / timeDiffSec) > 35 && acc > 20) {
           console.warn('[GPS] Discarding multipath jump spike:', distM, 'm');
           return;
         }
       }
+
+      // Update 2D Kalman filter
+      const kalmanEst = activeKalmanFilter.update(lat, lng, acc, pos.timestamp);
 
       collectedFixes.push(pos);
       if (!bestFix || acc < bestFix.coords.accuracy) {
         bestFix = pos;
       }
 
-      const currentEstimate = computeOptimalGpsEstimate(collectedFixes);
+      const currentEstimate = computeOptimalGpsEstimate(collectedFixes, activeKalmanFilter);
       if (currentEstimate) {
-        updateGpsBadge(currentEstimate.accuracy, currentEstimate.sampleCount);
+        updateGpsBadge(currentEstimate.accuracy, currentEstimate.sampleCount, isFallbackFixActive);
+        renderLowSignalAssist(currentEstimate.accuracy, isFallbackFixActive);
 
         if (btn) {
-          btn.innerHTML = `<span class="spinner-border" style="width:12px;height:12px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite;margin-right:6px"></span> Lock Fix: ±${currentEstimate.accuracy}m [Tap to finish]`;
+          const actionText = currentEstimate.accuracy > 25 ? 'Stabilizing Low Signal' : 'Lock Fix';
+          btn.innerHTML = `<span class="spinner-border" style="width:12px;height:12px;display:inline-block;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .75s linear infinite;margin-right:6px"></span> ${actionText}: ±${currentEstimate.accuracy}m [Tap to finish]`;
         }
 
         // Fast-path lock: Ultra precision <= 5m with at least 2 samples
@@ -1063,29 +1320,51 @@ function initApp() {
       }
     }
 
+    function triggerNetworkFallback() {
+      if (hasNetworkFallbackFired) return;
+      hasNetworkFallbackFired = true;
+      try {
+        navigator.geolocation.getCurrentPosition(
+          pos => onFixReceived(pos, true),
+          err => console.warn('[GPS Network Fallback] warning:', err.message),
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+        );
+      } catch (_) {}
+    }
+
     // 1. High-accuracy watch to acquire satellite locks
     try {
       activeGpsWatchId = navigator.geolocation.watchPosition(
-        onFixReceived,
+        pos => onFixReceived(pos, false),
         err => {
-          console.warn('[GPS] Watch warning:', err.message);
+          console.warn('[GPS] GNSS watch notice:', err.message);
+          // If GNSS has immediate error (e.g. indoors/POSITION_UNAVAILABLE), trigger network fallback immediately
+          triggerNetworkFallback();
         },
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
       );
     } catch (e) {
       console.warn('[GPS] watchPosition failed:', e);
+      triggerNetworkFallback();
     }
 
-    // 2. Hardware kick-start via concurrent high-accuracy single shot
+    // 2. Fast concurrent cell/Wi-Fi fallback timer (fires after 3.5s if satellites are delayed)
+    activeGpsFallbackTimer = setTimeout(() => {
+      if (collectedFixes.length === 0) {
+        triggerNetworkFallback();
+      }
+    }, 3500);
+
+    // 3. Hardware kick-start via concurrent high-accuracy single shot
     try {
       navigator.geolocation.getCurrentPosition(
-        onFixReceived,
+        pos => onFixReceived(pos, false),
         err => console.warn('[GPS] Initial poll warning:', err.message),
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
       );
     } catch (_) {}
 
-    // 3. Master settling timeout: finalize with optimal centroid after 12 seconds
+    // 4. Master settling timeout: finalize with optimal centroid after 12 seconds
     activeGpsTimeoutTimer = setTimeout(() => {
       if (isGpsAcquiring) {
         finalizeFix();
@@ -1095,6 +1374,7 @@ function initApp() {
 
   // GEOLOCATE BUTTON LISTENER
   document.getElementById('geolocateBtn')?.addEventListener('click', runHighAccuracyGps);
+
 
   // ── PINPOINT ON MAP MODAL & CONTROLLER ────────────────────────
   let pinpointMap = null;
@@ -1147,13 +1427,37 @@ function initApp() {
     pinpointCurrentLat = parseFloat(lat.toFixed(6));
     pinpointCurrentLng = parseFloat(lng.toFixed(6));
 
+    const isLowSignal = (selectedLocation.accuracy && selectedLocation.accuracy > 25);
+    if (isLowSignal) {
+      currentTileLayerName = 'satellite';
+    }
+
     setTimeout(() => {
       initOrUpdatePinpointMap(pinpointCurrentLat, pinpointCurrentLng);
+      if (isLowSignal) {
+        setMapTileLayer('satellite');
+        let banner = document.getElementById('mapLowSignalNotice');
+        if (!banner) {
+          const mapContainer = document.getElementById('pinpointMapContainer');
+          if (mapContainer && mapContainer.parentNode) {
+            banner = document.createElement('div');
+            banner.id = 'mapLowSignalNotice';
+            banner.className = 'map-low-signal-banner';
+            banner.innerHTML = `<span class="pulse-dot"></span><span>Low GPS Signal Mode: High-Resolution Satellite View active. Drag the red marker directly over your house or pole.</span>`;
+            mapContainer.parentNode.insertBefore(banner, mapContainer);
+          }
+        } else {
+          banner.classList.remove('hidden');
+        }
+      } else {
+        document.getElementById('mapLowSignalNotice')?.classList.add('hidden');
+      }
     }, 150);
   }
 
   function closePinpointMap() {
     document.getElementById('pinpointMapModalOverlay')?.classList.add('hidden');
+    document.getElementById('mapLowSignalNotice')?.classList.add('hidden');
   }
 
   function setMapTileLayer(type) {
@@ -1202,6 +1506,12 @@ function initApp() {
       return;
     }
 
+    const isCoarse = (selectedLocation.accuracy && selectedLocation.accuracy > 25);
+    const circleRadius = isCoarse ? Math.min(selectedLocation.accuracy, 120) : Math.min(selectedLocation.accuracy || 12, 25);
+    const circleColor = isCoarse ? '#f59e0b' : '#0284c7';
+    const circleFill = isCoarse ? '#fbbf24' : '#38bdf8';
+    const circleDash = isCoarse ? '6, 8' : null;
+
     if (!pinpointMap) {
       // High-resolution default zoom 18 for street/pole level accuracy
       pinpointMap = L.map('pinpointMapContainer', {
@@ -1233,11 +1543,12 @@ function initApp() {
       }).addTo(pinpointMap);
 
       pinpointCircle = L.circle([lat, lng], {
-        radius: Math.min(selectedLocation.accuracy || 12, 25),
-        color: '#0284c7',
-        fillColor: '#38bdf8',
+        radius: circleRadius,
+        color: circleColor,
+        fillColor: circleFill,
         fillOpacity: 0.16,
-        weight: 1.5
+        dashArray: circleDash,
+        weight: 1.6
       }).addTo(pinpointMap);
 
       pinpointMarker.on('dragstart', function () {
@@ -1262,7 +1573,12 @@ function initApp() {
       if (pinpointMarker) pinpointMarker.setLatLng([lat, lng]);
       if (pinpointCircle) {
         pinpointCircle.setLatLng([lat, lng]);
-        pinpointCircle.setRadius(Math.min(selectedLocation.accuracy || 12, 25));
+        pinpointCircle.setRadius(circleRadius);
+        pinpointCircle.setStyle({
+          color: circleColor,
+          fillColor: circleFill,
+          dashArray: circleDash
+        });
       }
     }
 
@@ -1460,6 +1776,8 @@ function initApp() {
     selectedLocation.accuracy = 2; // High-precision verified pin on aerial imagery with micro-nudging
 
     updateGpsBadge(2);
+    hideLowSignalAssist();
+    document.getElementById('mapLowSignalNotice')?.classList.add('hidden');
 
     const gpsStr = `(GPS: ${pinpointCurrentLat.toFixed(6)}, ${pinpointCurrentLng.toFixed(6)})`;
     const finalAddress = pinpointCurrentAddr ? `${pinpointCurrentAddr} ${gpsStr}` : `Masbate Location ${gpsStr}`;
@@ -1591,6 +1909,7 @@ function initApp() {
     selectedLocation.accuracy = 15;
 
     updateGpsBadge(15);
+    hideLowSignalAssist();
 
     const addrInput = document.getElementById('reportAddressInput');
     if (addrInput) {
@@ -1600,6 +1919,7 @@ function initApp() {
 
     saveDraft();
     renderPossibleReports();
+    syncMapMarker(coords.lat, coords.lng, formatted);
     closeSelectBarangay();
     UI.toast(`Location set to ${brgy}, ${muni}`, 'success');
   });
