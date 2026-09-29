@@ -37,6 +37,13 @@ const adminApp = http.createServer(createRequestHandler(true));
 // Ensure DB is initialized before starting
 db.initDb(false);
 
+function formatExternalUrl(urlStr, fallback) {
+    if (!urlStr) return fallback;
+    const trimmed = String(urlStr).trim();
+    if (!trimmed) return fallback;
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 if (require.main === module) {
     adminApp.listen(PORT, () => {
         console.log('==========================================================');
@@ -45,7 +52,7 @@ if (require.main === module) {
         console.log(`   • Admin Login:     http://localhost:${PORT}/login.html`);
         console.log(`   • REST API:        http://localhost:${PORT}/api/reports`);
         if (process.env.RESIDENT_URL) {
-            console.log(`   • Resident Portal: ${process.env.RESIDENT_URL}`);
+            console.log(`   • Resident Portal: ${formatExternalUrl(process.env.RESIDENT_URL)}`);
         }
         console.log('==========================================================');
     });

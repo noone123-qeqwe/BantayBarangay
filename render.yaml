@@ -1,0 +1,47 @@
+# ==========================================================
+# BantayBarangay — Render.com Blueprint Configuration
+# Deploy both Resident Citizen Portal and Admin Command Center
+# ==========================================================
+
+services:
+  # ── 1. RESIDENT CITIZEN WEB SERVICE ─────────────────────────
+  - type: web
+    name: bantaybarangay-resident
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm run start:resident
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SMS_ENABLED
+        value: "true"
+      - key: TEXTBEE_API_KEY
+        value: txb_G3o6fPep2noqjzgwfS7EDyTAs5ioqQYY
+      - key: TEXTBEE_DEVICE_ID
+        value: ""
+      - key: ADMIN_URL
+        fromService:
+          type: web
+          name: bantaybarangay-admin
+          property: host
+
+  # ── 2. ADMIN COMMAND CENTER WEB SERVICE ─────────────────────
+  - type: web
+    name: bantaybarangay-admin
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm run start:admin
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: IS_ADMIN
+        value: "true"
+      - key: RESIDENT_URL
+        fromService:
+          type: web
+          name: bantaybarangay-resident
+          property: host

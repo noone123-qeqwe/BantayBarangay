@@ -32,8 +32,14 @@ const db = require('./database/db.js');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PORT = process.env.ADMIN_PORT || 3001;
-const ADMIN_URL = process.env.ADMIN_URL || `http://localhost:${ADMIN_PORT}`;
-const RESIDENT_URL = process.env.RESIDENT_URL || `http://localhost:${PORT}`;
+function formatExternalUrl(urlStr, fallback) {
+    if (!urlStr) return fallback;
+    const trimmed = String(urlStr).trim();
+    if (!trimmed) return fallback;
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+const ADMIN_URL = formatExternalUrl(process.env.ADMIN_URL, `http://localhost:${ADMIN_PORT}`);
+const RESIDENT_URL = formatExternalUrl(process.env.RESIDENT_URL, `http://localhost:${PORT}`);
 const PUBLIC_DIR = __dirname;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
@@ -288,7 +294,7 @@ function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
             safePath = '/resident/index.html';
         } else if (safePath === '/admin' || safePath === '/admin/' || safePath.startsWith('/admin/')) {
             const hostOnly = (req.headers.host || 'localhost').split(':')[0];
-            const targetBase = process.env.ADMIN_URL || `http://${hostOnly}:${ADMIN_PORT}`;
+            const targetBase = formatExternalUrl(process.env.ADMIN_URL, `http://${hostOnly}:${ADMIN_PORT}`);
             const targetUrl = targetBase.replace(/\/$/, '') + (safePath === '/admin' || safePath === '/admin/' ? '/' : safePath.replace(/^\/admin/, ''));
             res.writeHead(302, { Location: targetUrl });
             return res.end();
@@ -387,8 +393,8 @@ function createRequestHandler(isDedicatedAdmin = false) {
                 return sendJson(res, 200, {
                     success: true,
                     data: {
-                        adminUrl: process.env.ADMIN_URL || `http://${hostOnly}:${ADMIN_PORT}`,
-                        residentUrl: process.env.RESIDENT_URL || `http://${hostOnly}:${PORT}`,
+                        adminUrl: formatExternalUrl(process.env.ADMIN_URL, `http://${hostOnly}:${ADMIN_PORT}`),
+                        residentUrl: formatExternalUrl(process.env.RESIDENT_URL, `http://${hostOnly}:${PORT}`),
                         isDedicatedAdmin
                     }
                 });
