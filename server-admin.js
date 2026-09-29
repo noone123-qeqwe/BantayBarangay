@@ -45,9 +45,9 @@ function formatExternalUrl(urlStr, fallback) {
 }
 
 if (require.main === module) {
-    adminApp.listen(PORT, () => {
+    adminApp.listen(PORT, '0.0.0.0', () => {
         console.log('==========================================================');
-        console.log(`🛡️  BantayBarangay Admin Command Server running on port ${PORT}`);
+        console.log(`🛡️  BantayBarangay Admin Command Server running on 0.0.0.0:${PORT}`);
         console.log(`   • Command Center:  http://localhost:${PORT}/`);
         console.log(`   • Admin Login:     http://localhost:${PORT}/login.html`);
         console.log(`   • REST API:        http://localhost:${PORT}/api/reports`);

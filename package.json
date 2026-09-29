@@ -4,10 +4,12 @@
   "description": "Barangay Infrastructure Incident Reporting & Civic Action System (Philippines)",
   "main": "server.js",
   "scripts": {
+    "dev": "node server.js",
     "start": "node server.js",
+    "build": "node database/init-db.js",
+    "lint": "node -c server.js server-admin.js database/db.js database/init-db.js",
     "start:resident": "node server.js --standalone",
     "start:admin": "node server-admin.js",
-    "build": "node scripts/build-apk.js",
     "db:init": "node database/init-db.js",
     "db:reset": "node database/init-db.js --force",
     "test:db": "node database/test-db.js",

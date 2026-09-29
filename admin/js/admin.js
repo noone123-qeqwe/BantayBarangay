@@ -16,8 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const retLink = document.getElementById('linkReturnToResident');
         if (retLink) {
           retLink.href = res.data.residentUrl;
-          const isLocal = res.data.residentUrl.includes('localhost');
-          retLink.textContent = `← Return to Resident Portal${isLocal ? ' (Port 3000)' : ''}`;
+          retLink.textContent = '← Return to Resident Portal';
         }
       }
     })

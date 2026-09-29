@@ -292,12 +292,19 @@ function serveStatic(req, res, pathname, isDedicatedAdmin = false) {
             safePath = '/index.html';
         } else if (safePath === '/resident' || safePath === '/resident/') {
             safePath = '/resident/index.html';
-        } else if (safePath === '/admin' || safePath === '/admin/' || safePath.startsWith('/admin/')) {
-            const hostOnly = (req.headers.host || 'localhost').split(':')[0];
-            const targetBase = formatExternalUrl(process.env.ADMIN_URL, `http://${hostOnly}:${ADMIN_PORT}`);
-            const targetUrl = targetBase.replace(/\/$/, '') + (safePath === '/admin' || safePath === '/admin/' ? '/' : safePath.replace(/^\/admin/, ''));
-            res.writeHead(302, { Location: targetUrl });
-            return res.end();
+        } else if (safePath === '/admin' || safePath === '/admin/') {
+            if (process.env.ADMIN_URL) {
+                const targetBase = formatExternalUrl(process.env.ADMIN_URL);
+                res.writeHead(302, { Location: targetBase });
+                return res.end();
+            }
+            safePath = '/admin/index.html';
+        } else if (safePath === '/admin/login' || safePath === '/admin/login.html') {
+            safePath = '/admin/login.html';
+        } else if (safePath === '/admin/index.html') {
+            safePath = '/admin/index.html';
+        } else if (safePath === '/login' || safePath === '/login.html') {
+            safePath = '/admin/login.html';
         }
     }
 
@@ -390,11 +397,33 @@ function createRequestHandler(isDedicatedAdmin = false) {
             // Portal configuration endpoint (exposes cross-portal URLs for deployment)
             if (pathname === '/api/config' && req.method === 'GET') {
                 const hostOnly = (req.headers.host || 'localhost').split(':')[0];
+                const hostHeader = req.headers.host || `localhost:${PORT}`;
+                const protocol = req.headers['x-forwarded-proto'] || 'http';
+                const currentOrigin = `${protocol}://${hostHeader}`;
+
+                let resolvedAdminUrl;
+                if (process.env.ADMIN_URL) {
+                    resolvedAdminUrl = formatExternalUrl(process.env.ADMIN_URL);
+                } else if (isDedicatedAdmin) {
+                    resolvedAdminUrl = `${currentOrigin}/index.html`;
+                } else {
+                    resolvedAdminUrl = `${currentOrigin}/admin/index.html`;
+                }
+
+                let resolvedResidentUrl;
+                if (process.env.RESIDENT_URL) {
+                    resolvedResidentUrl = formatExternalUrl(process.env.RESIDENT_URL);
+                } else if (isDedicatedAdmin) {
+                    resolvedResidentUrl = `${protocol}://${hostOnly}:${PORT}/resident/index.html`;
+                } else {
+                    resolvedResidentUrl = `${currentOrigin}/resident/index.html`;
+                }
+
                 return sendJson(res, 200, {
                     success: true,
                     data: {
-                        adminUrl: formatExternalUrl(process.env.ADMIN_URL, `http://${hostOnly}:${ADMIN_PORT}`),
-                        residentUrl: formatExternalUrl(process.env.RESIDENT_URL, `http://${hostOnly}:${PORT}`),
+                        adminUrl: resolvedAdminUrl,
+                        residentUrl: resolvedResidentUrl,
                         isDedicatedAdmin
                     }
                 });
@@ -801,9 +830,9 @@ const isStandalone = process.env.STANDALONE === 'true' || process.argv.includes(
 
 if (require.main === module) {
     if (IS_ADMIN_SERVICE) {
-        server.listen(PORT, () => {
+        server.listen(PORT, '0.0.0.0', () => {
             console.log('==========================================================');
-            console.log(`🛡️  BantayBarangay Admin Server running on port ${PORT}`);
+            console.log(`🛡️  BantayBarangay Admin Server running on 0.0.0.0:${PORT}`);
             console.log(`   • Admin Login:       http://localhost:${PORT}/login.html`);
             console.log(`   • Command Center:    http://localhost:${PORT}/index.html`);
             console.log(`   • REST API:          http://localhost:${PORT}/api/reports`);
@@ -813,28 +842,31 @@ if (require.main === module) {
             console.log('==========================================================');
         });
     } else {
-        server.listen(PORT, () => {
+        server.listen(PORT, '0.0.0.0', () => {
             console.log('==========================================================');
-            console.log(`🚀 BantayBarangay Resident Server:  http://localhost:${PORT}`);
-            console.log(`   • Citizen Portal:    http://localhost:${PORT}/resident`);
+            console.log(`🚀 BantayBarangay Server running on 0.0.0.0:${PORT}`);
+            console.log(`   • Citizen Portal:    http://localhost:${PORT}/resident/`);
             console.log(`   • Citizen Login:     http://localhost:${PORT}/resident/auth.html`);
+            console.log(`   • Admin Portal:      http://localhost:${PORT}/admin/`);
+            console.log(`   • Admin Login:       http://localhost:${PORT}/admin/login.html`);
             console.log(`   • REST API:          http://localhost:${PORT}/api/reports`);
             if (isStandalone) {
                 console.log(`   • Standalone Mode:   Citizen Service Only`);
-                if (process.env.ADMIN_URL) {
-                    console.log(`   • Linked Admin URL:  ${process.env.ADMIN_URL}`);
-                }
-                console.log('==========================================================');
             }
+            console.log('==========================================================');
         });
 
-        if (!isStandalone) {
-            adminServer.listen(ADMIN_PORT, () => {
-                console.log(`🛡️  BantayBarangay Admin Server:     http://localhost:${ADMIN_PORT}`);
-                console.log(`   • Admin Login:       http://localhost:${ADMIN_PORT}/login.html`);
-                console.log(`   • Command Center:    http://localhost:${ADMIN_PORT}/`);
-                console.log('==========================================================');
+        if (!isStandalone && String(ADMIN_PORT) !== String(PORT) && !process.env.DISABLE_SECONDARY_ADMIN_PORT) {
+            adminServer.on('error', (err) => {
+                console.warn(`[Admin Server] Secondary port ${ADMIN_PORT} not bound (${err.message}). Admin portal is accessible directly on port ${PORT}/admin.`);
             });
+            try {
+                adminServer.listen(ADMIN_PORT, '0.0.0.0', () => {
+                    console.log(`🛡️  BantayBarangay Admin Server (Secondary): http://localhost:${ADMIN_PORT}`);
+                });
+            } catch (err) {
+                console.warn(`[Admin Server] Secondary port ${ADMIN_PORT} skipped:`, err.message);
+            }
         }
     }
 }

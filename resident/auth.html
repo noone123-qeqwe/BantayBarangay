@@ -598,8 +598,7 @@
             const adminLink = document.getElementById('linkToAdminPortal');
             if (adminLink) {
               adminLink.href = res.data.adminUrl;
-              const isLocal = res.data.adminUrl.includes('localhost');
-              adminLink.innerHTML = `<span>Barangay Official or Command Staff?</span><span style="color:#0284c7;">Admin Portal ${isLocal ? '(Port 3001) ' : ''}→</span>`;
+              adminLink.innerHTML = `<span>Barangay Official or Command Staff?</span><span style="color:#0284c7;">Admin Portal →</span>`;
             }
           }
         })

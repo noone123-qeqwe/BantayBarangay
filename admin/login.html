@@ -700,8 +700,7 @@
             const resLink = document.getElementById('linkToResidentPortal');
             if (resLink) {
               resLink.href = res.data.residentUrl;
-              const isLocal = res.data.residentUrl.includes('localhost');
-              resLink.innerHTML = `<span>←</span><span>Are you a resident citizen? Go to Resident Portal${isLocal ? ' (Port 3000)' : ''}</span>`;
+              resLink.innerHTML = `<span>←</span><span>Are you a resident citizen? Go to Resident Portal</span>`;
             }
           }
         })
