@@ -29,7 +29,7 @@
 
       <h2 style="font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Barangay Operations Portal</h2>
       <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px;">
-        Authorized access for Masbate Barangay Officials, Responders, and Agency Liaisons (MASELCO, DPWH, LGU, PNP).
+        Authorized access for Masbate Barangay Officials, Responders, and Agency Liaisons (MASELCO, LGU Engineering, Barangay Responders, PNP).
       </p>
 
       <form id="authPinForm">
@@ -205,7 +205,7 @@
         <select class="form-select filter-select" id="adminAgencyFilter">
           <option value="all">All Agencies</option>
           <option value="MASELCO">⚡ MASELCO</option>
-          <option value="DPWH">🛣️ DPWH</option>
+          <option value="MASELCO_HEAVY">🏗️ MASELCO Heavy Line Unit</option>
           <option value="LGU">🏢 LGU / City Eng.</option>
           <option value="Barangay">🏛️ Barangay Tanod</option>
           <option value="PNP">🚨 PNP</option>
@@ -354,41 +354,41 @@
           </div>
         </div>
 
-        <!-- 2. DPWH -->
+        <!-- 2. MASELCO Heavy Line & Boom Truck Unit -->
         <div class="agency-card">
           <div class="agency-card-top">
-            <div class="agency-card-icon" style="background:rgba(3,105,161,0.12);color:#0369a1;">🛣️</div>
+            <div class="agency-card-icon" style="background:rgba(217,119,6,0.12);color:#d97706;">🏗️</div>
             <div class="agency-card-header-info">
-              <h3 class="agency-card-name">DPWH Masbate 1st DEO</h3>
+              <h3 class="agency-card-name">MASELCO Heavy Line Unit</h3>
               <div class="agency-card-category">
-                <span>District Engineering Office</span>
-                <span class="agency-status-badge">● On-Duty</span>
+                <span>Boom Truck &amp; High-Voltage Linemen</span>
+                <span class="agency-status-badge">● On-Standby</span>
               </div>
             </div>
           </div>
           <p class="agency-card-desc">
-            National highway utility pole clearances, road right-of-way infrastructure, and highway power corridor coordination.
+            Emergency lineman crew equipped with crane and bucket boom trucks for pole re-erection, heavy transformer hoisting, and high-voltage line splicing.
           </p>
           <div class="agency-contact-details">
             <div class="agency-contact-row">
               <span class="agency-contact-label">Hotline:</span>
-              <a href="tel:0563332575" class="agency-contact-val">(056) 333-2575</a>
+              <a href="tel:0563332288" class="agency-contact-val">(056) 333-2288</a>
             </div>
             <div class="agency-contact-row">
               <span class="agency-contact-label">Email:</span>
-              <a href="mailto:dpwh.masbate1st@gov.ph" class="agency-contact-val">dpwh.masbate1st@gov.ph</a>
+              <a href="mailto:linemen.dispatch@maselco.com.ph" class="agency-contact-val">linemen.dispatch@maselco.com.ph</a>
             </div>
             <div class="agency-contact-row">
-              <span class="agency-contact-label">Jurisdiction:</span>
-              <span style="font-size:12px;color:var(--text-secondary);">Masbate 1st District</span>
+              <span class="agency-contact-label">Specialty:</span>
+              <span style="font-size:12px;color:var(--text-secondary);">Poles, Transformers &amp; High-Voltage</span>
             </div>
           </div>
           <div class="agency-actions-row">
-            <a href="tel:0563332575" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <a href="tel:0563332288" class="btn btn-primary btn-sm" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <span>Call DPWH</span>
+              <span>Call Linemen</span>
             </a>
-            <a href="mailto:dpwh.masbate1st@gov.ph?subject=Barangay%20Incident%20Dispatch" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;">
+            <a href="mailto:linemen.dispatch@maselco.com.ph?subject=Barangay%20Emergency%20Lineman%20Dispatch" class="btn btn-outline btn-sm" style="display:flex;align-items:center;justify-content:center;">
               <span>Email</span>
             </a>
           </div>
@@ -879,7 +879,7 @@
               <label class="form-label" for="adminAgencySelect">Route / Reassign Agency</label>
               <select class="form-select triage-select" id="adminAgencySelect">
                 <option value="MASELCO">⚡ MASELCO</option>
-                <option value="DPWH">🛣️ DPWH</option>
+                <option value="MASELCO_HEAVY">🏗️ MASELCO Heavy Line Unit</option>
                 <option value="LGU">🏢 LGU / City Eng.</option>
                 <option value="Barangay">🏛️ Barangay Tanod</option>
                 <option value="PNP">🚨 PNP</option>
@@ -894,7 +894,7 @@
               <button type="button" class="template-chip-btn" data-template="Endorsed to MASELCO lineman crew; scheduled for dispatch.">⚡ MASELCO Dispatched</button>
               <button type="button" class="template-chip-btn" data-template="Hazard cordoned off by Barangay Tanod responders.">🏛️ Cordoned by Tanod</button>
               <button type="button" class="template-chip-btn" data-template="Tree pruning team dispatched for line clearance.">🌳 Tree Crew Assigned</button>
-              <button type="button" class="template-chip-btn" data-template="DPWH engineering inspection scheduled for tomorrow.">🛣️ DPWH Inspection</button>
+              <button type="button" class="template-chip-btn" data-template="MASELCO transformer crew dispatched with boom truck for on-site repair.">⚡ Transformer Crew Dispatched</button>
               <button type="button" class="template-chip-btn" data-template="Repair completed and verified on-site. Problem resolved.">✅ Repair Completed</button>
             </div>
           </div>

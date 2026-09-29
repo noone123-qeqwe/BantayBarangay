@@ -911,6 +911,12 @@ body {
   border-color: #bae6fd;
 }
 
+.agency-pill.maselco_heavy {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
 .agency-pill.lgu {
   background: #f0fdfa;
   color: #0d9488;

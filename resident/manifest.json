@@ -1,8 +1,8 @@
 {
   "id": "/resident/",
-  "name": "BantayBarangay — Masbate Civic Portal",
+  "name": "BantayBarangay — Masbate Electrical & Power Portal",
   "short_name": "BantayBarangay",
-  "description": "Mobile citizen reporting app for Masbate Province infrastructure hazards: downed lines, utility poles, transformers, and outages.",
+  "description": "Mobile citizen reporting app for Masbate Province electrical hazards: downed lines, utility poles, transformers, and outages.",
   "start_url": "./mobile.html",
   "scope": "./",
   "display": "standalone",
@@ -41,7 +41,7 @@
     {
       "name": "Report Hazard",
       "short_name": "Report",
-      "description": "Report a civic infrastructure hazard to MASELCO",
+      "description": "Report an electrical hazard or outage to MASELCO",
       "url": "./mobile.html#view-report",
       "icons": [
         {

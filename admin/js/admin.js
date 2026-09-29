@@ -904,7 +904,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const agencyCallText = document.getElementById('adminModalAgencyCallText');
 
   const AGENCY_HOTLINES = {
-    'MASELCO': { name: 'MASELCO', phone: '(056) 333-2244', rawPhone: '0563332244' },
+    'MASELCO': { name: 'MASELCO Technical Operations', phone: '(056) 333-2244', rawPhone: '0563332244' },
+    'MASELCO_HEAVY': { name: 'MASELCO Heavy Line Unit', phone: '(056) 333-2288', rawPhone: '0563332288' },
     'DPWH': { name: 'DPWH', phone: '(056) 333-2575', rawPhone: '0563332575' },
     'LGU': { name: 'City Engineering (LGU)', phone: '(056) 333-2111', rawPhone: '0563332111' },
     'PNP': { name: 'PNP Masbate', phone: '(056) 333-2222', rawPhone: '0563332222' },

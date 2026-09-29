@@ -429,6 +429,7 @@ const Reports = (() => {
         };
         const agencyMap = {
           'DPWH': 'DPWH',
+          'MASELCO_HEAVY': 'MASELCO',
           'LGU Engineering': 'LGU',
           'LGU': 'LGU',
           'MASELCO': 'MASELCO',

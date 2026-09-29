@@ -90,7 +90,7 @@ const BantayVersion = (() => {
 
         <div class="update-popup-body">
           ${data.releaseName ? `<div class="update-release-tag">${data.releaseName}</div>` : ''}
-          <p class="update-popup-desc">Update now to access the latest civic reporting features, real-time status updates, and mobile performance fixes.</p>
+          <p class="update-popup-desc">Update now to access the latest electrical reporting features, real-time status updates, and mobile performance fixes.</p>
         </div>
 
         <div class="update-popup-actions">
