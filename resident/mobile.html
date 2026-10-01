@@ -753,6 +753,24 @@
     </div>
   </div>
 
+  <!-- ── TOAST ─────────────────────────────────────────── -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ── SUCCESS OVERLAY ───────────────────────────────── -->
+  <div class="success-overlay hidden" id="successOverlay">
+    <div class="success-card">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="40" height="40"><polyline points="20,6 9,17 4,12"/></svg>
+      </div>
+      <h2>Report Submitted!</h2>
+      <p>Your incident report has been forwarded to MASELCO via SMS and is being tracked in the Barangay Admin Portal.</p>
+      <div class="success-actions">
+        <button class="btn btn-primary" id="successNewReport" data-view="report">Submit Another Report</button>
+        <button class="btn btn-ghost" id="successGoSettings" data-view="profile">Account Settings</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../shared/js/api.js"></script>
   <script src="../shared/js/reports.js"></script>
   <script src="../shared/js/auth.js"></script>

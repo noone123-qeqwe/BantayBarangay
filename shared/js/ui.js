@@ -6,7 +6,13 @@ const UI = (() => {
 
   // ── TOAST ─────────────────────────────────────────────────
   function toast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toastContainer';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
     const el = document.createElement('div');
     el.className = `toast toast-${type}`;
     const icons = { success: '✓', error: '✕', info: 'ℹ' };
@@ -259,10 +265,12 @@ const UI = (() => {
 
   // ── SUCCESS OVERLAY ───────────────────────────────────────
   function showSuccess() {
-    document.getElementById('successOverlay').classList.remove('hidden');
+    const el = document.getElementById('successOverlay');
+    if (el) el.classList.remove('hidden');
   }
   function hideSuccess() {
-    document.getElementById('successOverlay').classList.add('hidden');
+    const el = document.getElementById('successOverlay');
+    if (el) el.classList.add('hidden');
   }
 
   // ── STATS UPDATE ──────────────────────────────────────────

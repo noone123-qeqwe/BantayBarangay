@@ -669,6 +669,25 @@ const Auth = (() => {
     };
   }
 
+  function resetPasswordWithMobile(mobile, newPassword) {
+    init();
+    if (!mobile || !newPassword || newPassword.length < 6) {
+      return { success: false, error: 'Valid mobile and minimum 6 character password required.' };
+    }
+    const cleanMobile = mobile.replace(/\D/g, '');
+    const users = getUsers();
+    const user = users.find(u => {
+      const uMob = (u.mobile || '').replace(/\D/g, '');
+      return uMob === cleanMobile || uMob.endsWith(cleanMobile) || cleanMobile.endsWith(uMob);
+    });
+    if (user) {
+      user.password = newPassword;
+      saveUsers(users);
+      return { success: true };
+    }
+    return { success: false, error: 'User not found in local store.' };
+  }
+
   function changePhoneNumber(newMobileRaw, password) {
     init();
     const currentUser = getCurrentUser();
@@ -779,6 +798,7 @@ const Auth = (() => {
     register,
     updateProfile,
     changePassword,
+    resetPasswordWithMobile,
     changePhoneNumber,
     getSettings,
     updateSettings,

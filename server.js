@@ -49,6 +49,62 @@ const sessions = new Map();
 const TEXTBEE_API_KEY = process.env.TEXTBEE_API_KEY || '';
 const TEXTBEE_DEVICE_ID = process.env.TEXTBEE_DEVICE_ID || '';
 const SMS_ENABLED = (process.env.SMS_ENABLED || 'false').toLowerCase() === 'true';
+const MASELCO_NOTIFY_NUMBER = process.env.MASELCO_NOTIFY_NUMBER || '';
+
+/**
+ * Send SMS notification to MASELCO when a new report is submitted.
+ * Non-blocking — failures are logged but do not affect the API response.
+ * @param {object} report - The newly created report object from the database
+ */
+function notifyMaselco(report) {
+    if (!SMS_ENABLED || !MASELCO_NOTIFY_NUMBER) {
+        console.log('[MASELCO] SMS notification skipped (SMS_ENABLED=%s, number=%s)', SMS_ENABLED, MASELCO_NOTIFY_NUMBER || 'not set');
+        return;
+    }
+
+    const agency = report.agency || 'MASELCO';
+    // Only notify MASELCO if the report is assigned to them
+    if (!agency.toUpperCase().includes('MASELCO')) {
+        console.log('[MASELCO] Skipping notification — report assigned to %s, not MASELCO', agency);
+        return;
+    }
+
+    const severity = report.severity || 'Medium';
+    const category = report.category || 'Electrical Hazard';
+    const address = report.address || report.purok || 'Location not specified';
+    const reporter = report.reporter_name || report.reporter || 'Anonymous Resident';
+    const reportId = report.id || 'N/A';
+    const description = (report.description || '').substring(0, 120);
+    const timestamp = new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila', hour12: true });
+
+    const message = [
+        `🔔 BANTAYBARANGAY ALERT`,
+        `Report #${reportId}`,
+        `Category: ${category}`,
+        `Urgency: ${severity}`,
+        `Location: ${address}`,
+        `Reporter: ${reporter}`,
+        description ? `Details: ${description}` : '',
+        `Time: ${timestamp}`,
+        ``,
+        `Please dispatch a response team. This report is also visible in the Barangay Admin Portal.`
+    ].filter(Boolean).join('\n');
+
+    const recipient = toE164(MASELCO_NOTIFY_NUMBER);
+    console.log(`[MASELCO] 📤 Sending SMS notification to ${recipient} for report #${reportId}`);
+
+    sendSmsViaTextBee(recipient, message)
+        .then(result => {
+            if (result.success) {
+                console.log(`[MASELCO] ✅ SMS notification sent to ${recipient} for report #${reportId}`);
+            } else {
+                console.error(`[MASELCO] ❌ SMS notification failed for report #${reportId}:`, result.error);
+            }
+        })
+        .catch(err => {
+            console.error(`[MASELCO] ❌ SMS notification error for report #${reportId}:`, err.message);
+        });
+}
 
 /**
  * Send an SMS via TextBee.dev REST API
@@ -641,6 +697,10 @@ function createRequestHandler(isDedicatedAdmin = false) {
                     const body = await parseBody(req);
                     try {
                         const newReport = db.createReport(body);
+
+                        // 🔔 Send SMS notification to MASELCO (non-blocking)
+                        notifyMaselco(newReport);
+
                         return sendJson(res, 201, { success: true, message: 'Report created successfully.', data: newReport });
                     } catch (err) {
                         // A device may retry an offline report after the server accepted it but

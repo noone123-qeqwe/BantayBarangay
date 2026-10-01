@@ -2002,6 +2002,13 @@ function initApp() {
     UI.showSuccess();
 
     UI.toast(`Report #${report.id} submitted successfully!`, 'success');
+
+    // Notify resident that MASELCO has been alerted via SMS
+    if ((report.agency || '').toUpperCase().includes('MASELCO')) {
+      setTimeout(() => {
+        UI.toast('📤 MASELCO has been notified via SMS and will dispatch a response team.', 'info');
+      }, 1200);
+    }
   });
 
   // ════ SUCCESS OVERLAY ══════════════════════════════════════

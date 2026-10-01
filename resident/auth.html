@@ -345,6 +345,13 @@
                   </svg>
                 </button>
               </div>
+              <div class="pass-strength-bar-wrap">
+                <div class="pass-strength-bar-fill" id="regPassStrengthFill"></div>
+              </div>
+              <div class="pass-strength-label" id="regPassStrengthLabel">
+                <span>Password strength</span>
+                <span id="regPassStrengthText" style="font-weight:700;">Too short</span>
+              </div>
             </div>
 
             <!-- CONFIRM PASSWORD -->
@@ -522,6 +529,125 @@
           ⬇️ Download APK Now
         </a>
         <button type="button" class="btn btn-ghost btn-sm" id="btnDismissApkGuide" style="border:1px solid rgba(255,255,255,0.15);color:#94a3b8;">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PASSWORD RESET MODAL ═══════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="resetPasswordModalOverlay" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle">
+    <div class="modal auth-modal-dialog glass-card modal-reset-card" id="resetPasswordModal">
+      <div class="modal-header modal-header-reset">
+        <div>
+          <div class="reset-badge-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Account Security</span>
+          </div>
+          <h3 id="resetModalTitle" class="reset-modal-heading">Reset Your Password</h3>
+          <p class="reset-modal-sub">Verify your Philippine mobile number to set a new password.</p>
+        </div>
+        <button type="button" class="auth-modal-close" id="btnCloseResetModal" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-body-reset">
+        <!-- STEP 1: ENTER PHONE NUMBER -->
+        <div id="resetStepPhone">
+          <form id="formResetSendOtp" novalidate>
+            <div class="ph-phone-field-wrap">
+              <label class="form-label-styled" for="resetPhoneInput">
+                <span>Registered Philippine Mobile Number</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
+              <div class="ph-phone-input-box" id="resetPhoneBox">
+                <div class="ph-country-prefix">
+                  <span class="ph-country-flag">🇵🇭</span>
+                  <span class="ph-country-code">+63</span>
+                </div>
+                <input type="tel" id="resetPhoneInput" class="ph-phone-input" placeholder="09XXXXXXXXX or 9XXXXXXXXX" autocomplete="tel" required />
+              </div>
+              <div class="ph-format-guide">
+                <span>We will send an SMS OTP to verify your account.</span>
+              </div>
+            </div>
+
+            <div class="ph-error-banner hidden" id="resetPhoneErrorBanner" style="margin-top:14px;">
+              <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="resetPhoneErrorMessage">Please enter a valid Philippine mobile number.</span>
+            </div>
+
+            <button type="submit" class="btn-auth-primary" id="btnSendResetOtp" style="margin-top:18px;">
+              <span>Send SMS Verification Code</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- STEP 2: ENTER OTP & NEW PASSWORD -->
+        <div id="resetStepNewPass" class="hidden">
+          <div class="reset-target-phone-bar">
+            <span>Code sent to: <strong id="resetTargetPhoneText">+63 9XX XXX XXXX</strong></span>
+            <button type="button" class="auth-text-btn" id="btnChangeResetPhone">Change</button>
+          </div>
+
+          <form id="formResetSubmit" novalidate>
+            <!-- 6-digit OTP -->
+            <div style="margin-bottom:16px;">
+              <label class="form-label-styled" style="margin-bottom:8px;">Enter 6-Digit SMS Code</label>
+              <div class="otp-input-boxes otp-6-digit" style="gap:6px;">
+                <input type="text" maxlength="1" class="otp-box reset-otp-box" id="resetOtp1" inputmode="numeric" />
+                <input type="text" maxlength="1" class="otp-box reset-otp-box" id="resetOtp2" inputmode="numeric" />
+                <input type="text" maxlength="1" class="otp-box reset-otp-box" id="resetOtp3" inputmode="numeric" />
+                <input type="text" maxlength="1" class="otp-box reset-otp-box" id="resetOtp4" inputmode="numeric" />
+                <input type="text" maxlength="1" class="otp-box reset-otp-box" id="resetOtp5" inputmode="numeric" />
+                <input type="text" maxlength="1" class="otp-box reset-otp-box" id="resetOtp6" inputmode="numeric" />
+              </div>
+            </div>
+
+            <!-- New Password -->
+            <div class="ph-phone-field-wrap" style="margin-bottom:14px;">
+              <label class="form-label-styled" for="newPasswordInput">
+                <span>New Password</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input type="password" id="newPasswordInput" class="form-input-styled" placeholder="Create a new password (min. 6 chars)" autocomplete="new-password" required />
+                <button type="button" class="password-toggle-styled" id="btnToggleNewPass" title="Toggle visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <div class="pass-strength-bar-wrap">
+                <div class="pass-strength-bar-fill" id="resetPassStrengthFill"></div>
+              </div>
+              <div class="pass-strength-label" id="resetPassStrengthLabel">Minimum 6 characters</div>
+            </div>
+
+            <!-- Confirm New Password -->
+            <div class="ph-phone-field-wrap" style="margin-bottom:16px;">
+              <label class="form-label-styled" for="confirmNewPasswordInput">
+                <span>Confirm New Password</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input type="password" id="confirmNewPasswordInput" class="form-input-styled" placeholder="Re-enter your new password" autocomplete="new-password" required />
+                <button type="button" class="password-toggle-styled" id="btnToggleConfirmNewPass" title="Toggle visibility">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="ph-error-banner hidden" id="resetSubmitErrorBanner" style="margin-bottom:14px;">
+              <svg class="ph-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="resetSubmitErrorMessage">An error occurred while resetting password.</span>
+            </div>
+
+            <button type="submit" class="btn-auth-primary" id="btnApplyPasswordReset">
+              <span>Save New Password &amp; Log In</span>
+            </button>
+          </form>
+
+          <div style="margin-top:14px;text-align:center;">
+            <button type="button" class="auth-text-btn" id="btnResendResetOtp" style="font-size:12.5px;">Resend SMS Code</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -790,9 +916,305 @@
         }
       }
 
-      btnForgotPass?.addEventListener('click', () => {
-        startSmsOtpFlow('Sending SMS verification code...');
+      // ═════════════════════════════════════════════════════════
+      // PASSWORD STRENGTH EVALUATION
+      // ═════════════════════════════════════════════════════════
+      function evaluatePasswordStrength(password) {
+        if (!password) {
+          return { score: 0, text: 'Too short', cssClass: 'weak', percent: '0%' };
+        }
+        if (password.length < 6) {
+          return { score: 1, text: 'Too short (min 6 chars)', cssClass: 'weak', percent: '20%' };
+        }
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (password.length >= 12) score++;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+
+        if (score <= 1) {
+          return { score: 2, text: 'Weak', cssClass: 'weak', percent: '35%' };
+        } else if (score === 2) {
+          return { score: 3, text: 'Fair', cssClass: 'fair', percent: '60%' };
+        } else if (score === 3 || score === 4) {
+          return { score: 4, text: 'Good', cssClass: 'good', percent: '80%' };
+        } else {
+          return { score: 5, text: 'Strong', cssClass: 'strong', percent: '100%' };
+        }
+      }
+
+      function updateStrengthMeter(password, fillEl, textEl) {
+        const result = evaluatePasswordStrength(password);
+        if (!fillEl) return;
+        fillEl.className = 'pass-strength-bar-fill';
+        if (password && password.length > 0) {
+          fillEl.classList.add(result.cssClass);
+          fillEl.style.width = result.percent;
+        } else {
+          fillEl.style.width = '0%';
+        }
+        if (textEl) {
+          textEl.textContent = result.text;
+        }
+      }
+
+      // ═════════════════════════════════════════════════════════
+      // PASSWORD RESET MODAL CONTROLLER
+      // ═════════════════════════════════════════════════════════
+      const resetModalOverlay = document.getElementById('resetPasswordModalOverlay');
+      const btnCloseResetModal = document.getElementById('btnCloseResetModal');
+      const resetStepPhone = document.getElementById('resetStepPhone');
+      const resetStepNewPass = document.getElementById('resetStepNewPass');
+      const formResetSendOtp = document.getElementById('formResetSendOtp');
+      const resetPhoneInput = document.getElementById('resetPhoneInput');
+      const resetPhoneBox = document.getElementById('resetPhoneBox');
+      const resetDigitCount = document.getElementById('resetDigitCount');
+      const resetPhoneErrorBanner = document.getElementById('resetPhoneErrorBanner');
+      const resetPhoneErrorMessage = document.getElementById('resetPhoneErrorMessage');
+      const btnSendResetOtp = document.getElementById('btnSendResetOtp');
+      const resetTargetPhoneText = document.getElementById('resetTargetPhoneText');
+      const btnChangeResetPhone = document.getElementById('btnChangeResetPhone');
+      const formResetSubmit = document.getElementById('formResetSubmit');
+      const newPasswordInput = document.getElementById('newPasswordInput');
+      const confirmNewPasswordInput = document.getElementById('confirmNewPasswordInput');
+      const btnToggleNewPass = document.getElementById('btnToggleNewPass');
+      const btnToggleConfirmNewPass = document.getElementById('btnToggleConfirmNewPass');
+      const resetPassStrengthFill = document.getElementById('resetPassStrengthFill');
+      const resetPassStrengthLabel = document.getElementById('resetPassStrengthLabel');
+      const resetSubmitErrorBanner = document.getElementById('resetSubmitErrorBanner');
+      const resetSubmitErrorMessage = document.getElementById('resetSubmitErrorMessage');
+      const btnApplyPasswordReset = document.getElementById('btnApplyPasswordReset');
+      const btnResendResetOtp = document.getElementById('btnResendResetOtp');
+
+      const resetOtpBoxes = [
+        document.getElementById('resetOtp1'),
+        document.getElementById('resetOtp2'),
+        document.getElementById('resetOtp3'),
+        document.getElementById('resetOtp4'),
+        document.getElementById('resetOtp5'),
+        document.getElementById('resetOtp6')
+      ];
+
+      let currentResetPhoneValidation = null;
+
+      function showResetPhoneError(msg) {
+        if (resetPhoneErrorMessage) resetPhoneErrorMessage.textContent = msg;
+        resetPhoneErrorBanner?.classList.remove('hidden');
+        resetPhoneBox?.classList.add('input-invalid');
+      }
+
+      function hideResetPhoneError() {
+        resetPhoneErrorBanner?.classList.add('hidden');
+        resetPhoneBox?.classList.remove('input-invalid');
+      }
+
+      function showResetSubmitError(msg) {
+        if (resetSubmitErrorMessage) resetSubmitErrorMessage.textContent = msg;
+        resetSubmitErrorBanner?.classList.remove('hidden');
+      }
+
+      function hideResetSubmitError() {
+        resetSubmitErrorBanner?.classList.add('hidden');
+      }
+
+      function openResetPasswordModal() {
+        if (!resetModalOverlay) return;
+        const curPhone = phoneInput ? phoneInput.value.trim() : '';
+        if (curPhone && resetPhoneInput) {
+          resetPhoneInput.value = curPhone;
+          resetPhoneInput.dispatchEvent(new Event('input'));
+        }
+        resetStepPhone?.classList.remove('hidden');
+        resetStepNewPass?.classList.add('hidden');
+        hideResetPhoneError();
+        hideResetSubmitError();
+        resetOtpBoxes.forEach(b => { if (b) b.value = ''; });
+        if (newPasswordInput) newPasswordInput.value = '';
+        if (confirmNewPasswordInput) confirmNewPasswordInput.value = '';
+        updateStrengthMeter('', resetPassStrengthFill, resetPassStrengthLabel);
+        resetModalOverlay.classList.remove('hidden');
+        setTimeout(() => resetPhoneInput?.focus(), 150);
+      }
+
+      function closeResetPasswordModal() {
+        if (!resetModalOverlay) return;
+        resetModalOverlay.classList.add('hidden');
+      }
+
+      btnCloseResetModal?.addEventListener('click', closeResetPasswordModal);
+      resetModalOverlay?.addEventListener('click', (e) => {
+        if (e.target === resetModalOverlay) closeResetPasswordModal();
       });
+
+      resetPhoneInput?.addEventListener('input', () => {
+        hideResetPhoneError();
+        const raw = resetPhoneInput.value;
+        const val = Auth.validatePhilippineMobile(raw);
+        if (val.isValid) {
+          resetPhoneBox?.classList.remove('input-invalid');
+          resetPhoneBox?.classList.add('input-valid');
+        } else {
+          resetPhoneBox?.classList.remove('input-valid');
+        }
+      });
+
+      formResetSendOtp?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const raw = resetPhoneInput.value.trim();
+        const validation = Auth.validatePhilippineMobile(raw);
+        if (!validation.isValid) {
+          showResetPhoneError(validation.error || 'Please enter a valid Philippine mobile number.');
+          resetPhoneInput.focus();
+          return;
+        }
+
+        hideResetPhoneError();
+        currentResetPhoneValidation = validation;
+
+        btnSendResetOtp.disabled = true;
+        btnSendResetOtp.innerHTML = '<span>Sending SMS Code...</span>';
+
+        try {
+          UI.toast(`Sending SMS reset code to ${validation.intlFormatted}...`, 'info');
+          const res = await API.sendOtp(validation.normalized, 'reset_password');
+          if (res.success) {
+            UI.toast(`Verification code sent to ${validation.intlFormatted}.`, 'success');
+            resetStepPhone.classList.add('hidden');
+            resetStepNewPass.classList.remove('hidden');
+            if (resetTargetPhoneText) resetTargetPhoneText.textContent = validation.intlFormatted;
+            resetOtpBoxes.forEach(b => { if (b) b.value = ''; });
+            setTimeout(() => resetOtpBoxes[0]?.focus(), 150);
+          } else {
+            showResetPhoneError(res.error || 'Could not send verification SMS. Please try again.');
+          }
+        } catch (err) {
+          showResetPhoneError('Network error sending verification code.');
+        } finally {
+          btnSendResetOtp.disabled = false;
+          btnSendResetOtp.innerHTML = `<span>Send SMS Verification Code</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+        }
+      });
+
+      btnChangeResetPhone?.addEventListener('click', () => {
+        resetStepNewPass.classList.add('hidden');
+        resetStepPhone.classList.remove('hidden');
+        resetPhoneInput?.focus();
+      });
+
+      resetOtpBoxes.forEach((box, idx) => {
+        if (!box) return;
+        box.addEventListener('input', e => {
+          hideResetSubmitError();
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val;
+          if (val && idx < resetOtpBoxes.length - 1) resetOtpBoxes[idx + 1]?.focus();
+        });
+        box.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !box.value && idx > 0) resetOtpBoxes[idx - 1]?.focus();
+        });
+        box.addEventListener('paste', e => {
+          e.preventDefault();
+          const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+          if (text) {
+            for (let i = 0; i < resetOtpBoxes.length; i++) {
+              if (resetOtpBoxes[i] && text[i]) {
+                resetOtpBoxes[i].value = text[i];
+              }
+            }
+            const targetIdx = Math.min(text.length, resetOtpBoxes.length - 1);
+            resetOtpBoxes[targetIdx]?.focus();
+          }
+        });
+      });
+
+      btnToggleNewPass?.addEventListener('click', () => {
+        if (!newPasswordInput) return;
+        newPasswordInput.type = newPasswordInput.type === 'password' ? 'text' : 'password';
+      });
+
+      btnToggleConfirmNewPass?.addEventListener('click', () => {
+        if (!confirmNewPasswordInput) return;
+        confirmNewPasswordInput.type = confirmNewPasswordInput.type === 'password' ? 'text' : 'password';
+      });
+
+      newPasswordInput?.addEventListener('input', () => {
+        hideResetSubmitError();
+        updateStrengthMeter(newPasswordInput.value, resetPassStrengthFill, resetPassStrengthLabel);
+      });
+
+      confirmNewPasswordInput?.addEventListener('input', hideResetSubmitError);
+
+      btnResendResetOtp?.addEventListener('click', async () => {
+        if (!currentResetPhoneValidation) return;
+        UI.toast(`Resending SMS verification code to ${currentResetPhoneValidation.intlFormatted}...`, 'info');
+        const res = await API.sendOtp(currentResetPhoneValidation.normalized, 'reset_password');
+        if (res.success) {
+          UI.toast('New verification code sent! Check your phone.', 'success');
+        } else {
+          UI.toast(res.error || 'Failed to resend verification code.', 'error');
+        }
+      });
+
+      formResetSubmit?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideResetSubmitError();
+
+        const code = resetOtpBoxes.map(b => b ? b.value : '').join('');
+        if (!code || code.length < 6) {
+          showResetSubmitError('Please enter all 6 digits of the SMS verification code.');
+          return;
+        }
+
+        const newPass = newPasswordInput ? newPasswordInput.value : '';
+        const confirmPass = confirmNewPasswordInput ? confirmNewPasswordInput.value : '';
+
+        if (!newPass || newPass.length < 6) {
+          showResetSubmitError('New password must be at least 6 characters long.');
+          newPasswordInput?.focus();
+          return;
+        }
+
+        if (newPass !== confirmPass) {
+          showResetSubmitError('Passwords do not match. Please re-enter your new password.');
+          confirmNewPasswordInput?.focus();
+          return;
+        }
+
+        btnApplyPasswordReset.disabled = true;
+        btnApplyPasswordReset.innerHTML = '<span>Updating Password...</span>';
+
+        try {
+          const resetRes = await API.resetPassword(currentResetPhoneValidation.normalized, code, newPass);
+          if (resetRes.success) {
+            // Also update local storage Auth user store
+            Auth.resetPasswordWithMobile(currentResetPhoneValidation.normalized, newPass);
+            closeResetPasswordModal();
+            UI.toast('Password reset successfully! You can now log in with your new password.', 'success');
+            if (phoneInput) {
+              phoneInput.value = currentResetPhoneValidation.localFormatted || currentResetPhoneValidation.raw;
+              phoneInput.dispatchEvent(new Event('input'));
+            }
+            if (loginPassword) {
+              loginPassword.value = '';
+              loginPassword.focus();
+            }
+          } else {
+            showResetSubmitError(resetRes.error || 'Failed to reset password. Please check your verification code.');
+          }
+        } catch (err) {
+          showResetSubmitError('An unexpected network error occurred. Please try again.');
+        } finally {
+          btnApplyPasswordReset.disabled = false;
+          btnApplyPasswordReset.innerHTML = '<span>Save New Password &amp; Log In</span>';
+        }
+      });
+
+      btnForgotPass?.addEventListener('click', () => {
+        openResetPasswordModal();
+      });
+
 
       phLoginForm.addEventListener('submit', e => {
         e.preventDefault();
@@ -966,6 +1388,19 @@
         regPhoneInput.dispatchEvent(new Event('input'));
         hideRegError();
         regPhoneInput.focus();
+      });
+
+      regPassword?.addEventListener('input', () => {
+        hideRegError();
+        updateStrengthMeter(
+          regPassword.value,
+          document.getElementById('regPassStrengthFill'),
+          document.getElementById('regPassStrengthText')
+        );
+      });
+
+      regConfirmPassword?.addEventListener('input', () => {
+        hideRegError();
       });
 
       regPhoneInput.addEventListener('input', () => {
@@ -1347,7 +1782,10 @@
 
       // Keyboard Esc handler
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeApkGuideModal();
+        if (e.key === 'Escape') {
+          closeApkGuideModal();
+          closeResetPasswordModal();
+        }
       });
 
       // Register service worker if supported
