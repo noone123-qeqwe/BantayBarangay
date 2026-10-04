@@ -164,6 +164,54 @@
     <!-- ════ VIEW 1: LIST OF COMPLAINTS ════════════════════ -->
     <section class="view active" id="view-complaints">
 
+      <!-- EXECUTIVE KPI METRIC CARDS -->
+      <div class="dashboard-stats" id="dashboardStatsGrid">
+        <div class="dash-stat stat-total" data-kpi-filter="all" role="button" tabindex="0" title="Click to view all complaints">
+          <div class="dash-stat-header">
+            <span class="dash-stat-label">Total Complaints</span>
+            <span class="dash-stat-micro info">All</span>
+          </div>
+          <div class="dash-stat-val" id="kpiValTotal">0</div>
+          <div class="dash-stat-sub">Across Masbate Province</div>
+        </div>
+
+        <div class="dash-stat stat-pending" data-kpi-filter="Pending" role="button" tabindex="0" title="Click to filter Pending reports">
+          <div class="dash-stat-header">
+            <span class="dash-stat-label">Pending Verification</span>
+            <span class="dash-stat-micro alert">Action Required</span>
+          </div>
+          <div class="dash-stat-val" id="kpiValPending" style="color:var(--amber-ops);">0</div>
+          <div class="dash-stat-sub">Awaiting officer review</div>
+        </div>
+
+        <div class="dash-stat stat-review" data-kpi-filter="Under Review" role="button" tabindex="0" title="Click to filter Under Review reports">
+          <div class="dash-stat-header">
+            <span class="dash-stat-label">Under Review</span>
+            <span class="dash-stat-micro warn">In Triage</span>
+          </div>
+          <div class="dash-stat-val" id="kpiValReview" style="color:#d97706;">0</div>
+          <div class="dash-stat-sub">Assessing agency route</div>
+        </div>
+
+        <div class="dash-stat stat-progress" data-kpi-filter="In Progress" role="button" tabindex="0" title="Click to filter In Progress reports">
+          <div class="dash-stat-header">
+            <span class="dash-stat-label">Active Dispatch</span>
+            <span class="dash-stat-micro info">In Field</span>
+          </div>
+          <div class="dash-stat-val" id="kpiValProgress" style="color:var(--cyan-telemetry);">0</div>
+          <div class="dash-stat-sub">Crews &amp; linemen on-site</div>
+        </div>
+
+        <div class="dash-stat stat-resolved" data-kpi-filter="Resolved" role="button" tabindex="0" title="Click to filter Resolved reports">
+          <div class="dash-stat-header">
+            <span class="dash-stat-label">Resolved</span>
+            <span class="dash-stat-micro success" id="kpiRateResolved">0% rate</span>
+          </div>
+          <div class="dash-stat-val" id="kpiValResolved" style="color:var(--emerald-ops);">0</div>
+          <div class="dash-stat-sub">Repairs verified complete</div>
+        </div>
+      </div>
+
       <!-- QUICK STATUS PILLS (SEGMENTED CONTROL) -->
       <div class="quick-status-pills">
         <div class="status-pill-tab active" data-status-filter="all">
@@ -307,6 +355,51 @@
           Emergency &amp; Government Agency Contact Directory
         </h2>
         <p class="view-subtitle">Direct hotline numbers, emergency dispatch desks, and agency liaisons across Masbate Province.</p>
+      </div>
+
+      <!-- Priority Emergency Hotline Speed-Dial Bar -->
+      <div class="hotline-quick-bar">
+        <div class="hotline-quick-title">
+          <span class="hotline-radar-dot"></span>
+          <span>Priority Emergency Hotlines</span>
+        </div>
+        <div class="hotline-quick-actions">
+          <a href="tel:0563332244" class="hotline-quick-chip chip-maselco">
+            <span class="chip-icon">⚡</span>
+            <div class="chip-info">
+              <span class="chip-name">MASELCO 24/7 Hotline</span>
+              <span class="chip-number">(056) 333-2244</span>
+            </div>
+          </a>
+          <a href="tel:09173336273" class="hotline-quick-chip chip-maselco-mobile">
+            <span class="chip-icon">📱</span>
+            <div class="chip-info">
+              <span class="chip-name">MASELCO Mobile Dispatch</span>
+              <span class="chip-number">0917-333-6273</span>
+            </div>
+          </a>
+          <a href="tel:0563332222" class="hotline-quick-chip chip-pnp">
+            <span class="chip-icon">🚨</span>
+            <div class="chip-info">
+              <span class="chip-name">PNP Masbate Desk</span>
+              <span class="chip-number">(056) 333-2222</span>
+            </div>
+          </a>
+          <a href="tel:0563332999" class="hotline-quick-chip chip-bfp">
+            <span class="chip-icon">🚒</span>
+            <div class="chip-info">
+              <span class="chip-name">BFP Fire / CDRRMO</span>
+              <span class="chip-number">(056) 333-2999 / 911</span>
+            </div>
+          </a>
+          <a href="tel:0563332199" class="hotline-quick-chip chip-tanod">
+            <span class="chip-icon">🏛️</span>
+            <div class="chip-info">
+              <span class="chip-name">Barangay Tanod Desk</span>
+              <span class="chip-number">(056) 333-2199</span>
+            </div>
+          </a>
+        </div>
       </div>
 
       <div class="agencies-grid">
@@ -764,6 +857,35 @@
             </button>
           </div>
         </div>
+
+        <!-- 4. System Telemetry & Operational Health -->
+        <div class="admin-card">
+          <h3 class="settings-card-title">
+            <span>🛡️ System Telemetry &amp; Engine Status</span>
+          </h3>
+          <p class="settings-card-desc">
+            Live technical metrics for the BantayBarangay Masbate Province operations engine.
+          </p>
+
+          <div class="security-info-box">
+            <div class="security-info-row">
+              <span class="security-info-label">Database Engine</span>
+              <span class="security-info-val" style="color:#0284c7;">SQLite (Synchronous WAL)</span>
+            </div>
+            <div class="security-info-row">
+              <span class="security-info-label">Application Runtime</span>
+              <span class="security-info-val" style="color:#16a34a;">Node.js v22 (Zero Dependencies)</span>
+            </div>
+            <div class="security-info-row">
+              <span class="security-info-label">Sync Protocol</span>
+              <span class="security-info-val">BroadcastChannel + Storage Events</span>
+            </div>
+            <div class="security-info-row">
+              <span class="security-info-label">Security Clearance</span>
+              <span class="security-info-val" style="color:#16a34a;">Tier-2 Authenticated</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -773,156 +895,173 @@
   <div class="modal-overlay hidden" id="adminModalOverlay">
     <div class="modal glass-card" id="adminModal">
       <div class="modal-header">
-        <div>
+        <div class="modal-header-main">
+          <div class="modal-header-badge-row">
+            <span class="modal-header-badge" id="adminModalRefCode">BB-000</span>
+            <span class="modal-header-dot">•</span>
+            <span class="modal-header-date" id="adminModalId">Filed: Just now</span>
+          </div>
           <h2 class="modal-title" id="adminModalTitle">Report Details</h2>
-          <p class="modal-id" id="adminModalId"></p>
         </div>
         <button class="modal-close" id="adminModalClose" aria-label="Close Modal">✕</button>
       </div>
 
       <div class="modal-body">
-        <!-- Photo Section -->
-        <div class="modal-photo-wrap">
-          <img id="adminModalPhoto" src="" alt="Report photo" class="modal-photo hidden" />
-          <div id="adminModalNoPhoto" class="modal-no-photo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-            <span>No citizen photo attached</span>
+        <div class="modal-split-grid">
+          <!-- LEFT COLUMN: INCIDENT DOSSIER -->
+          <div class="modal-col-dossier">
+            <!-- Photo Section -->
+            <div class="modal-photo-wrap">
+              <img id="adminModalPhoto" src="" alt="Report photo" class="modal-photo hidden" />
+              <div id="adminModalNoPhoto" class="modal-no-photo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+                <span>No citizen incident photo attached</span>
+              </div>
+            </div>
+
+            <!-- Citizen Verification Card -->
+            <div class="citizen-contact-card">
+              <div class="citizen-contact-item">
+                <span class="citizen-contact-label">Citizen Reporter</span>
+                <div class="citizen-contact-value">
+                  <span id="adminModalReporterName">—</span>
+                  <span class="citizen-verify-badge">Verified</span>
+                </div>
+              </div>
+              <div class="citizen-contact-item">
+                <span class="citizen-contact-label">Mobile Contact</span>
+                <div class="citizen-contact-value">
+                  <a id="adminModalPhoneLink" href="#" class="citizen-phone-link" title="Direct Citizen Contact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span id="adminModalPhone">—</span>
+                  </a>
+                </div>
+              </div>
+              <div class="citizen-contact-item">
+                <span class="citizen-contact-label">Registered Purok</span>
+                <div class="citizen-contact-value">
+                  <span id="adminModalPurok">—</span>
+                </div>
+              </div>
+              <div class="citizen-contact-item">
+                <span class="citizen-contact-label">Community Validation</span>
+                <div class="citizen-contact-value">
+                  <span class="citizen-confirm-pill" id="adminModalConfirmations">1 Confirmation</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Details Grid -->
+            <div class="modal-grid">
+              <div class="modal-info-block">
+                <label>Hazard Category</label>
+                <p id="adminModalCategory">—</p>
+              </div>
+              <div class="modal-info-block">
+                <label>Urgency Level</label>
+                <div id="adminModalSeverity">—</div>
+              </div>
+              <div class="modal-info-block col-span-2">
+                <label>Responsible Agency</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-top:2px;">
+                  <span id="adminModalAgency">—</span>
+                  <a id="adminModalAgencyCallBtn" href="#" class="agency-call-link" title="Direct Agency Hotline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span id="adminModalAgencyCallText">Call Agency</span>
+                  </a>
+                </div>
+              </div>
+              <div class="modal-info-block col-span-2">
+                <label>Incident Location &amp; Coordinates</label>
+                <p id="adminModalLocation">—</p>
+              </div>
+              <div class="modal-info-block col-span-2">
+                <label>Resident Problem Description</label>
+                <p id="adminModalDescription">—</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: ACTIONS & AUDIT TRAIL -->
+          <div class="modal-col-actions">
+            <!-- OFFICIAL OPERATIONS ACTION & TRIAGE -->
+            <div class="status-update-bar glass-card">
+              <div class="triage-controls-top">
+                <span class="triage-controls-title">Incident Triage &amp; Dispatch</span>
+                <span class="triage-officer-pill">Officer Duty Desk</span>
+              </div>
+
+              <div class="triage-controls-grid">
+                <div>
+                  <label class="form-label" for="adminStatusSelect">Change Status</label>
+                  <select class="form-select triage-select" id="adminStatusSelect">
+                    <option value="Pending">Pending</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label" for="adminAgencySelect">Route / Reassign Agency</label>
+                  <select class="form-select triage-select" id="adminAgencySelect">
+                    <option value="MASELCO">⚡ MASELCO</option>
+                    <option value="MASELCO_HEAVY">🏗️ MASELCO Heavy Line Unit</option>
+                    <option value="LGU">🏢 LGU / City Eng.</option>
+                    <option value="Barangay">🏛️ Barangay Tanod</option>
+                    <option value="PNP">🚨 PNP</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Quick Template Chips -->
+              <div class="triage-templates-block">
+                <label class="form-label">Dispatch Templates (Click to fill note)</label>
+                <div class="template-chips">
+                  <button type="button" class="template-chip-btn" data-template="Endorsed to MASELCO lineman crew; scheduled for dispatch.">⚡ MASELCO Dispatched</button>
+                  <button type="button" class="template-chip-btn" data-template="Hazard cordoned off by Barangay Tanod responders.">🏛️ Cordoned by Tanod</button>
+                  <button type="button" class="template-chip-btn" data-template="Tree pruning team dispatched for line clearance.">🌳 Tree Crew</button>
+                  <button type="button" class="template-chip-btn" data-template="MASELCO transformer crew dispatched with boom truck for on-site repair.">⚡ Transformer Crew</button>
+                  <button type="button" class="template-chip-btn" data-template="Repair completed and verified on-site. Problem resolved.">✅ Repair Completed</button>
+                </div>
+              </div>
+
+              <div class="triage-note-block">
+                <label class="form-label" for="adminActionNote">Official Log Note (Citizen-Visible Timeline)</label>
+                <div class="triage-note-input-row">
+                  <input class="form-input triage-note-input" type="text" id="adminActionNote" placeholder="e.g. Endorsed to MASELCO lineman crew; scheduled for Friday morning…" />
+                  <button class="btn btn-primary triage-save-btn" id="saveAdminActionBtn">
+                    Save &amp; Update
+                  </button>
+                </div>
+              </div>
+
+              <!-- Auto-SMS Dispatch Notification Toggle -->
+              <div class="sms-dispatch-toggle-wrap">
+                <input type="checkbox" id="adminNotifyCitizenCheck" checked />
+                <label for="adminNotifyCitizenCheck">
+                  <span>Citizen SMS Dispatch: Automatically notify resident's mobile number upon status update.</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- TIMELINE -->
+            <div class="timeline-section">
+              <h3 class="timeline-title">Official Status Audit Trail</h3>
+              <div class="timeline" id="adminModalTimeline"></div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- CITIZEN VERIFICATION & DIRECT CONTACT BLOCK -->
-        <div class="citizen-contact-card">
-          <div class="citizen-contact-item">
-            <span class="citizen-contact-label">Citizen Reporter</span>
-            <div class="citizen-contact-value">
-              <span id="adminModalReporterName">—</span>
-              <span class="citizen-verify-badge">Verified</span>
-            </div>
-          </div>
-          <div class="citizen-contact-item">
-            <span class="citizen-contact-label">Mobile Contact</span>
-            <div class="citizen-contact-value">
-              <a id="adminModalPhoneLink" href="#" class="citizen-phone-link" title="Direct Citizen Contact">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span id="adminModalPhone">—</span>
-              </a>
-            </div>
-          </div>
-          <div class="citizen-contact-item">
-            <span class="citizen-contact-label">Registered Purok</span>
-            <div class="citizen-contact-value">
-              <span id="adminModalPurok">—</span>
-            </div>
-          </div>
-          <div class="citizen-contact-item">
-            <span class="citizen-contact-label">Community Validation</span>
-            <div class="citizen-contact-value">
-              <span class="citizen-confirm-pill" id="adminModalConfirmations">1 Confirmation</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Details Grid -->
-        <div class="modal-grid">
-          <div class="modal-info-block">
-            <label>Hazard Category</label>
-            <p id="adminModalCategory">—</p>
-          </div>
-          <div class="modal-info-block">
-            <label>Urgency Level</label>
-            <p id="adminModalSeverity">—</p>
-          </div>
-          <div class="modal-info-block">
-            <label>Responsible Agency</label>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-top:2px;">
-              <span id="adminModalAgency">—</span>
-              <a id="adminModalAgencyCallBtn" href="#" class="agency-call-link" title="Direct Agency Hotline">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span id="adminModalAgencyCallText">Call Agency</span>
-              </a>
-            </div>
-          </div>
-          <div class="modal-info-block">
-            <label>Incident Reference</label>
-            <p id="adminModalRefCode" class="mono-code">—</p>
-          </div>
-          <div class="modal-info-block col-span-2">
-            <label>Incident Location &amp; Coordinates</label>
-            <p id="adminModalLocation">—</p>
-          </div>
-          <div class="modal-info-block col-span-2">
-            <label>Resident Problem Description</label>
-            <p id="adminModalDescription">—</p>
-          </div>
-        </div>
-
-        <!-- OFFICIAL OPERATIONS ACTION & TRIAGE -->
-        <div class="status-update-bar glass-card">
-          <div class="triage-controls-top">
-            <span class="triage-controls-title">Incident Triage &amp; Dispatch</span>
-            <button class="btn btn-ghost btn-sm btn-delete-report" id="adminDeleteBtn">
-              Delete Report
-            </button>
-          </div>
-
-          <div class="triage-controls-grid">
-            <div>
-              <label class="form-label" for="adminStatusSelect">Change Status</label>
-              <select class="form-select triage-select" id="adminStatusSelect">
-                <option value="Pending">Pending</option>
-                <option value="Under Review">Under Review</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Resolved">Resolved</option>
-              </select>
-            </div>
-            <div>
-              <label class="form-label" for="adminAgencySelect">Route / Reassign Agency</label>
-              <select class="form-select triage-select" id="adminAgencySelect">
-                <option value="MASELCO">⚡ MASELCO</option>
-                <option value="MASELCO_HEAVY">🏗️ MASELCO Heavy Line Unit</option>
-                <option value="LGU">🏢 LGU / City Eng.</option>
-                <option value="Barangay">🏛️ Barangay Tanod</option>
-                <option value="PNP">🚨 PNP</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Quick Template Chips -->
-          <div class="triage-templates-block">
-            <label class="form-label">Dispatch Templates</label>
-            <div class="template-chips">
-              <button type="button" class="template-chip-btn" data-template="Endorsed to MASELCO lineman crew; scheduled for dispatch.">⚡ MASELCO Dispatched</button>
-              <button type="button" class="template-chip-btn" data-template="Hazard cordoned off by Barangay Tanod responders.">🏛️ Cordoned by Tanod</button>
-              <button type="button" class="template-chip-btn" data-template="Tree pruning team dispatched for line clearance.">🌳 Tree Crew Assigned</button>
-              <button type="button" class="template-chip-btn" data-template="MASELCO transformer crew dispatched with boom truck for on-site repair.">⚡ Transformer Crew Dispatched</button>
-              <button type="button" class="template-chip-btn" data-template="Repair completed and verified on-site. Problem resolved.">✅ Repair Completed</button>
-            </div>
-          </div>
-
-          <div class="triage-note-block">
-            <label class="form-label" for="adminActionNote">Official Log Note (Citizen-Visible Timeline)</label>
-            <div class="triage-note-input-row">
-              <input class="form-input triage-note-input" type="text" id="adminActionNote" placeholder="e.g. Endorsed to MASELCO lineman crew; scheduled for Friday morning…" />
-              <button class="btn btn-primary triage-save-btn" id="saveAdminActionBtn">
-                Save &amp; Update
-              </button>
-            </div>
-          </div>
-
-          <!-- Auto-SMS Dispatch Notification Toggle -->
-          <div class="sms-dispatch-toggle-wrap">
-            <input type="checkbox" id="adminNotifyCitizenCheck" checked />
-            <label for="adminNotifyCitizenCheck">
-              <span>Citizen SMS Dispatch: Automatically notify resident's mobile number upon status update.</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- TIMELINE -->
-        <div class="timeline-section">
-          <h3 class="timeline-title">Official Status Audit Trail</h3>
-          <div class="timeline" id="adminModalTimeline"></div>
-        </div>
+      <!-- MODAL DANGER ZONE & ACTION FOOTER -->
+      <div class="modal-footer">
+        <button class="btn btn-ghost btn-sm btn-delete-report" id="adminDeleteBtn" title="Permanently delete this report from the system">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          <span>Delete Incident Record</span>
+        </button>
+        <button class="btn btn-outline btn-sm modal-footer-close-btn" onclick="document.getElementById('adminModalClose').click()">
+          <span>Close Dossier</span>
+        </button>
       </div>
     </div>
   </div>

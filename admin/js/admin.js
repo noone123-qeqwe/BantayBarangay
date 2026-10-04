@@ -512,6 +512,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pRev) pRev.textContent = review;
     if (pProg) pProg.textContent = progress;
     if (pRes) pRes.textContent = resolved;
+
+    // Executive KPI Cards
+    const kTotal = document.getElementById('kpiValTotal');
+    const kPend = document.getElementById('kpiValPending');
+    const kRev = document.getElementById('kpiValReview');
+    const kProg = document.getElementById('kpiValProgress');
+    const kRes = document.getElementById('kpiValResolved');
+    const kRate = document.getElementById('kpiRateResolved');
+
+    if (kTotal) kTotal.textContent = total;
+    if (kPend) kPend.textContent = pending;
+    if (kRev) kRev.textContent = review;
+    if (kProg) kProg.textContent = progress;
+    if (kRes) kRes.textContent = resolved;
+    if (kRate) {
+      const pct = total > 0 ? Math.round((resolved / total) * 100) : 0;
+      kRate.textContent = `${pct}% resolved`;
+    }
   }
 
   // ── 8. COMPLAINTS LIST VIEW & FILTERS ─────────────────────
@@ -586,9 +604,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Clickable KPI Cards filtering
+  document.querySelectorAll('.dash-stat[data-kpi-filter]').forEach(card => {
+    card.addEventListener('click', () => {
+      const val = card.dataset.kpiFilter;
+      filters.status = val;
+      if (statusFilter) statusFilter.value = val;
+      syncStatusPills(val);
+      renderManageTable();
+    });
+  });
+
   function syncStatusPills(val) {
     document.querySelectorAll('.status-pill-tab').forEach(t => {
       t.classList.toggle('active', t.dataset.statusFilter === val);
+    });
+    document.querySelectorAll('.dash-stat[data-kpi-filter]').forEach(c => {
+      c.classList.toggle('active', c.dataset.kpiFilter === val);
     });
   }
 
@@ -684,7 +716,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const list = Reports.filter ? Reports.filter(filters) : [];
     if (!list.length) {
-      tbody.innerHTML = `<tr><td colspan="8" class="empty-cell">No complaints match the current filter criteria.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="empty-cell" style="padding:48px 20px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+        <div style="font-weight:700;color:#0f172a;font-size:15px;margin-bottom:4px;">No matching complaints found</div>
+        <div style="font-size:12.5px;color:var(--text-muted);max-width:340px;margin:0 auto 14px;">Try clearing search keywords or selecting "All Complaints" to see all reports.</div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('adminClearBtn').click()">Reset Filters</button>
+      </td></tr>`;
       return;
     }
 
@@ -722,7 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="table-btn-group" style="justify-content:flex-end;">
             <button class="table-action-btn admin-inspect-btn" data-id="${r.id}" title="Inspect Dossier & Triage">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span>Triage</span>
+              <span>Inspect &amp; Triage</span>
             </button>
           </div>
         </td>
