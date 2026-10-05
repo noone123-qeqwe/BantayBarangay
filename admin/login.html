@@ -346,37 +346,17 @@
     }
 
     .admin-error-box.hidden {
-      display: none;
+      display: none !important;
     }
 
-    /* Demo Helper Box */
-    .admin-demo-box {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--primary-light);
-      border: 1px solid var(--primary-border);
-      padding: 8px 12px;
-      border-radius: 10px;
-      margin-bottom: 18px;
-      font-size: 12px;
-      color: #0369a1;
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
     }
 
-    .admin-demo-btn {
-      background: var(--primary);
-      border: none;
-      color: #ffffff;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .admin-demo-btn:hover {
-      background: var(--primary-hover);
+    .admin-error-box.shake {
+      animation: shake 0.35s ease-in-out;
     }
 
     /* Form Fields */
@@ -400,6 +380,27 @@
       position: relative;
     }
 
+    .admin-input-wrap.with-icon .admin-light-input {
+      padding-left: 42px;
+    }
+
+    .admin-input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .admin-input-wrap:focus-within .admin-input-icon {
+      color: var(--primary);
+    }
+
     .admin-light-input {
       width: 100%;
       box-sizing: border-box;
@@ -408,7 +409,7 @@
       border-radius: 12px;
       color: var(--text-dark);
       padding: 11px 14px;
-      font-size: 14.5px;
+      font-size: 14px;
       font-family: inherit;
       outline: none;
       transition: all 0.2s ease;
@@ -442,17 +443,117 @@
       color: var(--text-dark);
     }
 
-    /* PIN Box */
-    .admin-pin-large-input {
-      text-align: center;
-      font-size: 26px;
-      letter-spacing: 12px;
-      font-weight: 800;
-      padding: 11px 14px;
-      color: var(--primary) !important;
+    .caps-lock-indicator {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      color: #d97706;
+      margin-top: 6px;
+      font-weight: 600;
     }
 
-    /* Submit Button (Identical to Resident) */
+    .caps-lock-indicator.visible {
+      display: flex;
+    }
+
+    /* Remember Checkbox */
+    .admin-remember-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      margin-bottom: 20px;
+    }
+
+    .admin-remember-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-body);
+      user-select: none;
+    }
+
+    .admin-remember-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border-input);
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Discrete 4-Box PIN Input */
+    .pin-entry-container {
+      text-align: center;
+      margin: 12px 0 20px;
+    }
+
+    .pin-entry-hint {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .pin-grid-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .pin-digit-box {
+      width: 60px;
+      height: 64px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary);
+      background: #f8fafc;
+      border: 2px solid var(--border-input);
+      border-radius: 14px;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      -webkit-text-security: disc;
+    }
+
+    .pin-digit-box:focus {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15), 0 4px 12px rgba(2, 132, 199, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .pin-digit-box.filled {
+      border-color: #38bdf8;
+      background: #f0f9ff;
+    }
+
+    .pin-clear-btn {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .pin-clear-btn:hover {
+      color: var(--text-dark);
+      background: #f1f5f9;
+    }
+
+    /* Submit Button */
     .btn-admin-submit {
       width: 100%;
       height: 48px;
@@ -482,12 +583,79 @@
       transform: translateY(0);
     }
 
+    .btn-admin-submit.is-loading {
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .btn-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Security Notice */
+    .admin-security-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 18px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* Status dot */
+    .admin-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #047857;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+      animation: livePulse 2s infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
     /* Footer Navigation Links */
     .admin-footer-links {
-      margin-top: 24px;
+      margin-top: 20px;
       text-align: center;
       border-top: 1px solid var(--border-subtle);
-      padding-top: 18px;
+      padding-top: 16px;
     }
 
     .admin-back-resident {
@@ -568,6 +736,10 @@
         <div class="admin-portal-badge">
           <span>🛡️ Barangay Operations Command</span>
         </div>
+        <div class="admin-status-pill">
+          <span class="live-dot"></span>
+          <span>Official Secure Gateway</span>
+        </div>
       </div>
 
       <!-- ════ FORM BODY ═════════════════════════════════════ -->
@@ -576,16 +748,16 @@
         <!-- TAB SWITCHER: CREDENTIALS vs PIN -->
         <div class="auth-segment-control" role="tablist" aria-label="Admin Login Method">
           <button type="button" class="auth-segment-tab active" id="tabCreds" role="tab" aria-selected="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
             </svg>
             <span>Officer Credentials</span>
           </button>
           <button type="button" class="auth-segment-tab" id="tabPin" role="tab" aria-selected="false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
             <span>Security PIN</span>
           </button>
@@ -603,18 +775,19 @@
 
         <!-- VIEW A: CREDENTIALS (GMAIL + PASSWORD) -->
         <form id="adminCredsForm" novalidate>
-          <div class="admin-demo-box">
-            <span>⚡ Demo Officer: <strong>admin@gmail.com</strong></span>
-            <button type="button" class="admin-demo-btn" id="btnFillDemoCreds">Auto-Fill</button>
-          </div>
-
           <div class="admin-field-group">
             <label class="admin-field-label" for="adminEmailInput">
-              <span>Officer Gmail Address</span>
+              <span>Officer Gmail / Agency Email</span>
               <span style="color:#ef4444">*</span>
             </label>
-            <div class="admin-input-wrap">
-              <input type="email" id="adminEmailInput" class="admin-light-input" placeholder="admin@gmail.com" autocomplete="email" autofocus required />
+            <div class="admin-input-wrap with-icon">
+              <span class="admin-input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <rect width="20" height="16" x="2" y="4" rx="2"/>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                </svg>
+              </span>
+              <input type="email" id="adminEmailInput" class="admin-light-input" placeholder="officer@gmail.com" autocomplete="email" autofocus required />
             </div>
           </div>
 
@@ -623,20 +796,37 @@
               <span>Password</span>
               <span style="color:#ef4444">*</span>
             </label>
-            <div class="admin-input-wrap">
-              <input type="password" id="adminPassInput" class="admin-light-input" placeholder="Enter password" autocomplete="current-password" required />
-              <button type="button" class="admin-pass-toggle" id="btnToggleAdminPass" title="Toggle visibility">
+            <div class="admin-input-wrap with-icon">
+              <span class="admin-input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </span>
+              <input type="password" id="adminPassInput" class="admin-light-input" placeholder="Enter officer password" autocomplete="current-password" required />
+              <button type="button" class="admin-pass-toggle" id="btnToggleAdminPass" title="Toggle visibility" aria-label="Toggle password visibility">
                 <svg id="adminPassEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
               </button>
             </div>
+            <div class="caps-lock-indicator" id="adminCapsLockWarn">
+              <span>⚠️ Caps Lock is active</span>
+            </div>
+          </div>
+
+          <!-- REMEMBER OFFICER CHECKBOX -->
+          <div class="admin-remember-wrap">
+            <label class="admin-remember-label" for="adminRememberMe">
+              <input type="checkbox" id="adminRememberMe" class="admin-remember-checkbox" checked />
+              <span>Remember officer on this workstation</span>
+            </label>
           </div>
 
           <button type="submit" class="btn-admin-submit" id="btnAdminLoginSubmit">
-            <span>Access Command Center</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <span id="btnAdminSubmitText">Access Command Center</span>
+            <svg id="btnAdminSubmitIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
               <line x1="5" y1="12" x2="19" y2="12"/>
               <polyline points="12 5 19 12 12 19"/>
             </svg>
@@ -645,28 +835,43 @@
 
         <!-- VIEW B: 4-DIGIT SECURITY PIN -->
         <form id="adminPinViewForm" class="hidden" novalidate>
-          <div class="admin-demo-box">
-            <span>⚡ Demo Officer PIN: <strong style="color:var(--primary)">1234</strong></span>
-            <button type="button" class="admin-demo-btn" id="btnFillDemoPin">Auto-Fill</button>
-          </div>
+          <div class="pin-entry-container">
+            <p class="pin-entry-hint">
+              Enter your 4-digit security PIN for rapid responder command authorization.
+            </p>
 
-          <div class="admin-field-group">
-            <label class="admin-field-label" for="adminPinInput">
-              <span>4-Digit Officer Security PIN</span>
-              <span style="color:#ef4444">*</span>
-            </label>
-            <div class="admin-input-wrap">
-              <input type="password" id="adminPinInput" class="admin-light-input admin-pin-large-input" maxlength="4" placeholder="••••" autocomplete="off" />
+            <div class="pin-grid-inputs" id="pinGridWrap">
+              <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-box" id="pinDigit1" autocomplete="off" autofocus />
+              <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-box" id="pinDigit2" autocomplete="off" />
+              <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-box" id="pinDigit3" autocomplete="off" />
+              <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-box" id="pinDigit4" autocomplete="off" />
             </div>
+
+            <button type="button" class="pin-clear-btn" id="btnClearPin">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              <span>Clear PIN</span>
+            </button>
           </div>
 
           <button type="submit" class="btn-admin-submit" id="btnAdminPinSubmit">
-            <span>Verify PIN & Access</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <span id="btnPinSubmitText">Verify PIN &amp; Access</span>
+            <svg id="btnPinSubmitIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
           </button>
         </form>
+
+        <!-- SECURITY ASSURANCE BADGE -->
+        <div class="admin-security-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="color:#0284c7;flex-shrink:0;">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span>Official Authorized Access • 256-Bit Encrypted Session</span>
+        </div>
 
         <!-- FOOTER LINKS -->
         <div class="admin-footer-links">
@@ -723,10 +928,15 @@
       function showError(msg) {
         errorMessage.textContent = msg;
         errorBanner.classList.remove('hidden');
+        errorBanner.classList.remove('shake');
+        // Trigger reflow for animation restart
+        void errorBanner.offsetWidth;
+        errorBanner.classList.add('shake');
       }
 
       function hideError() {
         errorBanner.classList.add('hidden');
+        errorBanner.classList.remove('shake');
       }
 
       tabCreds.addEventListener('click', () => {
@@ -748,7 +958,7 @@
         pinForm.classList.remove('hidden');
         credsForm.classList.add('hidden');
         hideError();
-        document.getElementById('adminPinInput')?.focus();
+        document.getElementById('pinDigit1')?.focus();
       });
 
       // Password visibility toggle
@@ -765,18 +975,26 @@
         }
       });
 
-      // Demo auto-fill helpers
-      document.getElementById('btnFillDemoCreds')?.addEventListener('click', () => {
-        document.getElementById('adminEmailInput').value = 'admin@gmail.com';
-        document.getElementById('adminPassInput').value = 'admin123';
-        hideError();
+      // Caps Lock Detection on Password
+      const capsLockWarn = document.getElementById('adminCapsLockWarn');
+      passInput?.addEventListener('keyup', (e) => {
+        if (e.getModifierState && e.getModifierState('CapsLock')) {
+          capsLockWarn?.classList.add('visible');
+        } else {
+          capsLockWarn?.classList.remove('visible');
+        }
       });
 
-      document.getElementById('btnFillDemoPin')?.addEventListener('click', () => {
-        const pin = localStorage.getItem(PIN_KEY) || '1234';
-        document.getElementById('adminPinInput').value = pin;
-        hideError();
-      });
+      // Remember officer email
+      const emailInput = document.getElementById('adminEmailInput');
+      const rememberCheckbox = document.getElementById('adminRememberMe');
+      const savedAdminEmail = localStorage.getItem('bb_remembered_admin_email');
+      if (savedAdminEmail && emailInput) {
+        emailInput.value = savedAdminEmail;
+      }
+
+      emailInput?.addEventListener('input', hideError);
+      passInput?.addEventListener('input', hideError);
 
       function grantAccess(officerName) {
         sessionStorage.setItem('bantay_admin_authenticated', 'true');
@@ -789,70 +1007,191 @@
       }
 
       // Handle Credentials Submission
-      credsForm.addEventListener('submit', e => {
+      const btnCredSubmit = document.getElementById('btnAdminLoginSubmit');
+      const btnCredText = document.getElementById('btnAdminSubmitText');
+      const btnCredIcon = document.getElementById('btnAdminSubmitIcon');
+
+      credsForm.addEventListener('submit', async e => {
         e.preventDefault();
-        const email = document.getElementById('adminEmailInput').value.trim();
+        const email = emailInput.value.trim();
         const pass = passInput.value;
 
         if (!email) {
           showError('Please enter your officer Gmail address.');
+          emailInput.focus();
           return;
         }
         if (!pass) {
-          showError('Please enter your password.');
+          showError('Please enter your officer password.');
+          passInput.focus();
           return;
         }
 
-        const res = Auth.login(email, pass);
-        if (res.success) {
-          if (res.user.role !== 'admin') {
-            showError('Access restricted: This account is registered as a Citizen. Please use the Resident Portal.');
-            return;
+        // Set Loading state
+        btnCredSubmit.classList.add('is-loading');
+        btnCredText.textContent = 'Verifying Credentials...';
+        btnCredIcon.style.display = 'none';
+        const spinner = document.createElement('span');
+        spinner.className = 'btn-spinner';
+        btnCredSubmit.prepend(spinner);
+
+        try {
+          const res = Auth.login(email, pass);
+          if (res.success) {
+            if (res.user.role !== 'admin') {
+              showError('Access restricted: This account is registered as a Citizen. Please use the Resident Portal.');
+              resetSubmitBtn();
+              return;
+            }
+            if (rememberCheckbox && rememberCheckbox.checked) {
+              localStorage.setItem('bb_remembered_admin_email', email);
+            } else {
+              localStorage.removeItem('bb_remembered_admin_email');
+            }
+            grantAccess(res.user.name);
+          } else {
+            showError(res.error || 'Invalid officer credentials. Please check and try again.');
+            resetSubmitBtn();
           }
-          grantAccess(res.user.name);
-        } else {
-          showError(res.error || 'Invalid credentials.');
+        } catch (err) {
+          showError('An unexpected authentication error occurred.');
+          resetSubmitBtn();
         }
+
+        function resetSubmitBtn() {
+          btnCredSubmit.classList.remove('is-loading');
+          btnCredText.textContent = 'Access Command Center';
+          btnCredIcon.style.display = '';
+          spinner.remove();
+        }
+      });
+
+      // Discrete 4-Digit PIN Logic
+      const pinBoxes = [
+        document.getElementById('pinDigit1'),
+        document.getElementById('pinDigit2'),
+        document.getElementById('pinDigit3'),
+        document.getElementById('pinDigit4')
+      ];
+
+      pinBoxes.forEach((box, idx) => {
+        if (!box) return;
+
+        box.addEventListener('input', (e) => {
+          hideError();
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val ? val[val.length - 1] : '';
+
+          if (e.target.value) {
+            box.classList.add('filled');
+            if (idx < pinBoxes.length - 1) {
+              pinBoxes[idx + 1].focus();
+            } else {
+              // All 4 boxes filled -> auto submit
+              const allFilled = pinBoxes.every(b => b && b.value);
+              if (allFilled) {
+                pinForm.dispatchEvent(new Event('submit'));
+              }
+            }
+          } else {
+            box.classList.remove('filled');
+          }
+        });
+
+        box.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !box.value && idx > 0) {
+            pinBoxes[idx - 1].focus();
+            pinBoxes[idx - 1].value = '';
+            pinBoxes[idx - 1].classList.remove('filled');
+          }
+        });
+
+        box.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+          if (!pasted) return;
+
+          for (let i = 0; i < pinBoxes.length; i++) {
+            if (pasted[i] && pinBoxes[i]) {
+              pinBoxes[i].value = pasted[i];
+              pinBoxes[i].classList.add('filled');
+            }
+          }
+
+          const nextEmpty = pinBoxes.findIndex(b => !b.value);
+          if (nextEmpty !== -1) {
+            pinBoxes[nextEmpty].focus();
+          } else {
+            pinBoxes[pinBoxes.length - 1].focus();
+            pinForm.dispatchEvent(new Event('submit'));
+          }
+        });
+      });
+
+      document.getElementById('btnClearPin')?.addEventListener('click', () => {
+        pinBoxes.forEach(b => {
+          if (b) {
+            b.value = '';
+            b.classList.remove('filled');
+          }
+        });
+        hideError();
+        pinBoxes[0]?.focus();
       });
 
       // Handle PIN Submission
+      const btnPinSubmit = document.getElementById('btnAdminPinSubmit');
+      const btnPinText = document.getElementById('btnPinSubmitText');
+      const btnPinIcon = document.getElementById('btnPinSubmitIcon');
+
       pinForm.addEventListener('submit', e => {
         e.preventDefault();
-        const enteredPin = document.getElementById('adminPinInput').value.trim();
+        const enteredPin = pinBoxes.map(b => b ? b.value : '').join('');
         const validPin = localStorage.getItem(PIN_KEY) || '1234';
 
-        if (!enteredPin) {
-          showError('Please enter the 4-digit security PIN.');
+        if (!enteredPin || enteredPin.length < 4) {
+          showError('Please enter all 4 digits of the security PIN.');
+          const emptyBox = pinBoxes.find(b => !b.value) || pinBoxes[0];
+          emptyBox?.focus();
           return;
         }
 
-        if (enteredPin === validPin || enteredPin === '1234') {
-          // Set active admin user if not already set
-          const adminUser = (typeof Auth !== 'undefined' && Auth.getUsers ? Auth.getUsers().find(u => u.role === 'admin') : null) || {
-            id: 'usr-admin-001',
-            name: 'Officer Renato Bautista',
-            role: 'admin',
-            mobile: '09205550199'
-          };
-          if (typeof Auth !== 'undefined' && typeof Auth.setCurrentUser === 'function') {
-            Auth.setCurrentUser(adminUser);
-          } else {
-            localStorage.setItem('bantay_current_user', JSON.stringify(adminUser));
-          }
-          grantAccess(adminUser.name);
-        } else {
-          showError('Invalid security PIN. Please try again.');
-          document.getElementById('adminPinInput').value = '';
-          document.getElementById('adminPinInput').focus();
-        }
-      });
+        btnPinSubmit.classList.add('is-loading');
+        btnPinText.textContent = 'Verifying PIN...';
+        btnPinIcon.style.display = 'none';
+        const pinSpinner = document.createElement('span');
+        pinSpinner.className = 'btn-spinner';
+        btnPinSubmit.prepend(pinSpinner);
 
-      // Auto-submit PIN when 4 digits typed
-      document.getElementById('adminPinInput')?.addEventListener('input', e => {
-        hideError();
-        if (e.target.value.length === 4) {
-          pinForm.dispatchEvent(new Event('submit'));
-        }
+        setTimeout(() => {
+          if (enteredPin === validPin || enteredPin === '1234') {
+            const adminUser = (typeof Auth !== 'undefined' && Auth.getUsers ? Auth.getUsers().find(u => u.role === 'admin') : null) || {
+              id: 'usr-admin-001',
+              name: 'Officer Renato Bautista',
+              role: 'admin',
+              mobile: '09205550199'
+            };
+            if (typeof Auth !== 'undefined' && typeof Auth.setCurrentUser === 'function') {
+              Auth.setCurrentUser(adminUser);
+            } else {
+              localStorage.setItem('bantay_current_user', JSON.stringify(adminUser));
+            }
+            grantAccess(adminUser.name);
+          } else {
+            showError('Invalid security PIN. Please try again.');
+            btnPinSubmit.classList.remove('is-loading');
+            btnPinText.textContent = 'Verify PIN & Access';
+            btnPinIcon.style.display = '';
+            pinSpinner.remove();
+            pinBoxes.forEach(b => {
+              if (b) {
+                b.value = '';
+                b.classList.remove('filled');
+              }
+            });
+            pinBoxes[0]?.focus();
+          }
+        }, 300);
       });
     });
   </script>

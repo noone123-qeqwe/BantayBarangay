@@ -436,47 +436,125 @@ body.auth-body {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-/* ── DEMO AUTO-FILL PILL ─────────────────────────────────── */
-.auth-demo-shortcut-wrap {
+/* ── OR DIVIDER & ALTERNATIVE AUTH ─────────────────────── */
+.auth-or-divider {
   display: flex;
-  justify-content: center;
-  margin: -14px 0 22px;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
-.auth-demo-pill {
-  display: inline-flex;
+.auth-or-divider::before,
+.auth-or-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.auth-or-divider span {
+  padding: 0 12px;
+}
+
+.btn-auth-secondary {
+  width: 100%;
+  height: 44px;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 7px 16px;
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(56, 189, 248, 0.12) 100%);
-  border: 1px solid rgba(2, 132, 199, 0.28);
-  border-radius: 9999px;
-  font-size: 12px;
-  color: #0369a1;
+  background: #f8fafc;
+  color: #0284c7;
+  border: 1.5px solid #bae6fd;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.auth-demo-pill:hover {
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(56, 189, 248, 0.22) 100%);
+.btn-auth-secondary:hover {
+  background: #f0f9ff;
+  border-color: #0284c7;
+  color: #0369a1;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.18);
 }
 
-.auth-demo-sparkle {
-  font-size: 13px;
-  animation: sparkleTwinkle 2s ease-in-out infinite;
+.btn-auth-secondary:active {
+  transform: translateY(0);
 }
 
-@keyframes sparkleTwinkle {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
-  50% { transform: scale(1.2) rotate(15deg); opacity: 1; }
-}
-
-.auth-demo-arrow {
+/* ── TELCO & STATUS BADGES ───────────────────────────────── */
+.ph-telco-badge {
+  display: none;
+  font-size: 11px;
   font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e0f2fe;
   color: #0284c7;
+  border: 1px solid #bae6fd;
+  transition: all 0.2s ease;
 }
+
+.ph-telco-badge.visible {
+  display: inline-block;
+}
+
+.caps-lock-warning {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #d97706;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.caps-lock-warning.visible {
+  display: flex;
+}
+
+.ph-input-status-icon {
+  margin-right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Button loading state */
+.btn-auth-primary.is-submitting {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.ph-error-banner.shake {
+  animation: shake 0.35s ease-in-out;
+}
+
 
 /* ── APP VERSION INDICATOR (BELOW AUTH FORMS) ──────────── */
 .auth-form-version {

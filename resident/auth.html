@@ -99,6 +99,27 @@
     <div class="auth-form-panel">
       <div class="ph-login-card">
 
+        <!-- ── TOP TAB SWITCHER: SIGN IN / CREATE ACCOUNT ── -->
+        <div class="auth-segment-control" role="tablist" aria-label="Sign In or Register">
+          <button type="button" class="auth-segment-tab active" id="tabLogin" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            <span>Sign In</span>
+          </button>
+          <button type="button" class="auth-segment-tab" id="tabRegister" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+            <span>Create Account</span>
+          </button>
+        </div>
+
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- VIEW 1: LOG IN WITH PHILIPPINE MOBILE               -->
         <!-- ═══════════════════════════════════════════════════ -->
@@ -107,18 +128,30 @@
           <!-- LOGIN FORM -->
           <form id="phLoginForm" novalidate>
             <div class="ph-phone-field-wrap">
-              <label class="form-label-styled" for="phPhoneInput">
-                <span>Philippine Mobile Number</span>
-                <span class="required" style="color:#ef476f">*</span>
-              </label>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <label class="form-label-styled" for="phPhoneInput" style="margin:0">
+                  <span>Philippine Mobile Number</span>
+                  <span class="required" style="color:#ef476f">*</span>
+                </label>
+                <span class="ph-telco-badge" id="phTelcoBadge" style="display:none"></span>
+              </div>
 
               <div class="ph-phone-input-box" id="phInputBox">
                 <div class="ph-country-prefix">
                   <span class="ph-country-flag">🇵🇭</span>
                   <span class="ph-country-code">+63</span>
                 </div>
-                <input type="tel" id="phPhoneInput" class="ph-phone-input" placeholder="09XXXXXXXXX or 9XXXXXXXXX"
+                <input type="tel" id="phPhoneInput" class="ph-phone-input" placeholder="9XXXXXXXXX or 09XXXXXXXXX"
                   autocomplete="tel" autofocus required />
+                <span class="ph-input-status-icon" id="phPhoneStatusIcon" style="display:none;margin-right:12px;color:#10b981;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="16" height="16">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="ph-format-guide" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                <span>Format: 09XX XXX XXXX or 9XXXXXXXXX</span>
+                <span id="digitCount" style="font-family:monospace;font-size:11px;font-weight:700;"></span>
               </div>
             </div>
 
@@ -129,19 +162,20 @@
                   <span>Password</span>
                   <span class="required" style="color:#ef476f">*</span>
                 </label>
+                <button type="button" class="auth-text-btn" id="btnForgotPass" style="font-size:12px;font-weight:600">Forgot password?</button>
               </div>
               <div class="password-input-wrapper">
                 <input type="password" id="loginPassword" class="form-input-styled" placeholder="Enter your password"
                   autocomplete="current-password" required />
-                <button type="button" class="password-toggle-styled" id="btnToggleLoginPass" title="Toggle password visibility">
+                <button type="button" class="password-toggle-styled" id="btnToggleLoginPass" title="Toggle password visibility" aria-label="Toggle password visibility">
                   <svg id="loginEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 </button>
               </div>
-              <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:8px">
-                <button type="button" class="auth-text-btn" id="btnForgotPass" style="font-size:12.5px;font-weight:600">Forgot password?</button>
+              <div class="caps-lock-warning" id="residentCapsLockWarn">
+                <span>⚠️ Caps Lock is active</span>
               </div>
             </div>
 
@@ -170,16 +204,29 @@
 
             <!-- SUBMIT BUTTON -->
             <button type="submit" class="btn-auth-primary" id="btnContinueLogin">
-              <span>Log In</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <span id="btnContinueLoginText">Log In</span>
+              <svg id="btnContinueLoginIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             </button>
+
+            <!-- OR DIVIDER -->
+            <div class="auth-or-divider">
+              <span>OR</span>
+            </div>
+
+            <!-- PASSWORD-FREE SMS CODE LOGIN BUTTON -->
+            <button type="button" class="btn-auth-secondary" id="btnQuickSmsLogin">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span>Sign In with SMS Code (Password-Free)</span>
+            </button>
           </form>
 
-          <div style="margin-top:24px;text-align:center;border-top:1px solid #e2e8f0;padding-top:18px">
-            <p style="font-size:14px;color:#64748b;margin:0">
+          <div style="margin-top:20px;text-align:center;border-top:1px solid #e2e8f0;padding-top:16px">
+            <p style="font-size:13.5px;color:#64748b;margin:0">
               Don't have an account yet?
               <button type="button" class="auth-text-btn" id="linkToRegister" style="font-weight:700;margin-left:4px">
                 Create Account
@@ -302,9 +349,6 @@
         <div id="registerStepView" class="hidden">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
             <h2 class="auth-panel-heading" style="margin:0">Create Account</h2>
-            <button type="button" class="auth-text-btn" id="btnQuickFillReg" style="font-size:12px;font-weight:700;color:#0284c7;display:inline-flex;align-items:center;gap:4px">
-              ⚡ Demo Fill
-            </button>
           </div>
           <p class="auth-panel-sub" style="margin-top:2px;margin-bottom:18px">Register your resident profile with Philippine mobile verification.</p>
 
@@ -790,22 +834,6 @@
         switchTab('register');
       }
 
-      // Demo citizen auto-fill shortcut
-      document.getElementById('btnFillDemoResident')?.addEventListener('click', () => {
-        switchTab('login');
-        const pInput = document.getElementById('phPhoneInput');
-        const passInput = document.getElementById('loginPassword');
-        if (pInput && passInput) {
-          pInput.value = '09171234567';
-          passInput.value = 'resident123';
-          pInput.dispatchEvent(new Event('input'));
-          passInput.dispatchEvent(new Event('input'));
-          if (typeof UI !== 'undefined' && UI.toast) {
-            UI.toast('Demo citizen credentials filled! Tap "Log In" to proceed.', 'info');
-          }
-        }
-      });
-
       // ═════════════════════════════════════════════════════════
       // 1. LOG IN LOGIC & OTP
       // ═════════════════════════════════════════════════════════
@@ -814,6 +842,8 @@
       const errorBanner = document.getElementById('phErrorBanner');
       const errorMessage = document.getElementById('phErrorMessage');
       const digitCount = document.getElementById('digitCount');
+      const telcoBadge = document.getElementById('phTelcoBadge');
+      const phoneStatusIcon = document.getElementById('phPhoneStatusIcon');
       const phLoginForm = document.getElementById('phLoginForm');
 
       const loginOtpTargetPhone = document.getElementById('loginOtpTargetPhone');
@@ -836,7 +866,29 @@
         const res = Auth.validatePhilippineMobile(raw);
 
         const digitsOnly = raw.replace(/\D/g, '');
-        if (digitCount) digitCount.textContent = digitsOnly.length > 0 ? `${digitsOnly.length} digits` : '';
+        if (digitCount) {
+          if (digitsOnly.length > 0) {
+            digitCount.textContent = res.isValid ? `${digitsOnly.length}/11 digits ✓` : `${digitsOnly.length}/11 digits`;
+            digitCount.style.color = res.isValid ? '#10b981' : '#64748b';
+          } else {
+            digitCount.textContent = '';
+          }
+        }
+
+        if (telcoBadge) {
+          if (res.network && res.network !== 'Philippine Mobile' && digitsOnly.length >= 4) {
+            telcoBadge.textContent = res.network;
+            telcoBadge.classList.add('visible');
+            telcoBadge.style.display = 'inline-block';
+          } else {
+            telcoBadge.classList.remove('visible');
+            telcoBadge.style.display = 'none';
+          }
+        }
+
+        if (phoneStatusIcon) {
+          phoneStatusIcon.style.display = res.isValid ? 'inline-flex' : 'none';
+        }
 
         if (res.isValid) {
           inputBox.classList.remove('input-invalid');
@@ -851,6 +903,7 @@
       const btnToggleLoginPass = document.getElementById('btnToggleLoginPass');
       const loginEyeIcon = document.getElementById('loginEyeIcon');
       const btnForgotPass = document.getElementById('btnForgotPass');
+      const residentCapsLockWarn = document.getElementById('residentCapsLockWarn');
 
       if (btnToggleLoginPass && loginPassword) {
         btnToggleLoginPass.addEventListener('click', () => {
@@ -869,6 +922,14 @@
           loginPassword.classList.remove('input-invalid');
           hideLoginError();
         });
+
+        loginPassword.addEventListener('keyup', (e) => {
+          if (e.getModifierState && e.getModifierState('CapsLock')) {
+            residentCapsLockWarn?.classList.add('visible');
+          } else {
+            residentCapsLockWarn?.classList.remove('visible');
+          }
+        });
       }
 
       const authRememberMe = document.getElementById('authRememberMe');
@@ -877,6 +938,11 @@
         phoneInput.value = savedPhone;
         phoneInput.dispatchEvent(new Event('input'));
       }
+
+      // Quick SMS Code Login button
+      document.getElementById('btnQuickSmsLogin')?.addEventListener('click', () => {
+        startSmsOtpFlow('Sign in with SMS OTP');
+      });
 
       // SMS OTP Fallback Function
       async function startSmsOtpFlow(promptMessage) {
@@ -1216,7 +1282,11 @@
       });
 
 
-      phLoginForm.addEventListener('submit', e => {
+      const btnContinueLogin = document.getElementById('btnContinueLogin');
+      const btnContinueLoginText = document.getElementById('btnContinueLoginText');
+      const btnContinueLoginIcon = document.getElementById('btnContinueLoginIcon');
+
+      phLoginForm.addEventListener('submit', async e => {
         e.preventDefault();
         const inputVal = phoneInput.value.trim();
         const validation = Auth.validatePhilippineMobile(inputVal);
@@ -1245,26 +1315,51 @@
 
         hideLoginError();
 
-        const res = Auth.login(inputVal, passVal);
-        if (res.success) {
-          if (authRememberMe && authRememberMe.checked) {
-            localStorage.setItem('bb_remembered_phone', inputVal);
-          } else {
-            localStorage.removeItem('bb_remembered_phone');
-          }
+        // Submit button loading animation
+        if (btnContinueLogin) {
+          btnContinueLogin.classList.add('is-submitting');
+          if (btnContinueLoginText) btnContinueLoginText.textContent = 'Signing In...';
+          if (btnContinueLoginIcon) btnContinueLoginIcon.style.display = 'none';
+          const spin = document.createElement('span');
+          spin.className = 'btn-spinner';
+          btnContinueLogin.prepend(spin);
+        }
 
-          UI.toast(`Login successful! Welcome back, ${res.user.name}.`, 'success');
-          setTimeout(() => {
-            window.location.href = res.user.role === 'admin' ? '../admin/index.html' : 'index.html';
-          }, 600);
-        } else {
-          showLoginError(res.error);
-          if (res.notFound) {
-            inputBox.classList.add('input-invalid');
-            phoneInput.focus();
+        try {
+          const res = Auth.login(inputVal, passVal);
+          if (res.success) {
+            if (authRememberMe && authRememberMe.checked) {
+              localStorage.setItem('bb_remembered_phone', inputVal);
+            } else {
+              localStorage.removeItem('bb_remembered_phone');
+            }
+
+            UI.toast(`Login successful! Welcome back, ${res.user.name}.`, 'success');
+            setTimeout(() => {
+              window.location.href = res.user.role === 'admin' ? '../admin/index.html' : 'index.html';
+            }, 600);
           } else {
-            loginPassword?.classList.add('input-invalid');
-            loginPassword?.focus();
+            showLoginError(res.error);
+            resetLoginBtn();
+            if (res.notFound) {
+              inputBox.classList.add('input-invalid');
+              phoneInput.focus();
+            } else {
+              loginPassword?.classList.add('input-invalid');
+              loginPassword?.focus();
+            }
+          }
+        } catch (err) {
+          showLoginError('An unexpected login error occurred. Please try again.');
+          resetLoginBtn();
+        }
+
+        function resetLoginBtn() {
+          if (btnContinueLogin) {
+            btnContinueLogin.classList.remove('is-submitting');
+            if (btnContinueLoginText) btnContinueLoginText.textContent = 'Log In';
+            if (btnContinueLoginIcon) btnContinueLoginIcon.style.display = '';
+            btnContinueLogin.querySelector('.btn-spinner')?.remove();
           }
         }
       });
@@ -1272,10 +1367,14 @@
       function showLoginError(msg) {
         errorMessage.textContent = msg;
         errorBanner.classList.remove('hidden');
+        errorBanner.classList.remove('shake');
+        void errorBanner.offsetWidth;
+        errorBanner.classList.add('shake');
       }
 
       function hideLoginError() {
         errorBanner.classList.add('hidden');
+        errorBanner.classList.remove('shake');
         inputBox.classList.remove('input-invalid');
         loginPassword?.classList.remove('input-invalid');
       }
@@ -1380,15 +1479,6 @@
         regConfirmPassword.type = type;
       });
 
-      // Quick Fill Demo Registration
-      document.getElementById('btnQuickFillReg')?.addEventListener('click', () => {
-        regPhoneInput.value = '0919 444 8888';
-        regPassword.value = 'resident123';
-        regConfirmPassword.value = 'resident123';
-        regPhoneInput.dispatchEvent(new Event('input'));
-        hideRegError();
-        regPhoneInput.focus();
-      });
 
       regPassword?.addEventListener('input', () => {
         hideRegError();
