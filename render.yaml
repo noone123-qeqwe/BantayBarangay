@@ -20,7 +20,9 @@ services:
       - key: TEXTBEE_API_KEY
         value: txb_G3o6fPep2noqjzgwfS7EDyTAs5ioqQYY
       - key: TEXTBEE_DEVICE_ID
-        value: ""
+        value: 6aa9e7d1243aaa9bc78b8a0b
+      - key: TEXTBEE_SIM_SUBSCRIPTION_ID
+        value: "8"
       - key: ADMIN_URL
         fromService:
           type: web
