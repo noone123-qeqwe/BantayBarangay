@@ -500,22 +500,6 @@ body.auth-body {
   transform: translateY(0);
 }
 
-/* ── TELCO & STATUS BADGES ───────────────────────────────── */
-.ph-telco-badge {
-  display: none;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: #e0f2fe;
-  color: #0284c7;
-  border: 1px solid #bae6fd;
-  transition: all 0.2s ease;
-}
-
-.ph-telco-badge.visible {
-  display: inline-block;
-}
 
 .caps-lock-warning {
   display: none;

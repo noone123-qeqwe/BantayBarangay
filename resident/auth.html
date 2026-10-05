@@ -107,13 +107,10 @@
           <!-- LOGIN FORM -->
           <form id="phLoginForm" novalidate>
             <div class="ph-phone-field-wrap">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                <label class="form-label-styled" for="phPhoneInput" style="margin:0">
-                  <span>Philippine Mobile Number</span>
-                  <span class="required" style="color:#ef476f">*</span>
-                </label>
-                <span class="ph-telco-badge" id="phTelcoBadge" style="display:none"></span>
-              </div>
+              <label class="form-label-styled" for="phPhoneInput" style="margin-bottom:6px">
+                <span>Philippine Mobile Number</span>
+                <span class="required" style="color:#ef476f">*</span>
+              </label>
 
               <div class="ph-phone-input-box" id="phInputBox">
                 <div class="ph-country-prefix">
@@ -821,7 +818,6 @@
       const errorBanner = document.getElementById('phErrorBanner');
       const errorMessage = document.getElementById('phErrorMessage');
       const digitCount = document.getElementById('digitCount');
-      const telcoBadge = document.getElementById('phTelcoBadge');
       const phoneStatusIcon = document.getElementById('phPhoneStatusIcon');
       const phLoginForm = document.getElementById('phLoginForm');
 
@@ -851,17 +847,6 @@
             digitCount.style.color = res.isValid ? '#10b981' : '#64748b';
           } else {
             digitCount.textContent = '';
-          }
-        }
-
-        if (telcoBadge) {
-          if (res.network && res.network !== 'Philippine Mobile' && digitsOnly.length >= 4) {
-            telcoBadge.textContent = res.network;
-            telcoBadge.classList.add('visible');
-            telcoBadge.style.display = 'inline-block';
-          } else {
-            telcoBadge.classList.remove('visible');
-            telcoBadge.style.display = 'none';
           }
         }
 
