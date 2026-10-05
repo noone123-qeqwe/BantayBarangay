@@ -48,6 +48,7 @@ const sessions = new Map();
 // ── TextBee.dev SMS Gateway ─────────────────────────────────
 const TEXTBEE_API_KEY = process.env.TEXTBEE_API_KEY || '';
 const TEXTBEE_DEVICE_ID = process.env.TEXTBEE_DEVICE_ID || '';
+const TEXTBEE_SIM_SUBSCRIPTION_ID = process.env.TEXTBEE_SIM_SUBSCRIPTION_ID || '';
 const SMS_ENABLED = (process.env.SMS_ENABLED || 'false').toLowerCase() === 'true';
 const MASELCO_NOTIFY_NUMBER = process.env.MASELCO_NOTIFY_NUMBER || '';
 
@@ -122,7 +123,8 @@ function sendSmsViaTextBee(recipient, message) {
         const payload = JSON.stringify({
             recipients: [recipient],
             message: message,
-            ...(TEXTBEE_DEVICE_ID ? { deviceId: TEXTBEE_DEVICE_ID } : {})
+            ...(TEXTBEE_DEVICE_ID ? { deviceId: TEXTBEE_DEVICE_ID } : {}),
+            ...(TEXTBEE_SIM_SUBSCRIPTION_ID ? { simSubscriptionId: Number(TEXTBEE_SIM_SUBSCRIPTION_ID) } : {})
         });
 
         const options = {
