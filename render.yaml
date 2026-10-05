@@ -22,7 +22,7 @@ services:
       - key: TEXTBEE_DEVICE_ID
         value: 6aa9e7d1243aaa9bc78b8a0b
       - key: TEXTBEE_SIM_SUBSCRIPTION_ID
-        value: "8"
+        value: "2"
       - key: ADMIN_URL
         fromService:
           type: web
@@ -49,7 +49,7 @@ services:
       - key: TEXTBEE_DEVICE_ID
         value: 6aa9e7d1243aaa9bc78b8a0b
       - key: TEXTBEE_SIM_SUBSCRIPTION_ID
-        value: "8"
+        value: "2"
       - key: RESIDENT_URL
         fromService:
           type: web
