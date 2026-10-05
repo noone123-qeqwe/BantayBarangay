@@ -42,7 +42,7 @@ const login = process.env.SMS_GATEWAY_LOGIN || '';
 const password = process.env.SMS_GATEWAY_PASSWORD || '';
 const token = process.env.SMS_GATEWAY_TOKEN || '';
 const deviceId = process.env.SMS_GATEWAY_DEVICE_ID || '';
-const simNumber = process.env.SMS_GATEWAY_SIM_NUMBER || '1';
+const simNumber = process.env.SMS_GATEWAY_SIM_NUMBER || 'auto (default SMS SIM)';
 const textbeeKey = process.env.TEXTBEE_API_KEY || '';
 
 console.log(`• SMS_ENABLED:            ${isSmsEnabled}`);

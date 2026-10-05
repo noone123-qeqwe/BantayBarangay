@@ -24,7 +24,7 @@ services:
       - key: SMS_GATEWAY_PASSWORD
         sync: false
       - key: SMS_GATEWAY_SIM_NUMBER
-        value: "2"
+        value: "auto"
       - key: TEXTBEE_API_KEY
         value: txb_G3o6fPep2noqjzgwfS7EDyTAs5ioqQYY
       - key: TEXTBEE_DEVICE_ID
@@ -59,7 +59,7 @@ services:
       - key: SMS_GATEWAY_PASSWORD
         sync: false
       - key: SMS_GATEWAY_SIM_NUMBER
-        value: "2"
+        value: "auto"
       - key: TEXTBEE_API_KEY
         value: txb_G3o6fPep2noqjzgwfS7EDyTAs5ioqQYY
       - key: TEXTBEE_DEVICE_ID
