@@ -79,14 +79,14 @@ console.log('⏳ Dispatching request to SMS gateway...');
         if (result.success) {
             console.log('✅ SUCCESS: SMS successfully submitted to gateway!');
             console.log('Response Details:', JSON.stringify(result.data || {}, null, 2));
-            process.exit(0);
+            process.exitCode = 0;
         } else {
             console.error('❌ FAILED: Gateway rejected message.');
             console.error('Error Message:', result.error);
-            process.exit(1);
+            process.exitCode = 1;
         }
     } catch (err) {
         console.error('💥 UNEXPECTED EXCEPTION:', err.message);
-        process.exit(1);
+        process.exitCode = 1;
     }
 })();
