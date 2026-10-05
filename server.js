@@ -52,7 +52,7 @@ const SMS_GATEWAY_LOGIN = process.env.SMS_GATEWAY_LOGIN || '';
 const SMS_GATEWAY_PASSWORD = process.env.SMS_GATEWAY_PASSWORD || '';
 const SMS_GATEWAY_TOKEN = process.env.SMS_GATEWAY_TOKEN || '';
 const SMS_GATEWAY_DEVICE_ID = process.env.SMS_GATEWAY_DEVICE_ID || '';
-const SMS_GATEWAY_SIM_NUMBER = process.env.SMS_GATEWAY_SIM_NUMBER ? parseInt(process.env.SMS_GATEWAY_SIM_NUMBER, 10) : null;
+const SMS_GATEWAY_SIM_NUMBER = process.env.SMS_GATEWAY_SIM_NUMBER ? parseInt(process.env.SMS_GATEWAY_SIM_NUMBER, 10) : 2;
 const MASELCO_NOTIFY_NUMBER = process.env.MASELCO_NOTIFY_NUMBER || '';
 
 // Legacy TextBee fallback configuration
@@ -130,13 +130,14 @@ async function sendSmsViaAndroidGateway(recipient, message) {
         return { success: false, error: 'Android SMS Gateway credentials not configured.' };
     }
 
+    const simSlot = process.env.SMS_GATEWAY_SIM_NUMBER ? parseInt(process.env.SMS_GATEWAY_SIM_NUMBER, 10) : null;
     const payload = {
         textMessage: {
             text: message
         },
         phoneNumbers: [recipient],
         ...(SMS_GATEWAY_DEVICE_ID ? { deviceId: SMS_GATEWAY_DEVICE_ID } : {}),
-        ...(SMS_GATEWAY_SIM_NUMBER ? { simNumber: Number(SMS_GATEWAY_SIM_NUMBER) } : {})
+        ...(simSlot ? { simNumber: simSlot } : {})
     };
 
     const headers = {
