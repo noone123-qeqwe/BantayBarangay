@@ -371,7 +371,7 @@ const Auth = (() => {
   }
 
   /**
-   * Send OTP via the server API (which dispatches real SMS via TextBee.dev).
+   * Send OTP via the server API (which dispatches real SMS via Android SMS Gateway).
    * Returns { success, demo_otp? } — demo_otp is only present when SMS is disabled.
    */
   async function sendOtpViaServer(mobile, purpose = 'registration') {

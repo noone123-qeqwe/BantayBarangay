@@ -45,12 +45,20 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const sessions = new Map();
 
-// ── TextBee.dev SMS Gateway ─────────────────────────────────
+// ── Android SMS Gateway (sms-gate.app / capcom6) ─────────────
+const SMS_ENABLED = (process.env.SMS_ENABLED || 'false').toLowerCase() === 'true';
+const SMS_GATEWAY_URL = process.env.SMS_GATEWAY_URL || 'https://api.sms-gate.app/3rdparty/v1/messages';
+const SMS_GATEWAY_LOGIN = process.env.SMS_GATEWAY_LOGIN || '';
+const SMS_GATEWAY_PASSWORD = process.env.SMS_GATEWAY_PASSWORD || '';
+const SMS_GATEWAY_TOKEN = process.env.SMS_GATEWAY_TOKEN || '';
+const SMS_GATEWAY_DEVICE_ID = process.env.SMS_GATEWAY_DEVICE_ID || '';
+const SMS_GATEWAY_SIM_NUMBER = process.env.SMS_GATEWAY_SIM_NUMBER ? parseInt(process.env.SMS_GATEWAY_SIM_NUMBER, 10) : null;
+const MASELCO_NOTIFY_NUMBER = process.env.MASELCO_NOTIFY_NUMBER || '';
+
+// Legacy TextBee fallback configuration
 const TEXTBEE_API_KEY = process.env.TEXTBEE_API_KEY || '';
 const TEXTBEE_DEVICE_ID = process.env.TEXTBEE_DEVICE_ID || '';
 const TEXTBEE_SIM_SUBSCRIPTION_ID = process.env.TEXTBEE_SIM_SUBSCRIPTION_ID || '';
-const SMS_ENABLED = (process.env.SMS_ENABLED || 'false').toLowerCase() === 'true';
-const MASELCO_NOTIFY_NUMBER = process.env.MASELCO_NOTIFY_NUMBER || '';
 
 /**
  * Send SMS notification to MASELCO when a new report is submitted.
@@ -94,7 +102,7 @@ function notifyMaselco(report) {
     const recipient = toE164(MASELCO_NOTIFY_NUMBER);
     console.log(`[MASELCO] 📤 Sending SMS notification to ${recipient} for report #${reportId}`);
 
-    sendSmsViaTextBee(recipient, message)
+    sendSms(recipient, message)
         .then(result => {
             if (result.success) {
                 console.log(`[MASELCO] ✅ SMS notification sent to ${recipient} for report #${reportId}`);
@@ -108,10 +116,80 @@ function notifyMaselco(report) {
 }
 
 /**
- * Send an SMS via TextBee.dev REST API
+ * Send an SMS via Android SMS Gateway (sms-gate.app / capcom6)
+ * Supports Cloud mode (https://api.sms-gate.app/3rdparty/v1/messages)
+ * and Local Server mode (http://<device_ip>:8080/message or /3rdparty/v1/messages).
+ *
  * @param {string} recipient - E.164 formatted number (e.g. "+639171234567")
  * @param {string} message   - The SMS body text
- * @returns {Promise<{success: boolean, error?: string}>}
+ * @returns {Promise<{success: boolean, error?: string, data?: any}>}
+ */
+async function sendSmsViaAndroidGateway(recipient, message) {
+    if (!SMS_GATEWAY_LOGIN && !SMS_GATEWAY_TOKEN) {
+        console.warn('[SMS] Android SMS Gateway credentials not configured. Please set SMS_GATEWAY_LOGIN and SMS_GATEWAY_PASSWORD in .env.');
+        return { success: false, error: 'Android SMS Gateway credentials not configured.' };
+    }
+
+    const payload = {
+        textMessage: {
+            text: message
+        },
+        phoneNumbers: [recipient],
+        ...(SMS_GATEWAY_DEVICE_ID ? { deviceId: SMS_GATEWAY_DEVICE_ID } : {}),
+        ...(SMS_GATEWAY_SIM_NUMBER ? { simNumber: Number(SMS_GATEWAY_SIM_NUMBER) } : {})
+    };
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    };
+
+    if (SMS_GATEWAY_TOKEN) {
+        headers['Authorization'] = `Bearer ${SMS_GATEWAY_TOKEN}`;
+    } else if (SMS_GATEWAY_LOGIN && SMS_GATEWAY_PASSWORD) {
+        const basicAuth = Buffer.from(`${SMS_GATEWAY_LOGIN}:${SMS_GATEWAY_PASSWORD}`).toString('base64');
+        headers['Authorization'] = `Basic ${basicAuth}`;
+    }
+
+    try {
+        console.log(`[SMS] 📤 Dispatching SMS via Android SMS Gateway to ${recipient}...`);
+        const response = await fetch(SMS_GATEWAY_URL, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(12000)
+        });
+
+        const rawText = await response.text();
+        let data = {};
+        try {
+            data = JSON.parse(rawText);
+        } catch {
+            data = { raw: rawText };
+        }
+
+        if (response.ok) {
+            const msgId = data.id || (Array.isArray(data) && data[0]?.id) || 'queued';
+            console.log(`[SMS] ✅ Sent to ${recipient} via Android SMS Gateway (ID: ${msgId})`);
+            return { success: true, data };
+        } else {
+            const errDetail = data.message || data.error || rawText || `HTTP ${response.status}`;
+            console.error(`[SMS] ❌ Android SMS Gateway error (${response.status}):`, errDetail);
+            return { success: false, error: data.message || `Android SMS Gateway returned ${response.status}` };
+        }
+    } catch (err) {
+        const isTimeout = err.name === 'TimeoutError' || err.name === 'AbortError';
+        const msg = isTimeout ? 'Android SMS Gateway request timed out (12s).' : `SMS network error: ${err.message}`;
+        console.error(`[SMS] ❌ ${msg}`);
+        return { success: false, error: msg };
+    }
+}
+
+/**
+ * Send an SMS via legacy TextBee.dev REST API (fallback)
+ * @param {string} recipient - E.164 formatted number (e.g. "+639171234567")
+ * @param {string} message   - The SMS body text
+ * @returns {Promise<{success: boolean, error?: string, data?: any}>}
  */
 function sendSmsViaTextBee(recipient, message) {
     return new Promise((resolve) => {
@@ -146,7 +224,7 @@ function sendSmsViaTextBee(recipient, message) {
                 try {
                     const data = JSON.parse(body);
                     if (res.statusCode >= 200 && res.statusCode < 300) {
-                        console.log(`[SMS] ✅ Sent to ${recipient}`);
+                        console.log(`[SMS] ✅ Sent to ${recipient} via TextBee`);
                         resolve({ success: true, data });
                     } else {
                         console.error(`[SMS] ❌ TextBee error ${res.statusCode}:`, body);
@@ -175,7 +253,34 @@ function sendSmsViaTextBee(recipient, message) {
 }
 
 /**
- * Convert a Philippine mobile number to E.164 format for TextBee
+ * Unified SMS dispatcher.
+ * Prioritizes Android SMS Gateway (sms-gate.app); falls back to TextBee if configured.
+ * @param {string} recipient - E.164 formatted number (e.g. "+639171234567")
+ * @param {string} message   - The SMS body text
+ * @returns {Promise<{success: boolean, error?: string, data?: any}>}
+ */
+async function sendSms(recipient, message) {
+    if (!SMS_ENABLED) {
+        console.log(`[SMS] Skipped (SMS_ENABLED is false) for ${recipient}`);
+        return { success: false, error: 'SMS is disabled in configuration.' };
+    }
+
+    // Prioritize Android SMS Gateway if configured
+    if (SMS_GATEWAY_LOGIN || SMS_GATEWAY_TOKEN) {
+        return sendSmsViaAndroidGateway(recipient, message);
+    }
+
+    // Fall back to TextBee if legacy API key is set
+    if (TEXTBEE_API_KEY && TEXTBEE_API_KEY !== 'your_api_key_here') {
+        return sendSmsViaTextBee(recipient, message);
+    }
+
+    console.warn('[SMS] No active SMS gateway configured. Set SMS_GATEWAY_LOGIN & SMS_GATEWAY_PASSWORD in .env.');
+    return { success: false, error: 'SMS gateway credentials not configured.' };
+}
+
+/**
+ * Convert a Philippine mobile number to E.164 format
  * Input: "09171234567" → Output: "+639171234567"
  */
 function toE164(mobile) {
@@ -838,9 +943,9 @@ function createRequestHandler(isDedicatedAdmin = false) {
                     };
 
                     if (SMS_ENABLED && toE164(otp.mobile)) {
-                        // Send real SMS via TextBee.dev
+                        // Send real SMS via Android SMS Gateway (or fallback)
                         const smsBody = `[BantayBarangay] Your verification code is: ${otp.otp_code}. Valid for 5 minutes. Do not share this code.`;
-                        const smsResult = await sendSmsViaTextBee(toE164(otp.mobile), smsBody);
+                        const smsResult = await sendSms(toE164(otp.mobile), smsBody);
                         if (!smsResult.success) {
                             response.sms_warning = 'Code generated but SMS delivery may be delayed.';
                             console.warn(`[SMS] Failed for ${otp.mobile}: ${smsResult.error}`);
@@ -1160,3 +1265,7 @@ module.exports = server;
 module.exports.createRequestHandler = createRequestHandler;
 module.exports.serveStatic = serveStatic;
 module.exports.adminServer = adminServer;
+module.exports.sendSms = sendSms;
+module.exports.sendSmsViaAndroidGateway = sendSmsViaAndroidGateway;
+module.exports.sendSmsViaTextBee = sendSmsViaTextBee;
+module.exports.toE164 = toE164;

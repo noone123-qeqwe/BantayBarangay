@@ -15,6 +15,7 @@
     "test:db": "node database/test-db.js",
     "test:api": "node database/test-api.js",
     "test": "node database/test-db.js && node database/test-api.js",
+    "test:sms": "node scripts/test-sms.js",
     "build:apk": "node scripts/build-apk.js"
   },
   "keywords": [

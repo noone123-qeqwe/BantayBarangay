@@ -17,12 +17,20 @@ services:
         value: production
       - key: SMS_ENABLED
         value: "true"
+      - key: SMS_GATEWAY_URL
+        value: https://api.sms-gate.app/3rdparty/v1/messages
+      - key: SMS_GATEWAY_LOGIN
+        sync: false
+      - key: SMS_GATEWAY_PASSWORD
+        sync: false
+      - key: SMS_GATEWAY_SIM_NUMBER
+        value: "1"
       - key: TEXTBEE_API_KEY
         value: txb_G3o6fPep2noqjzgwfS7EDyTAs5ioqQYY
       - key: TEXTBEE_DEVICE_ID
         value: 6aa9e7d1243aaa9bc78b8a0b
       - key: TEXTBEE_SIM_SUBSCRIPTION_ID
-        value: "2"
+        value: "8"
       - key: ADMIN_URL
         fromService:
           type: web
@@ -44,12 +52,20 @@ services:
         value: "true"
       - key: SMS_ENABLED
         value: "true"
+      - key: SMS_GATEWAY_URL
+        value: https://api.sms-gate.app/3rdparty/v1/messages
+      - key: SMS_GATEWAY_LOGIN
+        sync: false
+      - key: SMS_GATEWAY_PASSWORD
+        sync: false
+      - key: SMS_GATEWAY_SIM_NUMBER
+        value: "1"
       - key: TEXTBEE_API_KEY
         value: txb_G3o6fPep2noqjzgwfS7EDyTAs5ioqQYY
       - key: TEXTBEE_DEVICE_ID
         value: 6aa9e7d1243aaa9bc78b8a0b
       - key: TEXTBEE_SIM_SUBSCRIPTION_ID
-        value: "2"
+        value: "8"
       - key: RESIDENT_URL
         fromService:
           type: web
